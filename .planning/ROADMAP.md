@@ -34,11 +34,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Running `gsd-wired hook <event>` dispatches to the correct handler skeleton and exits
   3. Plugin manifest (.claude-plugin/plugin.json) is valid and registers all entry points
   4. No output appears on stdout except valid MCP JSON or hook JSON responses (stderr-only logging verified)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Go binary skeleton: Cobra CLI, slog logging, MCP serve, hook dispatcher, bd passthrough
+- [ ] 01-02-PLAN.md — Plugin registration files and integration test suite
 
 ### Phase 2: Graph Primitives
 **Goal**: The plugin can perform all beads graph operations and map GSD concepts onto bead structures
@@ -193,7 +193,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Binary Scaffold | 0/TBD | Not started | - |
+| 1. Binary Scaffold | 0/2 | Not started | - |
 | 2. Graph Primitives | 0/TBD | Not started | - |
 | 3. MCP Server | 0/TBD | Not started | - |
 | 4. Hook Integration | 0/TBD | Not started | - |
