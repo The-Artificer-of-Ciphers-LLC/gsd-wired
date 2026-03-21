@@ -120,10 +120,26 @@ func main() {
 		// Check if querying by label.
 		for i, a := range args {
 			if a == "label=gsd:phase" || (i > 0 && args[i-1] == "label" && a == "gsd:phase") {
+				// Allow test override for phase bead queries.
+				if queryFile := os.Getenv("FAKE_BD_QUERY_PHASE_RESPONSE"); queryFile != "" {
+					data, err := os.ReadFile(queryFile)
+					if err == nil {
+						fmt.Print(string(data))
+						os.Exit(0)
+					}
+				}
 				fmt.Print(cannedPhaseBead)
 				os.Exit(0)
 			}
 			if strings.HasPrefix(a, "label=gsd:phase") {
+				// Allow test override for phase bead queries.
+				if queryFile := os.Getenv("FAKE_BD_QUERY_PHASE_RESPONSE"); queryFile != "" {
+					data, err := os.ReadFile(queryFile)
+					if err == nil {
+						fmt.Print(string(data))
+						os.Exit(0)
+					}
+				}
 				fmt.Print(cannedPhaseBead)
 				os.Exit(0)
 			}
