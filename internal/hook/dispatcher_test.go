@@ -210,6 +210,118 @@ func TestDispatchAllEventsValidJSON(t *testing.T) {
 	}
 }
 
+// TestDispatchPreCompactRoute verifies Dispatch routes PreCompact to handlePreCompact.
+// A valid snapshot file should be created and valid JSON output returned.
+func TestDispatchPreCompactRoute(t *testing.T) {
+	tmpDir := t.TempDir()
+	input := PreCompactInput{
+		HookInputBase: HookInputBase{
+			SessionID:     "test-precompact",
+			CWD:           tmpDir,
+			HookEventName: EventPreCompact,
+		},
+		Trigger: "manual",
+	}
+	raw, err := json.Marshal(input)
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	stdin := bytes.NewReader(raw)
+	var stdout bytes.Buffer
+
+	if err := Dispatch(context.Background(), EventPreCompact, stdin, &stdout); err != nil {
+		t.Fatalf("Dispatch returned error: %v", err)
+	}
+
+	// Output must be valid JSON
+	trimmed := strings.TrimSpace(stdout.String())
+	var out map[string]interface{}
+	if err := json.Unmarshal([]byte(trimmed), &out); err != nil {
+		t.Errorf("output is not valid JSON: %v, raw: %q", err, trimmed)
+	}
+
+	// Snapshot file must have been created
+	snapshotPath := filepath.Join(tmpDir, ".gsdw", "precompact-snapshot.json")
+	if _, err := os.Stat(snapshotPath); os.IsNotExist(err) {
+		t.Error("expected precompact-snapshot.json to be created by Dispatch")
+	}
+}
+
+// TestDispatchPreToolUseRoute verifies Dispatch routes PreToolUse to handlePreToolUse.
+func TestDispatchPreToolUseRoute(t *testing.T) {
+	tmpDir := t.TempDir()
+	input := PreToolUseInput{
+		HookInputBase: HookInputBase{
+			SessionID:     "test-pretooluse",
+			CWD:           tmpDir,
+			HookEventName: EventPreToolUse,
+		},
+		ToolName:  "Read",
+		ToolInput: json.RawMessage(`{}`),
+		ToolUseID: "tu-dispatch",
+	}
+	raw, err := json.Marshal(input)
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	stdin := bytes.NewReader(raw)
+	var stdout bytes.Buffer
+
+	if err := Dispatch(context.Background(), EventPreToolUse, stdin, &stdout); err != nil {
+		t.Fatalf("Dispatch returned error: %v", err)
+	}
+
+	trimmed := strings.TrimSpace(stdout.String())
+	var out map[string]interface{}
+	if err := json.Unmarshal([]byte(trimmed), &out); err != nil {
+		t.Errorf("output is not valid JSON: %v, raw: %q", err, trimmed)
+	}
+
+	// Verify hookSpecificOutput.permissionDecision = "allow"
+	if hso, ok := out["hookSpecificOutput"].(map[string]interface{}); ok {
+		if hso["permissionDecision"] != "allow" {
+			t.Errorf("expected permissionDecision=allow, got %v", hso["permissionDecision"])
+		}
+	} else {
+		t.Error("expected hookSpecificOutput to be present for PreToolUse")
+	}
+}
+
+// TestDispatchPostToolUseRoute verifies Dispatch routes PostToolUse to handlePostToolUse.
+func TestDispatchPostToolUseRoute(t *testing.T) {
+	tmpDir := t.TempDir()
+	input := PostToolUseInput{
+		HookInputBase: HookInputBase{
+			SessionID:     "test-posttooluse",
+			CWD:           tmpDir,
+			HookEventName: EventPostToolUse,
+		},
+		ToolName:     "Read",
+		ToolInput:    json.RawMessage(`{}`),
+		ToolResponse: json.RawMessage(`{}`),
+		ToolUseID:    "tu-dispatch",
+	}
+	raw, err := json.Marshal(input)
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	stdin := bytes.NewReader(raw)
+	var stdout bytes.Buffer
+
+	if err := Dispatch(context.Background(), EventPostToolUse, stdin, &stdout); err != nil {
+		t.Fatalf("Dispatch returned error: %v", err)
+	}
+
+	trimmed := strings.TrimSpace(stdout.String())
+	var out map[string]interface{}
+	if err := json.Unmarshal([]byte(trimmed), &out); err != nil {
+		t.Errorf("output is not valid JSON: %v, raw: %q", err, trimmed)
+	}
+}
+
 // TestDispatchUsesBeadsDir verifies that the dispatcher creates a hookState
 // with beadsDir set from the CWD in the incoming JSON.
 func TestDispatchUsesBeadsDir(t *testing.T) {

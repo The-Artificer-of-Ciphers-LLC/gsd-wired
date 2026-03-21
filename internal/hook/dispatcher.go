@@ -49,14 +49,11 @@ func Dispatch(ctx context.Context, event string, stdin io.Reader, stdout io.Writ
 	case EventSessionStart:
 		return handleSessionStart(ctx, raw, hs, stdout)
 	case EventPreCompact:
-		// Stub — Plan 02 replaces with PreCompact handler
-		return writeOutput(stdout, HookOutput{})
+		return handlePreCompact(ctx, raw, hs, stdout)
 	case EventPreToolUse:
-		// Stub — Plan 02 replaces with PreToolUse handler
-		return writeOutput(stdout, HookOutput{})
+		return handlePreToolUse(ctx, raw, hs, stdout)
 	case EventPostToolUse:
-		// Stub — Plan 02 replaces with PostToolUse handler
-		return writeOutput(stdout, HookOutput{})
+		return handlePostToolUse(ctx, raw, hs, stdout)
 	default:
 		// Should not reach here — already validated above
 		return fmt.Errorf("unhandled hook event: %s", event)
