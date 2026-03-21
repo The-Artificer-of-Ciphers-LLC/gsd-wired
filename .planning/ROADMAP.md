@@ -65,11 +65,11 @@ Plans:
   2. First tool call triggers Dolt initialization transparently (lazy init)
   3. Tool list includes all planned GSD tools (stubs acceptable at this phase)
   4. Dolt writes are batched at operation boundaries, not per-call
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md — Batch write mode in graph.Client + lazy init serverState with sync.Once
+- [ ] 03-02-PLAN.md — MCP tool registration (8 tools) and Serve() wiring
 
 ### Phase 4: Hook Integration
 **Goal**: Claude Code lifecycle events automatically load and persist project state through beads
@@ -195,7 +195,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 |-------|----------------|--------|-----------|
 | 1. Binary Scaffold | 2/2 | Complete | 2026-03-21 |
 | 2. Graph Primitives | 2/2 | Complete | 2026-03-21 |
-| 3. MCP Server | 0/TBD | Not started | - |
+| 3. MCP Server | 0/2 | Not started | - |
 | 4. Hook Integration | 0/TBD | Not started | - |
 | 5. Project Initialization | 0/TBD | Not started | - |
 | 6. Research + Planning | 0/TBD | Not started | - |
