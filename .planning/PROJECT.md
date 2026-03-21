@@ -22,6 +22,8 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] Success criteria stored as extensible fields on beads (MAP-04) — Phase 2
 - [x] Requirement IDs stored as bead labels for traceability (MAP-05) — Phase 2
 - [x] GSD-specific metadata via bd extensible fields (MAP-06) — Phase 2
+- [x] MCP server exposes tools via official Go SDK with lazy Dolt initialization (INFRA-02) — Phase 3
+- [x] Batched Dolt writes at operation boundaries, not per-call (INFRA-10) — Phase 3
 
 ### Active
 
@@ -102,4 +104,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 2 completion*
+*Last updated: 2026-03-21 after Phase 3 completion*
