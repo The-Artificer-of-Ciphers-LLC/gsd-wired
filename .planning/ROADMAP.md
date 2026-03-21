@@ -148,11 +148,11 @@ Plans:
   1. `/gsd-wired:ship` creates a PR with bead-sourced summary (requirements covered, phases completed)
   2. Phase completion updates bead state and triggers next phase readiness
   3. `/gsd-wired:status` shows current project state entirely from beads graph queries (no markdown parsing)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 08-01: TBD
-- [ ] 08-02: TBD
+- [ ] 08-01-PLAN.md — create_pr_summary + advance_phase MCP tools (tools 16-17), get_status enrichment
+- [ ] 08-02-PLAN.md — gsdw ship CLI stub, /gsd-wired:ship SKILL.md slash command
 
 ### Phase 9: Token-Aware Context
 **Goal**: The plugin minimizes token consumption through intelligent context routing based on bead state
@@ -200,6 +200,6 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 5. Project Initialization | 2/2 | Complete | 2026-03-21 |
 | 6. Research + Planning | 0/2 | Not started | - |
 | 7. Execution + Verification | 0/3 | Not started | - |
-| 8. Ship + Status | 0/TBD | Not started | - |
+| 8. Ship + Status | 0/2 | Not started | - |
 | 9. Token-Aware Context | 0/TBD | Not started | - |
 | 10. Coexistence | 0/TBD | Not started | - |
