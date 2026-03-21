@@ -133,12 +133,12 @@ Plans:
   5. Agent output is validated at the orchestrator before downstream consumption
   6. `/gsd-wired:verify` checks success criteria from the phase epic and reports pass/fail per criterion
   7. Failed verification criteria automatically produce new task beads for remediation
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
-- [ ] 07-03: TBD
+- [ ] 07-01-PLAN.md — execute_wave + verify_phase MCP tools (tools 14-15), fake_bd extension, tool count update to 15
+- [ ] 07-02-PLAN.md — gsdw execute and gsdw verify CLI stubs with root.go wiring
+- [ ] 07-03-PLAN.md — /gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands
 
 ### Phase 8: Ship + Status
 **Goal**: Users can ship completed phases as PRs and view project state from the beads graph
@@ -199,7 +199,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 4. Hook Integration | 0/2 | Not started | - |
 | 5. Project Initialization | 2/2 | Complete | 2026-03-21 |
 | 6. Research + Planning | 0/2 | Not started | - |
-| 7. Execution + Verification | 0/TBD | Not started | - |
+| 7. Execution + Verification | 0/3 | Not started | - |
 | 8. Ship + Status | 0/TBD | Not started | - |
 | 9. Token-Aware Context | 0/TBD | Not started | - |
 | 10. Coexistence | 0/TBD | Not started | - |
