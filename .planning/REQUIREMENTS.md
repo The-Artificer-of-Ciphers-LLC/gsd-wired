@@ -11,7 +11,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **INFRA-01**: Single Go binary serves as MCP server (stdio), hook dispatcher (subcommand), and CLI tool
 - [ ] **INFRA-02**: MCP server exposes tools via official Go SDK (v1.4.1) with lazy Dolt initialization
-- [ ] **INFRA-03**: bd CLI wrapper layer shells out to `bd --json` for all graph operations
+- [x] **INFRA-03**: bd CLI wrapper layer shells out to `bd --json` for all graph operations
 - [x] **INFRA-04**: Plugin manifest (.claude-plugin/plugin.json) registers MCP server, hooks, and slash commands
 - [ ] **INFRA-05**: SessionStart hook loads active project state from beads graph into context
 - [ ] **INFRA-06**: PreCompact hook saves in-progress work state to beads (two-stage: fast local write, async Dolt commit)
@@ -22,12 +22,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### GSD Domain Mapping
 
-- [ ] **MAP-01**: Phase maps to epic bead with metadata (phase number, goal, success criteria)
-- [ ] **MAP-02**: Plan maps to task bead with parent-child relationship to phase epic
-- [ ] **MAP-03**: Wave computed dynamically from dependency graph via `bd ready`
-- [ ] **MAP-04**: Success criteria stored as extensible fields on task beads
-- [ ] **MAP-05**: Requirement IDs (REQ-IDs) stored as bead tags for traceability
-- [ ] **MAP-06**: GSD-specific metadata stored via bd's extensible fields (phase tags, status, wave assignment)
+- [x] **MAP-01**: Phase maps to epic bead with metadata (phase number, goal, success criteria)
+- [x] **MAP-02**: Plan maps to task bead with parent-child relationship to phase epic
+- [x] **MAP-03**: Wave computed dynamically from dependency graph via `bd ready`
+- [x] **MAP-04**: Success criteria stored as extensible fields on task beads
+- [x] **MAP-05**: Requirement IDs (REQ-IDs) stored as bead tags for traceability
+- [x] **MAP-06**: GSD-specific metadata stored via bd's extensible fields (phase tags, status, wave assignment)
 
 ### Project Initialization
 

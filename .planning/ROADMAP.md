@@ -13,7 +13,7 @@ gsd-wired delivers GSD's full development lifecycle as a Claude Code plugin back
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Binary Scaffold** - Go binary with Cobra subcommands, plugin manifest, stdout discipline
-- [ ] **Phase 2: Graph Primitives** - bd CLI wrapper and GSD-to-beads domain mapping
+- [x] **Phase 2: Graph Primitives** - bd CLI wrapper and GSD-to-beads domain mapping
 - [ ] **Phase 3: MCP Server** - MCP server with lazy Dolt init and tool registration
 - [ ] **Phase 4: Hook Integration** - All four Claude Code hooks with state persistence
 - [ ] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
@@ -54,7 +54,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — internal/graph/ package: bd client, Bead types, CRUD operations, index, tests with fake bd
-- [ ] 02-02-PLAN.md — gsdw ready subcommand with tree format, --json, --phase filter
+- [x] 02-02-PLAN.md — gsdw ready subcommand with tree format, --json, --phase filter
 
 ### Phase 3: MCP Server
 **Goal**: The MCP server responds to protocol requests and exposes GSD tools with lazy database initialization
@@ -194,7 +194,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Binary Scaffold | 2/2 | Complete | 2026-03-21 |
-| 2. Graph Primitives | 0/2 | Not started | - |
+| 2. Graph Primitives | 2/2 | Complete | 2026-03-21 |
 | 3. MCP Server | 0/TBD | Not started | - |
 | 4. Hook Integration | 0/TBD | Not started | - |
 | 5. Project Initialization | 0/TBD | Not started | - |
