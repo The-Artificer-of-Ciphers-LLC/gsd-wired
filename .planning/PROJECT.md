@@ -24,6 +24,10 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] GSD-specific metadata via bd extensible fields (MAP-06) — Phase 2
 - [x] MCP server exposes tools via official Go SDK with lazy Dolt initialization (INFRA-02) — Phase 3
 - [x] Batched Dolt writes at operation boundaries, not per-call (INFRA-10) — Phase 3
+- [x] SessionStart loads active project state from beads graph into context (INFRA-05) — Phase 4
+- [x] PreCompact saves in-progress state to fast local buffer, syncs on next SessionStart (INFRA-06) — Phase 4
+- [x] PreToolUse injects relevant bead context before tool execution (INFRA-07) — Phase 4
+- [x] PostToolUse updates bead state after tool execution (INFRA-08) — Phase 4
 
 ### Active
 
@@ -104,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 3 completion*
+*Last updated: 2026-03-21 after Phase 4 completion*
