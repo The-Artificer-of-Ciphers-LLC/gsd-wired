@@ -53,18 +53,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Execution Phase
 
-- [ ] **EXEC-01**: Wave execution runs unblocked tasks in parallel (tasks from `bd ready`)
-- [ ] **EXEC-02**: Each execution subagent claims a task bead and receives only that bead's context chain
-- [ ] **EXEC-03**: Subagent context includes: task description, success criteria, parent epic summary, dependency bead summaries
-- [ ] **EXEC-04**: On task completion, subagent closes bead with results, triggering next wave
+- [x] **EXEC-01**: Wave execution runs unblocked tasks in parallel (tasks from `bd ready`)
+- [x] **EXEC-02**: Each execution subagent claims a task bead and receives only that bead's context chain
+- [x] **EXEC-03**: Subagent context includes: task description, success criteria, parent epic summary, dependency bead summaries
+- [x] **EXEC-04**: On task completion, subagent closes bead with results, triggering next wave
 - [ ] **EXEC-05**: Atomic git commits per completed task with bead ID in commit message
 - [ ] **EXEC-06**: Agent output validated at orchestrator before downstream consumption (error amplification prevention)
 
 ### Verification Phase
 
-- [ ] **VRFY-01**: Verification agent reads success criteria from phase epic's extensible fields
-- [ ] **VRFY-02**: Verification runs checks against codebase and reports pass/fail per criterion
-- [ ] **VRFY-03**: Failed criteria produce new task beads for remediation
+- [x] **VRFY-01**: Verification agent reads success criteria from phase epic's extensible fields
+- [x] **VRFY-02**: Verification runs checks against codebase and reports pass/fail per criterion
+- [x] **VRFY-03**: Failed criteria produce new task beads for remediation
 
 ### Ship Phase
 
@@ -163,15 +163,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAN-02 | Phase 6 | Pending |
 | PLAN-03 | Phase 6 | Pending |
 | PLAN-04 | Phase 6 | Pending |
-| EXEC-01 | Phase 7 | Pending |
-| EXEC-02 | Phase 7 | Pending |
-| EXEC-03 | Phase 7 | Pending |
-| EXEC-04 | Phase 7 | Pending |
+| EXEC-01 | Phase 7 | Complete |
+| EXEC-02 | Phase 7 | Complete |
+| EXEC-03 | Phase 7 | Complete |
+| EXEC-04 | Phase 7 | Complete |
 | EXEC-05 | Phase 7 | Pending |
 | EXEC-06 | Phase 7 | Pending |
-| VRFY-01 | Phase 7 | Pending |
-| VRFY-02 | Phase 7 | Pending |
-| VRFY-03 | Phase 7 | Pending |
+| VRFY-01 | Phase 7 | Complete |
+| VRFY-02 | Phase 7 | Complete |
+| VRFY-03 | Phase 7 | Complete |
 | SHIP-01 | Phase 8 | Pending |
 | SHIP-02 | Phase 8 | Pending |
 | TOKEN-01 | Phase 9 | Pending |
