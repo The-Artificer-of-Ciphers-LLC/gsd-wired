@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
+
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
 )
 
 // executeWaveArgs holds the arguments for the execute_wave MCP tool.
@@ -67,6 +69,21 @@ func planIDFromMeta(meta map[string]any) string {
 	return s
 }
 
+// extractCompact returns the compact summary for a closed dependency bead.
+// Prefers Metadata["gsd:compact"] (written at close time by ClosePlan) over raw CloseReason.
+// Falls back to CloseReason for beads not yet compacted (backward compatible).
+// Per Research Pattern 7 and D-11.
+func extractCompact(b *graph.Bead) string {
+	if b.Metadata != nil {
+		if v, ok := b.Metadata["gsd:compact"]; ok {
+			if s, ok := v.(string); ok && s != "" {
+				return s
+			}
+		}
+	}
+	return b.CloseReason
+}
+
 // handleExecuteWave implements the execute_wave MCP tool.
 // It pre-computes the full context chain for all ready tasks in a phase (per D-04).
 func handleExecuteWave(ctx context.Context, state *serverState, args executeWaveArgs) (*mcpsdk.CallToolResult, error) {
@@ -114,15 +131,17 @@ func handleExecuteWave(ctx context.Context, state *serverState, args executeWave
 			DepSummaries:       []string{},
 		}
 
-		// Resolve each dependency: fetch the dep bead and extract its CloseReason.
+		// Resolve each dependency: fetch the dep bead and extract compact summary (D-11).
+		// Prefers gsd:compact metadata over raw CloseReason for compacted beads.
 		for _, dep := range bead.Dependencies {
 			depBead, err := state.client.GetBead(ctx, dep.DependsOnID)
 			if err != nil {
 				// Best effort: skip unavailable dep beads rather than failing the whole call.
 				continue
 			}
-			if depBead.CloseReason != "" {
-				tc.DepSummaries = append(tc.DepSummaries, depBead.CloseReason)
+			summary := extractCompact(depBead)
+			if summary != "" {
+				tc.DepSummaries = append(tc.DepSummaries, summary)
 			}
 		}
 
