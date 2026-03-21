@@ -34,7 +34,7 @@ type closeResult struct {
 	Unblocked []graph.Bead `json:"unblocked"`
 }
 
-// registerTools registers all 10 GSD MCP tools on the server.
+// registerTools registers all 12 GSD MCP tools on the server.
 // Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
 // Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
 func registerTools(server *mcpsdk.Server, state *serverState) {
@@ -233,5 +233,31 @@ func registerTools(server *mcpsdk.Server, state *serverState) {
 		InputSchema: json.RawMessage(`{"type":"object","properties":{},"additionalProperties":false}`),
 	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
 		return handleGetStatus(ctx, state)
+	})
+
+	// run_research — Creates a research epic bead + 4 child beads for parallel research agents.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "run_research",
+		Description: "Creates a research epic bead plus 4 child beads (stack, features, architecture, pitfalls) for parallel research agents. Returns epic_bead_id and child_bead_ids map.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number for this research"},"title":{"type":"string","description":"Research title (e.g. project name)"},"req_ids":{"type":"array","items":{"type":"string"},"description":"Requirement IDs to attach to the research epic"}},"required":["phase_num","title"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args runResearchArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleRunResearch(ctx, state, args)
+	})
+
+	// synthesize_research — Queries completed research child beads and creates a summary bead.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "synthesize_research",
+		Description: "Queries the research epic for the given phase and creates a summary bead combining all findings.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number of the research to synthesize"},"summary":{"type":"string","description":"Combined summary of all research findings"}},"required":["phase_num","summary"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args synthesizeResearchArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleSynthesizeResearch(ctx, state, args)
 	})
 }

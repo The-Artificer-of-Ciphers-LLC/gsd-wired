@@ -22,6 +22,9 @@ const cannedPhaseBead = `[{"id":"bd-phase-1","title":"Phase 1","status":"open","
 // Canned plan bead for list --label gsd:plan responses.
 const cannedPlanBead = `[{"id":"bd-plan-01","title":"Plan 01","status":"open","priority":3,"issue_type":"task","metadata":{"gsd_plan":"02-01"},"labels":["gsd:plan"],"created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z"}]`
 
+// Canned research epic bead for query label=gsd:research responses.
+const cannedResearchBead = `[{"id":"bd-research-1","title":"Research Phase 6","status":"open","priority":3,"issue_type":"epic","metadata":{"gsd_phase":6},"labels":["gsd:research"],"created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z"}]`
+
 func main() {
 	args := os.Args[1:] // strip program name
 
@@ -112,6 +115,10 @@ func main() {
 			}
 			if strings.HasPrefix(a, "label=gsd:phase") {
 				fmt.Print(cannedPhaseBead)
+				os.Exit(0)
+			}
+			if strings.HasPrefix(a, "label=gsd:research") {
+				fmt.Print(cannedResearchBead)
 				os.Exit(0)
 			}
 		}

@@ -22,7 +22,7 @@ func Serve(ctx context.Context) error {
 	state := &serverState{}
 	registerTools(server, state)
 
-	slog.Debug("mcp server starting on stdio", "tools", 10)
+	slog.Debug("mcp server starting on stdio", "tools", 12)
 
 	return server.Run(ctx, &mcp.StdioTransport{})
 }
