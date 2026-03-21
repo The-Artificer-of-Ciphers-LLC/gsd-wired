@@ -34,7 +34,7 @@ type closeResult struct {
 	Unblocked []graph.Bead `json:"unblocked"`
 }
 
-// registerTools registers all 12 GSD MCP tools on the server.
+// registerTools registers all 13 GSD MCP tools on the server.
 // Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
 // Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
 func registerTools(server *mcpsdk.Server, state *serverState) {
@@ -259,5 +259,18 @@ func registerTools(server *mcpsdk.Server, state *serverState) {
 			return toolError("invalid arguments: " + err.Error()), nil
 		}
 		return handleSynthesizeResearch(ctx, state, args)
+	})
+
+	// create_plan_beads — Batch-creates task beads from a structured JSON plan with dependency wiring.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "create_plan_beads",
+		Description: "Batch-creates task beads from a structured plan, resolving local task IDs to bead IDs in topological order for dependency wiring.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number for these task beads"},"epic_bead_id":{"type":"string","description":"Parent epic bead ID for the phase"},"tasks":{"type":"array","description":"Ordered list of task definitions","items":{"type":"object","properties":{"id":{"type":"string","description":"Local task ID (e.g. 06-01)"},"title":{"type":"string","description":"Task title"},"acceptance":{"type":"string","description":"Acceptance criteria"},"context":{"type":"string","description":"Task context/description"},"req_ids":{"type":"array","items":{"type":"string"},"description":"Requirement IDs covered by this task"},"depends_on":{"type":"array","items":{"type":"string"},"description":"Local task IDs this task depends on"},"complexity":{"type":"string","description":"Estimated complexity: S, M, or L"},"files":{"type":"array","items":{"type":"string"},"description":"Files to be created or modified"}},"required":["id","title","acceptance","context","complexity","files"],"additionalProperties":false}}},"required":["phase_num","epic_bead_id","tasks"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args createPlanBeadsArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleCreatePlanBeads(ctx, state, args)
 	})
 }
