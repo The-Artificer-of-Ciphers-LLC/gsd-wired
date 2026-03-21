@@ -50,11 +50,11 @@ Plans:
   3. A plan can be created as a task bead with parent-child relationship to its phase epic
   4. `bd ready` returns unblocked tasks and the wrapper surfaces them as the current wave
   5. Requirement IDs and GSD metadata are stored as bead tags/extensible fields and queryable
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — internal/graph/ package: bd client, Bead types, CRUD operations, index, tests with fake bd
+- [ ] 02-02-PLAN.md — gsdw ready subcommand with tree format, --json, --phase filter
 
 ### Phase 3: MCP Server
 **Goal**: The MCP server responds to protocol requests and exposes GSD tools with lazy database initialization
@@ -194,7 +194,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Binary Scaffold | 2/2 | Complete | 2026-03-21 |
-| 2. Graph Primitives | 0/TBD | Not started | - |
+| 2. Graph Primitives | 0/2 | Not started | - |
 | 3. MCP Server | 0/TBD | Not started | - |
 | 4. Hook Integration | 0/TBD | Not started | - |
 | 5. Project Initialization | 0/TBD | Not started | - |
