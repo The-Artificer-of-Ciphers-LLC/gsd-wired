@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** Phase 2: Graph Primitives
+**Current focus:** Phase 3: MCP Server
 
 ## Current Position
 

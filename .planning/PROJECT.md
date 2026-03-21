@@ -15,6 +15,13 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] Single Go binary serves as MCP server, hook dispatcher, and CLI tool (INFRA-01) — Phase 1
 - [x] Plugin manifest registers MCP server and hooks (INFRA-04) — Phase 1
 - [x] Strict stdout discipline — no stray output breaking MCP stdio protocol (INFRA-09) — Phase 1
+- [x] bd CLI wrapper layer shells out to `bd --json` for all graph operations (INFRA-03) — Phase 2
+- [x] Phase maps to epic bead with metadata (MAP-01) — Phase 2
+- [x] Plan maps to task bead with parent-child relationship (MAP-02) — Phase 2
+- [x] Wave computed dynamically via `bd ready` (MAP-03) — Phase 2
+- [x] Success criteria stored as extensible fields on beads (MAP-04) — Phase 2
+- [x] Requirement IDs stored as bead labels for traceability (MAP-05) — Phase 2
+- [x] GSD-specific metadata via bd extensible fields (MAP-06) — Phase 2
 
 ### Active
 
@@ -95,4 +102,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 1 completion*
+*Last updated: 2026-03-21 after Phase 2 completion*
