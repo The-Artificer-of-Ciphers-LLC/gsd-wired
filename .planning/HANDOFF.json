@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-03-21T06:47:44.590Z",
+  "phase": "0",
+  "phase_name": "Project Initialization",
+  "phase_dir": ".planning",
+  "plan": 0,
+  "task": 0,
+  "total_tasks": 0,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "Git init + setup", "status": "done", "commit": "9ff19cb"},
+    {"id": 2, "name": "Deep questioning (12 questions)", "status": "done", "commit": "9ff19cb"},
+    {"id": 3, "name": "PROJECT.md creation", "status": "done", "commit": "9ff19cb"},
+    {"id": 4, "name": "Workflow config (YOLO, fine, parallel, quality)", "status": "done", "commit": "e257a53"},
+    {"id": 5, "name": "Domain research (4 parallel agents: stack, features, arch, pitfalls)", "status": "done", "commit": "4eb455a"},
+    {"id": 6, "name": "Research synthesis (SUMMARY.md)", "status": "done", "commit": "4eb455a"},
+    {"id": 7, "name": "Requirements definition (56 requirements, 10 categories)", "status": "done", "commit": "d4a5835"},
+    {"id": 8, "name": "Roadmap creation (10 phases, 56 requirements mapped)", "status": "done", "commit": "71757d9"}
+  ],
+  "remaining_tasks": [],
+  "blockers": [
+    {"description": "Go binary (go) needs ~/go/bin added to PATH in shell profile", "type": "human_action", "workaround": "Use full path /Users/trekkie/go/bin/go"},
+    {"description": "mcp-gopls installed but not on PATH (at ~/go/bin/mcp-gopls)", "type": "human_action", "workaround": "claude mcp add mcp-gopls /Users/trekkie/go/bin/mcp-gopls"},
+    {"description": "bd CLI not installed (required hard dependency)", "type": "human_action", "workaround": "See https://github.com/steveyegge/beads/blob/main/docs/INSTALLING.md"},
+    {"description": "dolt CLI not installed (required hard dependency)", "type": "human_action", "workaround": "brew install dolt"}
+  ],
+  "human_actions_pending": [
+    {"action": "Add ~/go/bin to PATH in ~/.zprofile", "context": "Go tools (mcp-gopls, future gsd-wired binary) need to be discoverable", "blocking": false},
+    {"action": "Install dolt: brew install dolt", "context": "Hard dependency for beads graph persistence", "blocking": true},
+    {"action": "Install beads (bd): see INSTALLING.md", "context": "Hard dependency for all graph operations", "blocking": true},
+    {"action": "Add mcp-gopls to Claude Code: claude mcp add mcp-gopls /Users/trekkie/go/bin/mcp-gopls", "context": "Go LSP intelligence via MCP (optional but recommended)", "blocking": false}
+  ],
+  "decisions": [
+    {"decision": "Deeper fusion of GSD + Beads, not layering", "rationale": "New primitives where Phase=epic, Plan=task, Wave=dependency layer", "phase": "init"},
+    {"decision": "Hard dependency on bd/Dolt", "rationale": "Leverage existing graph persistence instead of building own", "phase": "init"},
+    {"decision": "Go as implementation language", "rationale": "Same as bd, enables tight integration, single binary distribution", "phase": "init"},
+    {"decision": "Hybrid state: files + beads", "rationale": "PROJECT.md and config.json stay human-readable; dynamic state moves to graph", "phase": "init"},
+    {"decision": "All four hooks (SessionStart, PreCompact, PreToolUse, PostToolUse)", "rationale": "Deep integration for token-aware routing and automatic state management", "phase": "init"},
+    {"decision": "Coexistence with .planning/ as fallback", "rationale": "Lowers adoption barrier for existing GSD users", "phase": "init"},
+    {"decision": "Hook names are PreToolUse/PostToolUse not PreToolCall/PostToolCall", "rationale": "Corrected by architecture research against official Claude Code docs", "phase": "init"},
+    {"decision": "PreCompact is observability-only", "rationale": "Cannot block compaction; must use two-stage save (fast local + async Dolt)", "phase": "init"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Run /gsd:discuss-phase 1 to gather context for Phase 1: Binary Scaffold",
+  "context_notes": "Project fully initialized. All research, requirements, and roadmap complete. Key research insights: official MCP Go SDK v1.4.1, Beads Go API v0.61.0 available for direct import (v2), PreCompact cannot block compaction, Dolt write amplification requires batched writes. Effective Go skill installed. mcp-gopls binary installed but needs PATH setup. Before Phase 1 can execute, user needs dolt and bd CLI installed."
+}
