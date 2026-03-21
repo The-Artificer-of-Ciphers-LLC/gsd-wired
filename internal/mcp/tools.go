@@ -34,7 +34,7 @@ type closeResult struct {
 	Unblocked []graph.Bead `json:"unblocked"`
 }
 
-// registerTools registers all 15 GSD MCP tools on the server.
+// registerTools registers all 17 GSD MCP tools on the server.
 // Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
 // Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
 func registerTools(server *mcpsdk.Server, state *serverState) {
@@ -298,5 +298,31 @@ func registerTools(server *mcpsdk.Server, state *serverState) {
 			return toolError("invalid arguments: " + err.Error()), nil
 		}
 		return handleVerifyPhase(ctx, state, args)
+	})
+
+	// create_pr_summary — Creates a bead-sourced PR summary for a phase (tool 16).
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "create_pr_summary",
+		Description: "Creates a bead-sourced PR summary for a phase: title, markdown body with requirements and phase checklist, and branch name.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number to create PR summary for"}},"required":["phase_num"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args createPrSummaryArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleCreatePrSummary(ctx, state, args)
+	})
+
+	// advance_phase — Closes a phase epic bead and returns newly unblocked beads (tool 17).
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "advance_phase",
+		Description: "Closes a phase epic bead with a reason and returns newly unblocked beads and next phase info.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number to advance"},"reason":{"type":"string","description":"Completion reason"}},"required":["phase_num","reason"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args advancePhaseArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleAdvancePhase(ctx, state, args)
 	})
 }
