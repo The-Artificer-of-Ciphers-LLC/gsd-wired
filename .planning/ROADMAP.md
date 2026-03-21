@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
 - [x] **Phase 6: Research + Planning** - Research agents coordinating as beads, plan creation with dependencies
 - [x] **Phase 7: Execution + Verification** - Wave-based parallel execution and post-execution verification
-- [ ] **Phase 8: Ship + Status** - PR creation, phase advancement, and project status from graph
+- [x] **Phase 8: Ship + Status** - PR creation, phase advancement, and project status from graph
 - [ ] **Phase 9: Token-Aware Context** - Hot/warm/cold tiering, budget tracking, context injection
 - [ ] **Phase 10: Coexistence** - .planning/ fallback reading and gradual adoption path
 
@@ -164,12 +164,11 @@ Plans:
   3. Closed beads are automatically compacted (summary replaces full content)
   4. Active beads get full context, recent beads get summaries, done beads get IDs only (hot/warm/cold)
   5. Token budget tracking estimates tokens per bead and fits injected context within remaining window
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 09-01: TBD
-- [ ] 09-02: TBD
-- [ ] 09-03: TBD
+- [ ] 09-01-PLAN.md — Graph-layer tiering: Tier/TieredBead types, classifyTier, estimateTokens, CompactBead, QueryTiered, compaction on ClosePlan
+- [ ] 09-02-PLAN.md — Budget-aware SessionStart, get_tiered_context MCP tool (tool 18), execute_wave compacted dep summaries
 
 ### Phase 10: Coexistence
 **Goal**: Existing GSD users can adopt gsd-wired gradually without abandoning their .planning/ workflow
@@ -201,5 +200,5 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 6. Research + Planning | 2/2 | Complete | 2026-03-21 |
 | 7. Execution + Verification | 3/3 | Complete | 2026-03-21 |
 | 8. Ship + Status | 2/2 | Complete | 2026-03-21 |
-| 9. Token-Aware Context | 0/TBD | Not started | - |
+| 9. Token-Aware Context | 0/2 | Not started | - |
 | 10. Coexistence | 0/TBD | Not started | - |
