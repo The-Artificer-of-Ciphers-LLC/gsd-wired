@@ -136,7 +136,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | INFRA-01 | Phase 1 | Pending |
 | INFRA-02 | Phase 3 | Pending |
-| INFRA-03 | Phase 2 | Pending |
+| INFRA-03 | Phase 2 | Complete |
 | INFRA-04 | Phase 1 | Pending |
 | INFRA-05 | Phase 4 | Pending |
 | INFRA-06 | Phase 4 | Pending |
@@ -144,12 +144,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-08 | Phase 4 | Pending |
 | INFRA-09 | Phase 1 | Pending |
 | INFRA-10 | Phase 3 | Pending |
-| MAP-01 | Phase 2 | Pending |
-| MAP-02 | Phase 2 | Pending |
+| MAP-01 | Phase 2 | Complete |
+| MAP-02 | Phase 2 | Complete |
 | MAP-03 | Phase 2 | Pending |
-| MAP-04 | Phase 2 | Pending |
-| MAP-05 | Phase 2 | Pending |
-| MAP-06 | Phase 2 | Pending |
+| MAP-04 | Phase 2 | Complete |
+| MAP-05 | Phase 2 | Complete |
+| MAP-06 | Phase 2 | Complete |
 | INIT-01 | Phase 5 | Pending |
 | INIT-02 | Phase 5 | Pending |
 | INIT-03 | Phase 5 | Pending |

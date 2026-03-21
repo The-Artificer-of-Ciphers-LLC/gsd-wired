@@ -53,7 +53,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — internal/graph/ package: bd client, Bead types, CRUD operations, index, tests with fake bd
+- [x] 02-01-PLAN.md — internal/graph/ package: bd client, Bead types, CRUD operations, index, tests with fake bd
 - [ ] 02-02-PLAN.md — gsdw ready subcommand with tree format, --json, --phase filter
 
 ### Phase 3: MCP Server
