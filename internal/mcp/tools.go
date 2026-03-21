@@ -34,7 +34,7 @@ type closeResult struct {
 	Unblocked []graph.Bead `json:"unblocked"`
 }
 
-// registerTools registers all 13 GSD MCP tools on the server.
+// registerTools registers all 15 GSD MCP tools on the server.
 // Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
 // Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
 func registerTools(server *mcpsdk.Server, state *serverState) {
@@ -272,5 +272,31 @@ func registerTools(server *mcpsdk.Server, state *serverState) {
 			return toolError("invalid arguments: " + err.Error()), nil
 		}
 		return handleCreatePlanBeads(ctx, state, args)
+	})
+
+	// execute_wave — Returns full context chains for all ready tasks in a phase (tool 14).
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "execute_wave",
+		Description: "Returns pre-computed context chains for all ready tasks in a phase. Each context includes bead_id, plan_id, title, acceptance_criteria, parent_summary, and dep_summaries.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number to execute"}},"required":["phase_num"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args executeWaveArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleExecuteWave(ctx, state, args)
+	})
+
+	// verify_phase — Checks phase success criteria against codebase state (tool 15).
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "verify_phase",
+		Description: "Checks phase success criteria (acceptance criteria) against codebase state. Returns structured pass/fail per criterion with method and detail.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number to verify"},"project_dir":{"type":"string","description":"Absolute path to project root for file checks"}},"required":["phase_num"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args verifyPhaseArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleVerifyPhase(ctx, state, args)
 	})
 }

@@ -90,7 +90,17 @@ func main() {
 		fmt.Print(`[]`)
 		os.Exit(0)
 
+
 	case "show":
+		// Check if FAKE_BD_SHOW_RESPONSE env var is set to a file path.
+		showFile := os.Getenv("FAKE_BD_SHOW_RESPONSE")
+		if showFile != "" {
+			data, err := os.ReadFile(showFile)
+			if err == nil {
+				fmt.Print(string(data))
+				os.Exit(0)
+			}
+		}
 		fmt.Print(cannedBead)
 		os.Exit(0)
 
