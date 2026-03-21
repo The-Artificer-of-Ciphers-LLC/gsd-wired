@@ -98,11 +98,11 @@ Plans:
   3. PROJECT.md and config.json are created as human-readable files alongside the beads graph
   4. `bd init` creates .beads/ directory with Dolt-backed storage during initialization
   5. Running `/gsd-wired:status` after init shows the project state from the beads graph
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — init_project and get_status MCP tools with bead creation, file writing, and graph queries
+- [ ] 05-02-PLAN.md — SKILL.md files for /gsd-wired:init and /gsd-wired:status slash commands, CLI subcommands
 
 ### Phase 6: Research + Planning
 **Goal**: Users can run research phases and create dependency-aware plans, all coordinated through beads
@@ -198,7 +198,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 2. Graph Primitives | 2/2 | Complete | 2026-03-21 |
 | 3. MCP Server | 2/2 | Complete | 2026-03-21 |
 | 4. Hook Integration | 0/2 | Not started | - |
-| 5. Project Initialization | 0/TBD | Not started | - |
+| 5. Project Initialization | 0/2 | Not started | - |
 | 6. Research + Planning | 0/TBD | Not started | - |
 | 7. Execution + Verification | 0/TBD | Not started | - |
 | 8. Ship + Status | 0/TBD | Not started | - |
