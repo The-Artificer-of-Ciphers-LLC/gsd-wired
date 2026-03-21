@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 4 of 10 (Hook Integration)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-21 -- Phase 4 Plan 01 complete (hook type system + SessionStart handler)
+Plan: 2 of 2 in current phase
+Status: Phase 4 complete
+Last activity: 2026-03-21 -- Phase 4 Plan 02 complete (PreCompact, PreToolUse, PostToolUse handlers — all four hooks wired)
 
-Progress: [███████░░░] 35%
+Progress: [████████░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 5 min
+- Total plans completed: 7
+- Average duration: 4.6 min
 - Total execution time: 0.55 hours
 
 **By Phase:**
@@ -30,10 +30,10 @@ Progress: [███████░░░] 35%
 | 1. Binary Scaffold | 2 | 14 min | 7 min |
 | 2. Graph Primitives | 2 | 6 min | 3 min |
 | 3. MCP Server | 2 | 11 min | 5.5 min |
-| 4. Hook Integration | 1 (of 2) | 5 min | 5 min |
+| 4. Hook Integration | 2 | 9 min | 4.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 9 min, 4 min, 4 min, 7 min, 5 min
+- Last 5 plans: 4 min, 4 min, 7 min, 5 min, 4 min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -74,6 +74,10 @@ Recent decisions affecting current work:
 - [04-01]: buildSessionContext always returns string, never error — partial context better than nothing, errors logged to slog.Warn
 - [04-01]: handleSessionStart sets hs.beadsDir from input.CWD before init() — CWD drives the beads directory for hook context
 - [04-01]: Dispatcher creates fresh hookState per invocation — hooks are short-lived, no state reuse needed
+- [04-02]: PreCompact writes to .gsdw/precompact-snapshot.json atomically via temp+rename — no goroutines (research Pitfall 2)
+- [04-02]: PreToolUse fast path for read-class tools exits before any graph or file I/O — zero overhead for Read/Glob/Grep
+- [04-02]: PreToolUse loads .gsdw/index.json as cheap context source (<1ms) before attempting 400ms graph query
+- [04-02]: PostToolUse records Write/Edit/Bash to JSONL (Agent excluded) — no additionalContext injection (deferred to v2/TOKEN-A01)
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 4 Plan 01)
-Stopped at: Phase 4 Plan 01 complete — per-event hook types, hookState, SessionStart handler, dispatcher routing. 28 hook tests pass. Ready for Phase 4 Plan 02 (PreCompact, PreToolUse, PostToolUse handlers).
+Last session: 2026-03-21 (Phase 4 Plan 02)
+Stopped at: Phase 4 complete — PreCompact, PreToolUse, PostToolUse handlers, all four hooks wired. 55 hook tests pass. Ready for Phase 5.
 Resume file: None

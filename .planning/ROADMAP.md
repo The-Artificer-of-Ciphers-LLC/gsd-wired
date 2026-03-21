@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Binary Scaffold** - Go binary with Cobra subcommands, plugin manifest, stdout discipline
 - [x] **Phase 2: Graph Primitives** - bd CLI wrapper and GSD-to-beads domain mapping
 - [x] **Phase 3: MCP Server** - MCP server with lazy Dolt init and tool registration
-- [ ] **Phase 4: Hook Integration** - All four Claude Code hooks with state persistence
+- [x] **Phase 4: Hook Integration** - All four Claude Code hooks with state persistence
 - [ ] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
 - [ ] **Phase 6: Research + Planning** - Research agents coordinating as beads, plan creation with dependencies
 - [ ] **Phase 7: Execution + Verification** - Wave-based parallel execution and post-execution verification
@@ -85,7 +85,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — Extended hook types, hookState lazy init, SessionStart handler with context loading
-- [ ] 04-02-PLAN.md — PreCompact atomic buffer, PreToolUse context injection, PostToolUse event recording
+- [x] 04-02-PLAN.md — PreCompact atomic buffer, PreToolUse context injection, PostToolUse event recording
 
 ### Phase 5: Project Initialization
 **Goal**: Users can initialize a new gsd-wired project through guided questioning that produces a beads graph
