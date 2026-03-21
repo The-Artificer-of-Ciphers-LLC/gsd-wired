@@ -3,19 +3,29 @@ package mcp
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
 )
 
+// completedPhaseInfo holds ship-specific data about a completed phase.
+type completedPhaseInfo struct {
+	PhaseNum    int        `json:"phase_num"`
+	Title       string     `json:"title"`
+	CloseReason string     `json:"close_reason"`
+	ClosedAt    *time.Time `json:"closed_at,omitempty"`
+}
+
 // statusResult is the response for the get_status MCP tool.
 type statusResult struct {
-	ProjectName  string      `json:"project_name"`
-	CurrentPhase *phaseInfo  `json:"current_phase"`
-	ReadyTasks   []taskInfo  `json:"ready_tasks"`
-	TotalPhases  int         `json:"total_phases"`
-	OpenPhases   int         `json:"open_phases"`
+	ProjectName     string               `json:"project_name"`
+	CurrentPhase    *phaseInfo           `json:"current_phase"`
+	ReadyTasks      []taskInfo           `json:"ready_tasks"`
+	TotalPhases     int                  `json:"total_phases"`
+	OpenPhases      int                  `json:"open_phases"`
+	CompletedPhases []completedPhaseInfo `json:"completed_phases"`
 }
 
 // phaseInfo holds information about a phase bead.
@@ -43,7 +53,8 @@ func handleGetStatus(ctx context.Context, state *serverState) (*mcpsdk.CallToolR
 	}
 
 	result := &statusResult{
-		ReadyTasks: []taskInfo{}, // initialize to empty slice (not nil) for clean JSON
+		ReadyTasks:      []taskInfo{},           // initialize to empty slice (not nil) for clean JSON
+		CompletedPhases: []completedPhaseInfo{}, // initialize to empty slice (not nil) for clean JSON
 	}
 
 	// Query project bead for the project name.
@@ -68,7 +79,21 @@ func handleGetStatus(ctx context.Context, state *serverState) (*mcpsdk.CallToolR
 			if b.Status == "open" {
 				result.OpenPhases++
 			}
+			// Collect completed (non-open) phases for ship-specific enrichment (D-08).
 			if b.Status != "open" {
+				var phaseNum int
+				if b.Metadata != nil {
+					if pn, ok := phaseNumFromMetadata(b.Metadata["gsd_phase"]); ok {
+						phaseNum = int(pn)
+					}
+				}
+				cpi := completedPhaseInfo{
+					PhaseNum:    phaseNum,
+					Title:       b.Title,
+					CloseReason: b.CloseReason,
+					ClosedAt:    b.ClosedAt,
+				}
+				result.CompletedPhases = append(result.CompletedPhases, cpi)
 				continue
 			}
 			if b.Metadata == nil {
