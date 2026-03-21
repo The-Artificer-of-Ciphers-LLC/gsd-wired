@@ -134,68 +134,68 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Pending | Pending |
-| INFRA-02 | Pending | Pending |
-| INFRA-03 | Pending | Pending |
-| INFRA-04 | Pending | Pending |
-| INFRA-05 | Pending | Pending |
-| INFRA-06 | Pending | Pending |
-| INFRA-07 | Pending | Pending |
-| INFRA-08 | Pending | Pending |
-| INFRA-09 | Pending | Pending |
-| INFRA-10 | Pending | Pending |
-| MAP-01 | Pending | Pending |
-| MAP-02 | Pending | Pending |
-| MAP-03 | Pending | Pending |
-| MAP-04 | Pending | Pending |
-| MAP-05 | Pending | Pending |
-| MAP-06 | Pending | Pending |
-| INIT-01 | Pending | Pending |
-| INIT-02 | Pending | Pending |
-| INIT-03 | Pending | Pending |
-| INIT-04 | Pending | Pending |
-| INIT-05 | Pending | Pending |
-| RSRCH-01 | Pending | Pending |
-| RSRCH-02 | Pending | Pending |
-| RSRCH-03 | Pending | Pending |
-| RSRCH-04 | Pending | Pending |
-| PLAN-01 | Pending | Pending |
-| PLAN-02 | Pending | Pending |
-| PLAN-03 | Pending | Pending |
-| PLAN-04 | Pending | Pending |
-| EXEC-01 | Pending | Pending |
-| EXEC-02 | Pending | Pending |
-| EXEC-03 | Pending | Pending |
-| EXEC-04 | Pending | Pending |
-| EXEC-05 | Pending | Pending |
-| EXEC-06 | Pending | Pending |
-| VRFY-01 | Pending | Pending |
-| VRFY-02 | Pending | Pending |
-| VRFY-03 | Pending | Pending |
-| SHIP-01 | Pending | Pending |
-| SHIP-02 | Pending | Pending |
-| TOKEN-01 | Pending | Pending |
-| TOKEN-02 | Pending | Pending |
-| TOKEN-03 | Pending | Pending |
-| TOKEN-04 | Pending | Pending |
-| TOKEN-05 | Pending | Pending |
-| TOKEN-06 | Pending | Pending |
-| CMD-01 | Pending | Pending |
-| CMD-02 | Pending | Pending |
-| CMD-03 | Pending | Pending |
-| CMD-04 | Pending | Pending |
-| CMD-05 | Pending | Pending |
-| CMD-06 | Pending | Pending |
-| CMD-07 | Pending | Pending |
-| COMPAT-01 | Pending | Pending |
-| COMPAT-02 | Pending | Pending |
-| COMPAT-03 | Pending | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-02 | Phase 3 | Pending |
+| INFRA-03 | Phase 2 | Pending |
+| INFRA-04 | Phase 1 | Pending |
+| INFRA-05 | Phase 4 | Pending |
+| INFRA-06 | Phase 4 | Pending |
+| INFRA-07 | Phase 4 | Pending |
+| INFRA-08 | Phase 4 | Pending |
+| INFRA-09 | Phase 1 | Pending |
+| INFRA-10 | Phase 3 | Pending |
+| MAP-01 | Phase 2 | Pending |
+| MAP-02 | Phase 2 | Pending |
+| MAP-03 | Phase 2 | Pending |
+| MAP-04 | Phase 2 | Pending |
+| MAP-05 | Phase 2 | Pending |
+| MAP-06 | Phase 2 | Pending |
+| INIT-01 | Phase 5 | Pending |
+| INIT-02 | Phase 5 | Pending |
+| INIT-03 | Phase 5 | Pending |
+| INIT-04 | Phase 5 | Pending |
+| INIT-05 | Phase 5 | Pending |
+| RSRCH-01 | Phase 6 | Pending |
+| RSRCH-02 | Phase 6 | Pending |
+| RSRCH-03 | Phase 6 | Pending |
+| RSRCH-04 | Phase 6 | Pending |
+| PLAN-01 | Phase 6 | Pending |
+| PLAN-02 | Phase 6 | Pending |
+| PLAN-03 | Phase 6 | Pending |
+| PLAN-04 | Phase 6 | Pending |
+| EXEC-01 | Phase 7 | Pending |
+| EXEC-02 | Phase 7 | Pending |
+| EXEC-03 | Phase 7 | Pending |
+| EXEC-04 | Phase 7 | Pending |
+| EXEC-05 | Phase 7 | Pending |
+| EXEC-06 | Phase 7 | Pending |
+| VRFY-01 | Phase 7 | Pending |
+| VRFY-02 | Phase 7 | Pending |
+| VRFY-03 | Phase 7 | Pending |
+| SHIP-01 | Phase 8 | Pending |
+| SHIP-02 | Phase 8 | Pending |
+| TOKEN-01 | Phase 9 | Pending |
+| TOKEN-02 | Phase 9 | Pending |
+| TOKEN-03 | Phase 9 | Pending |
+| TOKEN-04 | Phase 9 | Pending |
+| TOKEN-05 | Phase 9 | Pending |
+| TOKEN-06 | Phase 9 | Pending |
+| CMD-01 | Phase 5 | Pending |
+| CMD-02 | Phase 8 | Pending |
+| CMD-03 | Phase 6 | Pending |
+| CMD-04 | Phase 7 | Pending |
+| CMD-05 | Phase 7 | Pending |
+| CMD-06 | Phase 8 | Pending |
+| CMD-07 | Phase 7 | Pending |
+| COMPAT-01 | Phase 10 | Pending |
+| COMPAT-02 | Phase 10 | Pending |
+| COMPAT-03 | Phase 10 | Pending |
 
 **Coverage:**
-- v1 requirements: 53 total
-- Mapped to phases: 0
-- Unmapped: 53
+- v1 requirements: 56 total
+- Mapped to phases: 56
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-21*
-*Last updated: 2026-03-21 after initial definition*
+*Last updated: 2026-03-21 after roadmap creation*
