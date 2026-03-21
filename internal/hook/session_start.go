@@ -13,6 +13,80 @@ import (
 	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
 )
 
+// syncPendingSnapshot checks for a pending precompact-snapshot.json and, if found,
+// syncs it to the active phase bead in Dolt via UpdateBeadMetadata.
+// On any error: logs slog.Warn and returns without blocking SessionStart.
+// On success: removes the snapshot file to prevent re-sync on next session.
+func syncPendingSnapshot(ctx context.Context, cwd string, c *graph.Client) {
+	snapshotPath := filepath.Join(cwd, ".gsdw", "precompact-snapshot.json")
+
+	// Fast path: snapshot doesn't exist — common case.
+	if _, err := os.Stat(snapshotPath); os.IsNotExist(err) {
+		return
+	}
+
+	// Read and unmarshal the snapshot.
+	data, err := os.ReadFile(snapshotPath)
+	if err != nil {
+		slog.Warn("sessionStart: syncPendingSnapshot: failed to read snapshot", "err", err)
+		return
+	}
+
+	var snapshot compactSnapshot
+	if err := json.Unmarshal(data, &snapshot); err != nil {
+		slog.Warn("sessionStart: syncPendingSnapshot: failed to unmarshal snapshot", "err", err)
+		return
+	}
+
+	// Find the active phase bead to update.
+	phaseBeads, err := c.QueryByLabel(ctx, "gsd:phase")
+	if err != nil {
+		slog.Warn("sessionStart: syncPendingSnapshot: failed to query phase beads", "err", err)
+		return
+	}
+
+	// Find the current active (open) phase bead.
+	var phaseBead *graph.Bead
+	var currentPhaseNum float64 = -1
+	for i := range phaseBeads {
+		b := &phaseBeads[i]
+		if b.Status != "open" {
+			continue
+		}
+		if b.Metadata == nil {
+			continue
+		}
+		phaseNum, ok := phaseNumAsFloat(b.Metadata["gsd_phase"])
+		if !ok {
+			continue
+		}
+		if phaseBead == nil || phaseNum > currentPhaseNum {
+			phaseBead = b
+			currentPhaseNum = phaseNum
+		}
+	}
+
+	if phaseBead == nil {
+		slog.Warn("sessionStart: syncPendingSnapshot: no active phase bead found")
+		return
+	}
+
+	// Update the bead with snapshot metadata.
+	meta := map[string]any{
+		"last_precompact":  snapshot.Timestamp,
+		"last_session_id": snapshot.SessionID,
+	}
+	if _, err := c.UpdateBeadMetadata(ctx, phaseBead.ID, meta); err != nil {
+		slog.Warn("sessionStart: syncPendingSnapshot: failed to update bead metadata", "err", err)
+		return
+	}
+
+	// Remove snapshot file — successfully synced.
+	if err := os.Remove(snapshotPath); err != nil {
+		slog.Warn("sessionStart: syncPendingSnapshot: failed to remove snapshot file", "err", err)
+	}
+}
+
 // handleSessionStart is the handler for SessionStart hook events.
 // It emits additionalContext containing project state from the beads graph.
 // On error, it degrades gracefully — never crashes, always emits valid JSON.
@@ -41,6 +115,11 @@ func handleSessionStart(ctx context.Context, raw json.RawMessage, hs *hookState,
 	// Use a timeout context leaving 500ms headroom within the 2s budget.
 	queryCtx, cancel := context.WithTimeout(ctx, 1500*time.Millisecond)
 	defer cancel()
+
+	// Sync any pending precompact-snapshot.json to Dolt before loading context.
+	// This is Stage 2 of INFRA-06: fast local write (PreCompact) + Dolt sync (SessionStart).
+	// Best-effort: any error is logged and SessionStart continues normally.
+	syncPendingSnapshot(queryCtx, input.CWD, hs.client)
 
 	// Build context markdown from graph queries.
 	contextStr := buildSessionContext(queryCtx, hs.client)

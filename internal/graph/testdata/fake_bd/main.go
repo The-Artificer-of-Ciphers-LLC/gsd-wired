@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // Canned single bead JSON for create/show/update responses.
@@ -103,6 +104,17 @@ func main() {
 		os.Exit(0)
 
 	case "query":
+		// Check if querying by label.
+		for i, a := range args {
+			if a == "label=gsd:phase" || (i > 0 && args[i-1] == "label" && a == "gsd:phase") {
+				fmt.Print(cannedPhaseBead)
+				os.Exit(0)
+			}
+			if strings.HasPrefix(a, "label=gsd:phase") {
+				fmt.Print(cannedPhaseBead)
+				os.Exit(0)
+			}
+		}
 		fmt.Print(`[]`)
 		os.Exit(0)
 

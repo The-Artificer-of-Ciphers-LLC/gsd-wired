@@ -82,3 +82,21 @@ func (c *Client) AddLabel(ctx context.Context, beadID, label string) (*Bead, err
 	}
 	return &bead, nil
 }
+
+// UpdateBeadMetadata merges the provided metadata into an existing bead.
+// Uses bd update --metadata which does a JSON merge patch.
+func (c *Client) UpdateBeadMetadata(ctx context.Context, beadID string, meta map[string]any) (*Bead, error) {
+	metaJSON, err := json.Marshal(meta)
+	if err != nil {
+		return nil, fmt.Errorf("marshal metadata: %w", err)
+	}
+	out, err := c.runWrite(ctx, "update", beadID, "--metadata", string(metaJSON))
+	if err != nil {
+		return nil, err
+	}
+	var bead Bead
+	if err := json.Unmarshal(out, &bead); err != nil {
+		return nil, err
+	}
+	return &bead, nil
+}

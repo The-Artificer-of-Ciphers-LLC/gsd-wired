@@ -490,6 +490,36 @@ func TestAddLabel(t *testing.T) {
 	mustContain(t, args, "MY-LABEL", "AddLabel args")
 }
 
+func TestUpdateBeadMetadata(t *testing.T) {
+	dir := t.TempDir()
+	captureFile := filepath.Join(dir, "capture.json")
+	t.Setenv("FAKE_BD_CAPTURE_FILE", captureFile)
+
+	c := NewClientWithPath(fakeBdPath, t.TempDir())
+	ctx := context.Background()
+
+	meta := map[string]any{
+		"last_precompact":  "2026-03-21T20:00:00Z",
+		"last_session_id": "test-session-abc",
+	}
+	bead, err := c.UpdateBeadMetadata(ctx, "bd-test-abc", meta)
+	if err != nil {
+		t.Fatalf("UpdateBeadMetadata() returned error: %v", err)
+	}
+	if bead == nil {
+		t.Fatal("UpdateBeadMetadata() returned nil bead")
+	}
+
+	data, _ := os.ReadFile(captureFile)
+	var args []string
+	json.Unmarshal(data, &args)
+
+	mustContain(t, args, "update", "UpdateBeadMetadata args")
+	mustContain(t, args, "bd-test-abc", "UpdateBeadMetadata args")
+	mustContain(t, args, "--metadata", "UpdateBeadMetadata args")
+	mustContainSubstring(t, args, "last_precompact", "UpdateBeadMetadata metadata JSON")
+}
+
 // --- Index tests ---
 
 func TestIndexSaveLoad(t *testing.T) {
