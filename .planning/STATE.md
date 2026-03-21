@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 9 of 10 (Token-Aware Context)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-21 -- Phase 9 Plan 01 complete (graph-layer tiering, compaction on close)
+Plan: 2 of 2 in current phase (COMPLETE)
+Status: Phase 9 Complete
+Last activity: 2026-03-21 -- Phase 9 Plan 02 complete (budget-aware SessionStart, get_tiered_context tool 18, execute_wave compaction)
 
-Progress: [████████░░] 75%
+Progress: [█████████░] 87%
 
 ## Performance Metrics
 
@@ -34,7 +34,7 @@ Progress: [████████░░] 75%
 | 5. Project Init | 2 | 10 min | 5 min |
 | 6. Research + Planning | 2 | 9 min | 4.5 min |
 | 7. Execution + Verification | 3/3 | 12 min | 4 min |
-| 9. Token-Aware Context | 1/2 | 5 min | 5 min |
+| 9. Token-Aware Context | 2/2 | 10 min | 5 min |
 
 **Recent Trend:**
 - Last 5 plans: 2 min, 4 min, 8 min, 2 min, 5 min
@@ -124,6 +124,10 @@ Recent decisions affecting current work:
 - [09-01]: tier types, pure functions, CompactBead, QueryTiered all in new tier.go — co-located with Bead type in graph package
 - [09-01]: CompactBead only called inside ClosePlan post-close — structural guard against compacting open beads (Research Pitfall 3)
 - [09-01]: FAKE_BD_QUERY_TIERED_RESPONSE env var added to fake_bd query subcommand for QueryTiered test isolation
+- [09-02]: buildSessionContext becomes thin wrapper (calls buildBudgetContext with 2000 token default) — existing call site in handleSessionStart unchanged
+- [09-02]: Exported EstimateTokens/FormatHot/FormatWarm/FormatCold added to tier.go as wrappers — hook package calls graph package without duplicating logic
+- [09-02]: extractCompact in execute_wave.go reads Metadata['gsd:compact'] first, falls back to CloseReason — backward compatible
+- [09-02]: get_tiered_context (tool 18) defaults budget_tokens to 2000 when 0/omitted — consistent with SessionStart default
 
 ### Pending Todos
 
@@ -136,6 +140,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 9 Plan 01 complete)
-Stopped at: Phase 9 Plan 01 complete — graph-layer tiering (tier.go: Tier constants, TieredBead, classifyTier, estimateTokens, CompactBead, QueryTiered) + ClosePlan compaction. 189 tests pass.
+Last session: 2026-03-21 (Phase 9 Plan 02 complete)
+Stopped at: Phase 9 Plan 02 complete — budget-aware SessionStart (buildBudgetContext, 2000 token default), get_tiered_context MCP tool (tool 18), execute_wave gsd:compact preference. All tests pass.
 Resume file: None

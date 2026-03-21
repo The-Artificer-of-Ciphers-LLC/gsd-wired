@@ -74,11 +74,11 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Token Optimization
 
 - [x] **TOKEN-01**: Graph queries replace full markdown file reads (O(relevant) not O(total)) — Phase 9 Plan 01
-- [ ] **TOKEN-02**: Subagent prompts contain only claimed bead context, not full project state
+- [x] **TOKEN-02**: Subagent prompts contain only claimed bead context, not full project state — Phase 9 Plan 02
 - [x] **TOKEN-03**: Closed beads automatically compacted (summary replaces full content) — Phase 9 Plan 01
 - [x] **TOKEN-04**: Token-aware context routing: hot beads (active) get full context, warm (recent) get summaries, cold (done) get IDs only — Phase 9 Plan 01
 - [x] **TOKEN-05**: Context budget tracking estimates tokens per bead and fits within remaining window — Phase 9 Plan 01
-- [ ] **TOKEN-06**: Tiered context injection in SessionStart based on available token budget
+- [x] **TOKEN-06**: Tiered context injection in SessionStart based on available token budget — Phase 9 Plan 02
 
 ### Slash Commands
 
@@ -175,11 +175,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHIP-01 | Phase 8 | Done |
 | SHIP-02 | Phase 8 | Done |
 | TOKEN-01 | Phase 9 | Done |
-| TOKEN-02 | Phase 9 | Pending |
+| TOKEN-02 | Phase 9 | Done |
 | TOKEN-03 | Phase 9 | Done |
 | TOKEN-04 | Phase 9 | Done |
 | TOKEN-05 | Phase 9 | Done |
-| TOKEN-06 | Phase 9 | Pending |
+| TOKEN-06 | Phase 9 | Done |
 | CMD-01 | Phase 5 | Pending |
 | CMD-02 | Phase 8 | Done |
 | CMD-03 | Phase 6 | Pending |
