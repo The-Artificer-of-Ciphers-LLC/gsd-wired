@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
 )
 
 // beadUpdateTools are tools whose invocations are recorded to the local JSONL log.
@@ -78,5 +80,56 @@ func handlePostToolUse(ctx context.Context, raw json.RawMessage, hs *hookState, 
 		slog.Warn("postToolUse: failed to write tool event", "err", writeErr)
 	}
 
+	// Best-effort bead state update: add gsd:tool-use label to the active bead.
+	// This satisfies INFRA-08 (bead state update after tool execution).
+	// Failure must never affect JSONL write or hook output.
+	updateBeadOnToolUse(ctx, input.CWD, hs)
+
 	return writeOutput(w, HookOutput{})
+}
+
+// updateBeadOnToolUse adds the gsd:tool-use label to the active bead in the local index.
+// Best-effort: any error is logged and silently swallowed — JSONL is the reliable path.
+func updateBeadOnToolUse(ctx context.Context, cwd string, hs *hookState) {
+	// Fast path: skip if .beads/ doesn't exist (uninitialized project).
+	beadsPath := filepath.Join(cwd, ".beads")
+	if _, err := os.Stat(beadsPath); os.IsNotExist(err) {
+		return
+	}
+
+	// Initialize the graph client (sets beadsDir if not already set).
+	hs.beadsDir = cwd
+	if err := hs.init(ctx); err != nil {
+		slog.Warn("postToolUse: graph client init failed", "err", err)
+		return
+	}
+
+	// Use a 400ms timeout for the graph call.
+	updateCtx, cancel := context.WithTimeout(ctx, 400*time.Millisecond)
+	defer cancel()
+
+	// Load local index to find active bead (cheapest path, <1ms).
+	gsdwDir := filepath.Join(cwd, ".gsdw")
+	idx, err := graph.LoadIndex(gsdwDir)
+	if err != nil {
+		slog.Warn("postToolUse: failed to load index", "err", err)
+		return
+	}
+
+	// Find the first plan bead ID in the index as the active bead.
+	// The index maps plan keys (e.g., "04-03") to bead IDs.
+	var activeBeadID string
+	for _, beadID := range idx.PlanToID {
+		activeBeadID = beadID
+		break
+	}
+	if activeBeadID == "" {
+		// No active plan bead — skip silently (common for projects without active tasks).
+		return
+	}
+
+	// Add gsd:tool-use label to mark bead as having received tool activity.
+	if _, err := hs.client.AddLabel(updateCtx, activeBeadID, "gsd:tool-use"); err != nil {
+		slog.Warn("postToolUse: failed to add gsd:tool-use label", "err", err)
+	}
 }
