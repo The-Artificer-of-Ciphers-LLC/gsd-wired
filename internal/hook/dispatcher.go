@@ -16,18 +16,24 @@ func Dispatch(event string, stdin io.Reader, stdout io.Writer) error {
 		return fmt.Errorf("unknown hook event: %s", event)
 	}
 
-	// Decode JSON from stdin
-	var input HookInput
-	if err := json.NewDecoder(stdin).Decode(&input); err != nil {
+	// Decode JSON from stdin into RawMessage to allow per-handler decoding
+	rawBytes, err := io.ReadAll(stdin)
+	if err != nil {
+		return fmt.Errorf("failed to read hook input: %w", err)
+	}
+
+	// Extract common base fields for validation
+	var base HookInputBase
+	if err := json.Unmarshal(rawBytes, &base); err != nil {
 		return fmt.Errorf("failed to decode hook input: %w", err)
 	}
 
 	// Validate that the JSON event name matches the subcommand argument
-	if input.HookEventName != event {
-		return fmt.Errorf("hook event mismatch: expected %s, got %s", event, input.HookEventName)
+	if base.HookEventName != event {
+		return fmt.Errorf("hook event mismatch: expected %s, got %s", event, base.HookEventName)
 	}
 
-	slog.Debug("hook dispatched", "event", event, "session_id", input.SessionID)
+	slog.Debug("hook dispatched", "event", event, "session_id", base.SessionID)
 
 	// Encode no-op response to stdout — empty HookOutput is valid for all hooks
 	if err := json.NewEncoder(stdout).Encode(HookOutput{}); err != nil {
