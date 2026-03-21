@@ -85,8 +85,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CMD-01**: `/gsd-wired:init` — Initialize new project with deep questioning
 - [ ] **CMD-02**: `/gsd-wired:status` — Show project state from beads graph
 - [x] **CMD-03**: `/gsd-wired:plan` — Create phase plan (task beads with dependencies)
-- [ ] **CMD-04**: `/gsd-wired:execute` — Execute current wave of unblocked tasks
-- [ ] **CMD-05**: `/gsd-wired:verify` — Verify phase against success criteria
+- [x] **CMD-04**: `/gsd-wired:execute` — Execute current wave of unblocked tasks
+- [x] **CMD-05**: `/gsd-wired:verify` — Verify phase against success criteria
 - [ ] **CMD-06**: `/gsd-wired:ship` — Create PR and advance to next phase
 - [ ] **CMD-07**: `/gsd-wired:ready` — Show unblocked tasks (next wave)
 

@@ -137,7 +137,7 @@ Plans:
 
 Plans:
 - [x] 07-01-PLAN.md — execute_wave + verify_phase MCP tools (tools 14-15), fake_bd extension, tool count update to 15
-- [ ] 07-02-PLAN.md — gsdw execute and gsdw verify CLI stubs with root.go wiring
+- [x] 07-02-PLAN.md — gsdw execute and gsdw verify CLI stubs with root.go wiring
 - [ ] 07-03-PLAN.md — /gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands
 
 ### Phase 8: Ship + Status

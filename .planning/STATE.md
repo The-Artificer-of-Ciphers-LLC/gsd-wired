@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 7 of 10 (Execution + Verification)
-Plan: 1 of 3 in current phase
-Status: Executing
-Last activity: 2026-03-21 -- Phase 7 Plan 01 complete (execute_wave tool 14, verify_phase tool 15, 15 MCP tools total)
+Plan: 3 of 3 in current phase (COMPLETE)
+Status: Phase 7 complete — ready for Phase 8
+Last activity: 2026-03-21 -- Phase 7 Plan 03 complete (/gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands)
 
-Progress: [████████░░] 53%
+Progress: [████████░░] 60%
 
 ## Performance Metrics
 
@@ -33,10 +33,10 @@ Progress: [████████░░] 53%
 | 4. Hook Integration | 3 | 14 min | 4.7 min |
 | 5. Project Init | 2 | 10 min | 5 min |
 | 6. Research + Planning | 2 | 9 min | 4.5 min |
-| 7. Execution + Verification | 1/3 | 8 min (so far) | 8 min |
+| 7. Execution + Verification | 3/3 | 12 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min, 4 min, 2 min, 4 min, 8 min
+- Last 5 plans: 4 min, 2 min, 4 min, 8 min, 2 min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -105,6 +105,12 @@ Recent decisions affecting current work:
 - [07-01]: go_test method uses exec.CommandContext with 60-second timeout (Pitfall 5)
 - [07-01]: FAKE_BD_QUERY_PHASE_RESPONSE env var added to fake_bd query subcommand for hermetic phase bead injection in tests
 - [07-01]: verify_phase.go written fully in Task 1 (not as stub) since tools.go required verifyPhaseArgs/handleVerifyPhase to compile
+- [07-02]: execute and verify CLI stubs follow identical pattern to plan.go — no new patterns introduced
+- [07-02]: Both commands wired into root.go AddCommand chain in same line as all other commands
+- [07-03]: execute SKILL.md uses plan_id (not bead_id) in commit messages and developer output per D-06/D-01
+- [07-03]: verify SKILL.md uses detail field (not raw criterion) in remediation task titles per Pitfall 4
+- [07-03]: ready has disable-model-invocation: false — lightweight informational, no agent spawning unlike execute/verify/plan/research
+- [07-03]: Remediation task id pattern is {phase}-fix-{N} (e.g., 07-fix-1) for uniqueness and traceability
 
 ### Pending Todos
 
@@ -117,6 +123,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 7 Plan 01 complete)
-Stopped at: Phase 7 Plan 01 complete — execute_wave (tool 14) + verify_phase (tool 15) MCP tools. 15 MCP tools total. 149 tests pass go test ./... -race.
+Last session: 2026-03-21 (Phase 7 Plan 03 complete)
+Stopped at: Phase 7 Plan 03 complete — /gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands. Phase 7 fully complete.
 Resume file: None
