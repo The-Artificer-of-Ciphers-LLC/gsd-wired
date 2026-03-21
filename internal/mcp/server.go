@@ -11,14 +11,18 @@ import (
 
 // Serve starts the MCP stdio server and blocks until the context is cancelled
 // or the client disconnects.
-// No tools are registered at Phase 1 — the manifest grows per phase (D-09).
+// serverState is created lazily — no graph init happens here, so initialize
+// responds instantly (D-06). Tools are registered but not initialized.
 func Serve(ctx context.Context) error {
 	server := mcp.NewServer(&mcp.Implementation{
 		Name:    "gsd-wired",
 		Version: version.String(),
 	}, nil)
 
-	slog.Debug("mcp server starting on stdio")
+	state := &serverState{}
+	registerTools(server, state)
+
+	slog.Debug("mcp server starting on stdio", "tools", 8)
 
 	return server.Run(ctx, &mcp.StdioTransport{})
 }
