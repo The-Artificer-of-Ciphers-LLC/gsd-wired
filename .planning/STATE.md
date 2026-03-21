@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 2 of 10 (Graph Primitives)
-Plan: 2 of 2 in current phase
-Status: Phase 2 complete
-Last activity: 2026-03-21 -- Phase 2 Plan 02 complete (gsdw ready subcommand, 6 tests, all passing)
+Phase: 3 of 10 (MCP Server)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-21 -- Phase 3 Plan 01 complete (batch write mode + serverState lazy init, 10 new tests)
 
-Progress: [████░░░░░░] 20%
+Progress: [█████░░░░░] 25%
 
 ## Performance Metrics
 
@@ -29,10 +29,11 @@ Progress: [████░░░░░░] 20%
 |-------|-------|-------|----------|
 | 1. Binary Scaffold | 2 | 14 min | 7 min |
 | 2. Graph Primitives | 2 | 6 min | 3 min |
+| 3. MCP Server | 1 (in progress) | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min, 9 min, 4 min, 2 min
-- Trend: improving
+- Last 5 plans: 5 min, 9 min, 4 min, 2 min, 4 min
+- Trend: stable
 
 *Updated after each plan completion*
 
@@ -61,6 +62,10 @@ Recent decisions affecting current work:
 - [02-02]: reqLabelPattern compiled once at package level — avoids per-call regexp compilation cost
 - [02-02]: phaseNumFromBead uses type switch — JSON unmarshal produces float64 for numbers; int variants handle direct construction in tests
 - [02-02]: ASCII tree chars (|-- / +--) per plan spec — safer than unicode box-drawing for all terminals
+- [03-01]: runWrite() as separate method from run() — write ops get batch flag, reads never do, clean separation
+- [03-01]: FlushWrites uses run() not runWrite() — the dolt commit itself is not a batched operation
+- [03-01]: initTimeout int field (ms) in serverState — allows test-configurable timeout without changing 30s default
+- [03-01]: fake_bd strips leading --flag args before dispatch — enables testing global bd flags without special-casing
 
 ### Pending Todos
 
@@ -73,6 +78,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 2 Plan 02)
-Stopped at: Phase 2 Plan 02 complete — gsdw ready subcommand with 6 tests all passing. Phase 2 (Graph Primitives) complete. Ready for Phase 3 (MCP Server).
+Last session: 2026-03-21 (Phase 3 Plan 01)
+Stopped at: Phase 3 Plan 01 complete — batch write mode + serverState lazy init with 10 new tests. Ready for Phase 3 Plan 02 (MCP tool registration).
 Resume file: None

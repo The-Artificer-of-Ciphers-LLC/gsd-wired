@@ -10,7 +10,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Plugin Infrastructure
 
 - [x] **INFRA-01**: Single Go binary serves as MCP server (stdio), hook dispatcher (subcommand), and CLI tool
-- [ ] **INFRA-02**: MCP server exposes tools via official Go SDK (v1.4.1) with lazy Dolt initialization
+- [x] **INFRA-02**: MCP server exposes tools via official Go SDK (v1.4.1) with lazy Dolt initialization
 - [x] **INFRA-03**: bd CLI wrapper layer shells out to `bd --json` for all graph operations
 - [x] **INFRA-04**: Plugin manifest (.claude-plugin/plugin.json) registers MCP server, hooks, and slash commands
 - [ ] **INFRA-05**: SessionStart hook loads active project state from beads graph into context
@@ -18,7 +18,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **INFRA-07**: PreToolUse hook injects relevant bead context before tool execution
 - [ ] **INFRA-08**: PostToolUse hook updates bead state after tool execution (progress, status changes)
 - [x] **INFRA-09**: Strict stdout discipline — no stray output that could break MCP stdio protocol
-- [ ] **INFRA-10**: Batched Dolt writes at wave boundaries to prevent write amplification
+- [x] **INFRA-10**: Batched Dolt writes at wave boundaries to prevent write amplification
 
 ### GSD Domain Mapping
 

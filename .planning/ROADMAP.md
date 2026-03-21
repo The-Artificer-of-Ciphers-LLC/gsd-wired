@@ -68,7 +68,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Batch write mode in graph.Client + lazy init serverState with sync.Once
+- [x] 03-01-PLAN.md — Batch write mode in graph.Client + lazy init serverState with sync.Once
 - [ ] 03-02-PLAN.md — MCP tool registration (8 tools) and Serve() wiring
 
 ### Phase 4: Hook Integration
@@ -195,7 +195,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 |-------|----------------|--------|-----------|
 | 1. Binary Scaffold | 2/2 | Complete | 2026-03-21 |
 | 2. Graph Primitives | 2/2 | Complete | 2026-03-21 |
-| 3. MCP Server | 0/2 | Not started | - |
+| 3. MCP Server | 1/2 | In progress | - |
 | 4. Hook Integration | 0/TBD | Not started | - |
 | 5. Project Initialization | 0/TBD | Not started | - |
 | 6. Research + Planning | 0/TBD | Not started | - |
