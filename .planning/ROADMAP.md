@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Binary Scaffold** - Go binary with Cobra subcommands, plugin manifest, stdout discipline
 - [x] **Phase 2: Graph Primitives** - bd CLI wrapper and GSD-to-beads domain mapping
-- [ ] **Phase 3: MCP Server** - MCP server with lazy Dolt init and tool registration
+- [x] **Phase 3: MCP Server** - MCP server with lazy Dolt init and tool registration
 - [ ] **Phase 4: Hook Integration** - All four Claude Code hooks with state persistence
 - [ ] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
 - [ ] **Phase 6: Research + Planning** - Research agents coordinating as beads, plan creation with dependencies
@@ -69,7 +69,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Batch write mode in graph.Client + lazy init serverState with sync.Once
-- [ ] 03-02-PLAN.md — MCP tool registration (8 tools) and Serve() wiring
+- [x] 03-02-PLAN.md — MCP tool registration (8 tools) and Serve() wiring
 
 ### Phase 4: Hook Integration
 **Goal**: Claude Code lifecycle events automatically load and persist project state through beads

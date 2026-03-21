@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 3 of 10 (MCP Server)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-21 -- Phase 3 Plan 01 complete (batch write mode + serverState lazy init, 10 new tests)
+Plan: 2 of 2 in current phase (phase complete)
+Status: Phase 3 complete — ready for Phase 4
+Last activity: 2026-03-21 -- Phase 3 Plan 02 complete (8 MCP tools registered, Serve() wired, 14 mcp tests)
 
-Progress: [█████░░░░░] 25%
+Progress: [██████░░░░] 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 5 min
-- Total execution time: 0.35 hours
+- Total execution time: 0.47 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [█████░░░░░] 25%
 |-------|-------|-------|----------|
 | 1. Binary Scaffold | 2 | 14 min | 7 min |
 | 2. Graph Primitives | 2 | 6 min | 3 min |
-| 3. MCP Server | 1 (in progress) | 4 min | 4 min |
+| 3. MCP Server | 2 | 11 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min, 9 min, 4 min, 2 min, 4 min
+- Last 5 plans: 5 min, 9 min, 4 min, 4 min, 7 min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -66,6 +66,9 @@ Recent decisions affecting current work:
 - [03-01]: FlushWrites uses run() not runWrite() — the dolt commit itself is not a batched operation
 - [03-01]: initTimeout int field (ms) in serverState — allows test-configurable timeout without changing 30s default
 - [03-01]: fake_bd strips leading --flag args before dispatch — enables testing global bd flags without special-casing
+- [03-02]: NewInMemoryTransports for tool handler tests — faster than subprocess, avoids bd dependency for protocol-level tests
+- [03-02]: toolError/toolResult helpers — consistent IsError=true pattern, eliminates repeated Content slice construction
+- [03-02]: closeResult struct — explicit JSON shape for wave-awareness (who gets unblocked when a plan closes)
 
 ### Pending Todos
 
@@ -78,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 3 Plan 01)
-Stopped at: Phase 3 Plan 01 complete — batch write mode + serverState lazy init with 10 new tests. Ready for Phase 3 Plan 02 (MCP tool registration).
+Last session: 2026-03-21 (Phase 3 Plan 02)
+Stopped at: Phase 3 Plan 02 complete — 8 MCP tools registered, Serve() wired, 14 mcp tests pass. Phase 3 complete. Ready for Phase 4 (Hook Dispatcher).
 Resume file: None
