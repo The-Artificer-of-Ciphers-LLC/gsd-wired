@@ -1,0 +1,10 @@
+# Binary output
+gsdw
+/gsdw-*
+
+# Go build cache
+*.test
+*.out
+
+# OS files
+.DS_Store
