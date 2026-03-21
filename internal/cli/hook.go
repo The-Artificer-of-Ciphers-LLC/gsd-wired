@@ -18,7 +18,7 @@ func NewHookCmd() *cobra.Command {
 		// This prevents panic on empty input (Pitfall 6 in RESEARCH.md)
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := hook.Dispatch(args[0], os.Stdin, os.Stdout)
+			err := hook.Dispatch(cmd.Context(), args[0], os.Stdin, os.Stdout)
 			if err != nil {
 				slog.Error("hook dispatch failed", "event", args[0], "err", err)
 				os.Exit(2) // exit 2 = show stderr to user per hook protocol
