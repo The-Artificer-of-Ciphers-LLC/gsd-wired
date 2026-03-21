@@ -39,10 +39,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Research Phase
 
-- [ ] **RSRCH-01**: Research phase creates epic bead with 4 child beads (stack, features, architecture, pitfalls)
-- [ ] **RSRCH-02**: Each research agent claims its child bead via `bd update --claim`
-- [ ] **RSRCH-03**: Research results stored as bead content/metadata, not separate markdown files
-- [ ] **RSRCH-04**: Synthesizer agent queries all 4 child beads when they close, produces summary bead
+- [x] **RSRCH-01**: Research phase creates epic bead with 4 child beads (stack, features, architecture, pitfalls)
+- [x] **RSRCH-02**: Each research agent claims its child bead via `bd update --claim`
+- [x] **RSRCH-03**: Research results stored as bead content/metadata, not separate markdown files
+- [x] **RSRCH-04**: Synthesizer agent queries all 4 child beads when they close, produces summary bead
 
 ### Planning Phase
 
@@ -155,10 +155,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INIT-03 | Phase 5 | Complete |
 | INIT-04 | Phase 5 | Complete |
 | INIT-05 | Phase 5 | Complete |
-| RSRCH-01 | Phase 6 | Pending |
-| RSRCH-02 | Phase 6 | Pending |
-| RSRCH-03 | Phase 6 | Pending |
-| RSRCH-04 | Phase 6 | Pending |
+| RSRCH-01 | Phase 6 | Complete |
+| RSRCH-02 | Phase 6 | Complete |
+| RSRCH-03 | Phase 6 | Complete |
+| RSRCH-04 | Phase 6 | Complete |
 | PLAN-01 | Phase 6 | Pending |
 | PLAN-02 | Phase 6 | Pending |
 | PLAN-03 | Phase 6 | Pending |

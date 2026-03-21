@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 5 of 10 (Project Initialization)
-Plan: 2 of 2 in current phase
+Phase: 6 of 10 (Research + Planning)
+Plan: 1 of 2 in current phase
 Status: Executing
-Last activity: 2026-03-21 -- Phase 5 Plan 02 complete (SKILL.md slash commands + CLI subcommands)
+Last activity: 2026-03-21 -- Phase 6 Plan 01 complete (run_research + synthesize_research tools, /gsd-wired:research SKILL.md)
 
-Progress: [████████░░] 44%
+Progress: [████████░░] 46%
 
 ## Performance Metrics
 
@@ -89,6 +89,11 @@ Recent decisions affecting current work:
 - [05-02]: SKILL.md files placed at plugin root skills/ (not inside .claude-plugin/) — auto-discovered as /gsd-wired:name slash commands
 - [05-02]: disable-model-invocation: true on init SKILL.md — user must explicitly invoke /gsd-wired:init
 - [05-02]: renderStatus extracted as pure function (io.Writer, phases, ready) — testable without graph client, same pattern as renderReadyTree
+- [06-01]: run_research uses CreatePhase for epic (gsd:research label) + CreatePlan for each of 4 fixed topics (gsd:research-child label)
+- [06-01]: synthesize_research falls back to first research epic if phase num not found in metadata — test hermetic with fake_bd
+- [06-01]: fake_bd updated to return canned research epic for label=gsd:research queries — keeps test infrastructure hermetic
+- [06-01]: research CLI stub follows init pattern — full orchestration belongs in SKILL.md, not CLI (requires Claude Code Task() tool)
+- [06-01]: SKILL.md subagent prompts are minimal (bead ID + topic + 4 instructions) — avoids context bloat per Pitfall 2
 
 ### Pending Todos
 
@@ -101,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 5 — both plans complete in parallel)
-Stopped at: Phase 5 fully complete — init_project + get_status MCP tools (Plan 01), SKILL.md slash commands + gsdw init/status CLI subcommands (Plan 02). 10 MCP tools total. 7 packages pass go test ./... -race. Ready for Phase 6.
+Last session: 2026-03-21 (Phase 6 Plan 01 complete)
+Stopped at: Phase 6 Plan 01 complete — run_research + synthesize_research MCP tools, /gsd-wired:research SKILL.md, gsdw research CLI stub. 12 MCP tools total. All 7 packages pass go test ./... -race.
 Resume file: None

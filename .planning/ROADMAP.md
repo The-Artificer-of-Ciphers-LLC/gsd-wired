@@ -118,7 +118,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — run_research + synthesize_research MCP tools, research CLI subcommand, /gsd-wired:research SKILL.md
+- [x] 06-01-PLAN.md — run_research + synthesize_research MCP tools, research CLI subcommand, /gsd-wired:research SKILL.md
 - [ ] 06-02-PLAN.md — create_plan_beads MCP tool, plan CLI subcommand, /gsd-wired:plan SKILL.md with inline checker
 
 ### Phase 7: Execution + Verification
