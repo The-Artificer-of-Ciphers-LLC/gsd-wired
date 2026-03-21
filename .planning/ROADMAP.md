@@ -152,7 +152,7 @@ Plans:
 
 Plans:
 - [x] 08-01-PLAN.md — create_pr_summary + advance_phase MCP tools (tools 16-17), get_status enrichment
-- [ ] 08-02-PLAN.md — gsdw ship CLI stub, /gsd-wired:ship SKILL.md slash command
+- [x] 08-02-PLAN.md — gsdw ship CLI stub, /gsd-wired:ship SKILL.md slash command
 
 ### Phase 9: Token-Aware Context
 **Goal**: The plugin minimizes token consumption through intelligent context routing based on bead state
@@ -196,10 +196,10 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 1. Binary Scaffold | 2/2 | Complete | 2026-03-21 |
 | 2. Graph Primitives | 2/2 | Complete | 2026-03-21 |
 | 3. MCP Server | 2/2 | Complete | 2026-03-21 |
-| 4. Hook Integration | 0/2 | Not started | - |
+| 4. Hook Integration | 3/3 | Complete | 2026-03-21 |
 | 5. Project Initialization | 2/2 | Complete | 2026-03-21 |
-| 6. Research + Planning | 0/2 | Not started | - |
-| 7. Execution + Verification | 0/3 | Not started | - |
-| 8. Ship + Status | 0/2 | Not started | - |
+| 6. Research + Planning | 2/2 | Complete | 2026-03-21 |
+| 7. Execution + Verification | 3/3 | Complete | 2026-03-21 |
+| 8. Ship + Status | 2/2 | Complete | 2026-03-21 |
 | 9. Token-Aware Context | 0/TBD | Not started | - |
 | 10. Coexistence | 0/TBD | Not started | - |

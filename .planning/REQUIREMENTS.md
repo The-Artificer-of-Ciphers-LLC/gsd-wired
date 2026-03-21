@@ -87,7 +87,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CMD-03**: `/gsd-wired:plan` — Create phase plan (task beads with dependencies)
 - [x] **CMD-04**: `/gsd-wired:execute` — Execute current wave of unblocked tasks
 - [x] **CMD-05**: `/gsd-wired:verify` — Verify phase against success criteria
-- [ ] **CMD-06**: `/gsd-wired:ship` — Create PR and advance to next phase
+- [x] **CMD-06**: `/gsd-wired:ship` — Create PR and advance to next phase — Phase 8 Plan 02
 - [x] **CMD-07**: `/gsd-wired:ready` — Show unblocked tasks (next wave)
 
 ### Coexistence
@@ -183,9 +183,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CMD-01 | Phase 5 | Pending |
 | CMD-02 | Phase 8 | Done |
 | CMD-03 | Phase 6 | Pending |
-| CMD-04 | Phase 7 | Pending |
-| CMD-05 | Phase 7 | Pending |
-| CMD-06 | Phase 8 | Pending |
+| CMD-04 | Phase 7 | Done |
+| CMD-05 | Phase 7 | Done |
+| CMD-06 | Phase 8 | Done |
 | CMD-07 | Phase 7 | Complete |
 | COMPAT-01 | Phase 10 | Pending |
 | COMPAT-02 | Phase 10 | Pending |

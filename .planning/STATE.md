@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 8 of 10 (Ship + Status)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-21 -- Phase 8 Plan 01 complete (create_pr_summary + advance_phase MCP tools, get_status enrichment)
+Plan: 2 of 2 in current phase
+Status: Phase complete — ready for Phase 9 or Phase 10
+Last activity: 2026-03-21 -- Phase 8 Plan 02 complete (gsdw ship CLI stub + /gsd-wired:ship SKILL.md)
 
-Progress: [████████░░] 60%
+Progress: [████████░░] 70%
 
 ## Performance Metrics
 
@@ -115,6 +115,9 @@ Recent decisions affecting current work:
 - [08-01]: advance_phase reuses phaseNumFromMeta from execute_wave.go (same mcp package) — no duplication needed
 - [08-01]: CompletedPhases populated in existing phase bead loop in get_status — single QueryByLabel, zero extra graph I/O
 - [08-01]: NextPhase uses pre-queried phases list after ClosePlan — avoids extra QueryByLabel call post-close
+- [08-02]: ship.go follows exact execute.go/verify.go stub pattern — consistency with existing CLI commands
+- [08-02]: SKILL.md no-changes-to-ship path still calls advance_phase — phase state always advances even without commits
+- [08-02]: Error handling stops at gh failure before advance_phase — PR creation and phase advancement atomic from user perspective
 
 ### Pending Todos
 
@@ -127,6 +130,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 8 Plan 01 complete)
-Stopped at: Phase 8 Plan 01 complete — create_pr_summary (tool 16) + advance_phase (tool 17) + get_status completed_phases enrichment. 17 MCP tools registered.
+Last session: 2026-03-21 (Phase 8 Plan 02 complete)
+Stopped at: Phase 8 Plan 02 complete — gsdw ship CLI stub (ship.go + ship_test.go) wired into root.go, /gsd-wired:ship SKILL.md with 7-step ship flow. Phase 8 fully complete.
 Resume file: None
