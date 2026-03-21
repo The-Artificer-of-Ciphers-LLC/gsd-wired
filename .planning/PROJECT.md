@@ -28,6 +28,11 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] PreCompact saves in-progress state to fast local buffer, syncs on next SessionStart (INFRA-06) — Phase 4
 - [x] PreToolUse injects relevant bead context before tool execution (INFRA-07) — Phase 4
 - [x] PostToolUse updates bead state after tool execution (INFRA-08) — Phase 4
+- [x] /gsd-wired:init launches deep questioning flow (INIT-01) — Phase 5
+- [x] Questioning produces project epic + context child beads (INIT-02, INIT-03) — Phase 5
+- [x] PROJECT.md and config.json created as human-readable files (INIT-04) — Phase 5
+- [x] bd init creates .beads/ with Dolt-backed storage (INIT-05) — Phase 5
+- [x] /gsd-wired:init slash command registered via skills/ (CMD-01) — Phase 5
 
 ### Active
 
@@ -108,4 +113,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 4 completion*
+*Last updated: 2026-03-21 after Phase 5 completion*
