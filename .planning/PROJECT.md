@@ -39,6 +39,12 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] Task beads have success criteria, complexity, file touch list (PLAN-03) — Phase 6
 - [x] Plan checker validates coverage before execution (PLAN-04) — Phase 6
 - [x] /gsd-wired:plan slash command registered via skills/ (CMD-03) — Phase 6
+- [x] Wave execution via execute_wave MCP tool + /gsd-wired:execute (EXEC-01 through EXEC-04) — Phase 7
+- [x] Atomic commits per task with plan ID (EXEC-05) — Phase 7
+- [x] Agent output validation at orchestrator (EXEC-06) — Phase 7
+- [x] Verification against success criteria via verify_phase (VRFY-01, VRFY-02) — Phase 7
+- [x] Failed criteria produce remediation task beads (VRFY-03) — Phase 7
+- [x] /gsd-wired:execute, :verify, :ready slash commands (CMD-04, CMD-05, CMD-07) — Phase 7
 
 ### Active
 
@@ -119,4 +125,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 6 completion*
+*Last updated: 2026-03-21 after Phase 7 completion*
