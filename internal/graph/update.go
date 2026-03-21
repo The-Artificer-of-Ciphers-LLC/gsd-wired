@@ -9,7 +9,7 @@ import (
 // ClaimBead atomically claims a bead for the current user.
 // Uses bd's native atomic claim semantics (fails if already claimed).
 func (c *Client) ClaimBead(ctx context.Context, beadID string) (*Bead, error) {
-	out, err := c.run(ctx, "update", beadID, "--claim")
+	out, err := c.runWrite(ctx, "update", beadID, "--claim")
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (c *Client) ClosePlan(ctx context.Context, beadID, reason string) (*Bead, [
 	if reason != "" {
 		args = append(args, "--reason", reason)
 	}
-	out, err := c.run(ctx, args...)
+	out, err := c.runWrite(ctx, args...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -72,7 +72,7 @@ func (c *Client) ClosePlan(ctx context.Context, beadID, reason string) (*Bead, [
 
 // AddLabel adds a label to an existing bead using bd update --add-label.
 func (c *Client) AddLabel(ctx context.Context, beadID, label string) (*Bead, error) {
-	out, err := c.run(ctx, "update", beadID, "--add-label", label)
+	out, err := c.runWrite(ctx, "update", beadID, "--add-label", label)
 	if err != nil {
 		return nil, err
 	}

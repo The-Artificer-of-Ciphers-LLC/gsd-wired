@@ -36,6 +36,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Handle global flag: --dolt-auto-commit=batch is a global bd flag that comes
+	// before the subcommand. Strip it before dispatching.
+	for len(args) > 0 && args[0] != "" && args[0][0] == '-' && args[0] != "--json" {
+		args = args[1:]
+	}
+
+	if len(args) == 0 {
+		fmt.Fprintln(os.Stderr, "fake_bd: no command after global flags")
+		os.Exit(1)
+	}
+
 	// First arg is the subcommand (before --json is stripped by the real bd).
 	// In our case, run() always appends --json so we look at args[0].
 	subcmd := args[0]
@@ -103,6 +114,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, "bd: something went wrong")
 		os.Exit(1)
 
+	case "dolt":
+		// Handle dolt subcommands (e.g., "dolt commit" used by FlushWrites).
+		// Writes args to FAKE_BD_CAPTURE_FILE if set, then returns success.
+		fmt.Print(`{"status":"ok"}`)
+		os.Exit(0)
+
 	case "echo-args":
 		data, _ := json.Marshal(args)
 		fmt.Print(string(data))
@@ -110,6 +127,11 @@ func main() {
 
 	case "echo-env":
 		fmt.Print(os.Getenv("BEADS_DIR"))
+		os.Exit(0)
+
+	case "init":
+		// Handle bd init (used by serverState.runBdInit).
+		fmt.Print(`{"status":"ok"}`)
 		os.Exit(0)
 
 	default:

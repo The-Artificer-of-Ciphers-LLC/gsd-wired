@@ -23,7 +23,7 @@ func (c *Client) CreatePhase(ctx context.Context, phaseNum int, title, goal, acc
 		return nil, err
 	}
 
-	out, err := c.run(ctx,
+	out, err := c.runWrite(ctx,
 		"create", title,
 		"--type", "epic",
 		"--acceptance", acceptance,
@@ -76,7 +76,7 @@ func (c *Client) CreatePlan(ctx context.Context, planID string, phaseNum int, pa
 		args = append(args, "--deps", strings.Join(depBeadIDs, ","))
 	}
 
-	out, err := c.run(ctx, args...)
+	out, err := c.runWrite(ctx, args...)
 	if err != nil {
 		return nil, err
 	}
