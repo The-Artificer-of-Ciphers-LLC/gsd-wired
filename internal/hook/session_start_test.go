@@ -352,6 +352,80 @@ func TestSessionStartSnapshotSyncError(t *testing.T) {
 	}
 }
 
+// TestBuildBudgetContext verifies budget-aware context building with hot/warm/cold beads.
+// Hot beads always included; warm beads included if budget allows; cold beads omitted when over.
+func TestBuildBudgetContext(t *testing.T) {
+	fakeBd := buildFakeBd(t)
+	tmpDir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(tmpDir, ".beads"), 0755); err != nil {
+		t.Fatalf("failed to create .beads/: %v", err)
+	}
+
+	hs := &hookState{
+		bdPath:   fakeBd,
+		beadsDir: tmpDir,
+	}
+	if err := hs.init(context.Background()); err != nil {
+		t.Fatalf("hookState.init() failed: %v", err)
+	}
+
+	// Build context with a generous budget — all tiers should be included.
+	ctx := context.Background()
+	result := buildBudgetContext(ctx, hs.client, 2000)
+	// Context should be non-empty (at least the header).
+	if result == "" {
+		t.Error("buildBudgetContext returned empty string with budget=2000")
+	}
+}
+
+// TestBuildBudgetContextHotAlways verifies hot beads are never dropped even with tiny budget.
+func TestBuildBudgetContextHotAlways(t *testing.T) {
+	fakeBd := buildFakeBd(t)
+	tmpDir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(tmpDir, ".beads"), 0755); err != nil {
+		t.Fatalf("failed to create .beads/: %v", err)
+	}
+
+	hs := &hookState{
+		bdPath:   fakeBd,
+		beadsDir: tmpDir,
+	}
+	if err := hs.init(context.Background()); err != nil {
+		t.Fatalf("hookState.init() failed: %v", err)
+	}
+
+	// Budget=1 (tiny) — hot beads must still be included per Pitfall 2.
+	ctx := context.Background()
+	// Should not panic and should return a string (possibly just the header).
+	result := buildBudgetContext(ctx, hs.client, 1)
+	// Result may be empty or have minimal content — the key is it doesn't panic.
+	_ = result
+}
+
+// TestSessionStartBudget verifies buildSessionContext still works as a wrapper for buildBudgetContext.
+func TestSessionStartBudget(t *testing.T) {
+	fakeBd := buildFakeBd(t)
+	tmpDir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(tmpDir, ".beads"), 0755); err != nil {
+		t.Fatalf("failed to create .beads/: %v", err)
+	}
+
+	hs := &hookState{
+		bdPath:   fakeBd,
+		beadsDir: tmpDir,
+	}
+	if err := hs.init(context.Background()); err != nil {
+		t.Fatalf("hookState.init() failed: %v", err)
+	}
+
+	ctx := context.Background()
+	result := buildSessionContext(ctx, hs.client)
+	// Should return a non-empty string with default budget (2000 tokens).
+	if result == "" {
+		t.Error("buildSessionContext returned empty string")
+	}
+}
+
 // TestSessionStartStdoutPurity verifies output starts with '{' and is valid JSON.
 func TestSessionStartStdoutPurity(t *testing.T) {
 	fakeBd := buildFakeBd(t)

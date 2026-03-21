@@ -147,7 +147,7 @@ func TestServeRespondsToInitialize(t *testing.T) {
 	}
 }
 
-// TestToolsListed verifies that the MCP server responds to tools/list with all 17 tool names.
+// TestToolsListed verifies that the MCP server responds to tools/list with all 18 tool names.
 // This is a subprocess integration test: lazy init means no bd/Dolt is needed for tools/list.
 func TestToolsListed(t *testing.T) {
 	// Build the binary first.
@@ -292,14 +292,14 @@ func TestToolsListed(t *testing.T) {
 	}
 
 	// Verify count.
-	if len(toolsRaw) != 17 {
+	if len(toolsRaw) != 18 {
 		names := make([]string, 0, len(toolsRaw))
 		for _, ti := range toolsRaw {
 			if tm, ok := ti.(map[string]any); ok {
 				names = append(names, fmt.Sprintf("%v", tm["name"]))
 			}
 		}
-		t.Errorf("expected 17 tools, got %d: %v", len(toolsRaw), names)
+		t.Errorf("expected 18 tools, got %d: %v", len(toolsRaw), names)
 	}
 
 	// Verify all expected tool names are present.
@@ -308,7 +308,7 @@ func TestToolsListed(t *testing.T) {
 		"query_by_label", "claim_bead", "close_plan", "flush_writes",
 		"init_project", "get_status", "run_research", "synthesize_research",
 		"create_plan_beads", "execute_wave", "verify_phase",
-		"create_pr_summary", "advance_phase",
+		"create_pr_summary", "advance_phase", "get_tiered_context",
 	}
 	toolMap := make(map[string]map[string]any)
 	for _, ti := range toolsRaw {

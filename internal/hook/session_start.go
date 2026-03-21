@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
@@ -127,45 +128,82 @@ func handleSessionStart(ctx context.Context, raw json.RawMessage, hs *hookState,
 	return writeOutput(w, HookOutput{AdditionalContext: contextStr})
 }
 
-// buildSessionContext queries the graph and builds a markdown context string.
+// sessionStartDefaultBudget is the default token budget for SessionStart additionalContext.
+// Chosen to allow full context for an active phase while leaving room for the user's prompt.
+const sessionStartDefaultBudget = 2000
+
+// buildSessionContext queries the graph and builds a budget-aware markdown context string.
+// It is a thin wrapper around buildBudgetContext using sessionStartDefaultBudget.
 // It always returns a string (possibly empty) and never returns an error —
 // partial results are better than nothing.
 func buildSessionContext(ctx context.Context, c *graph.Client) string {
-	// Query for open phase beads.
-	phaseBeads, err := c.QueryByLabel(ctx, "gsd:phase")
+	return buildBudgetContext(ctx, c, sessionStartDefaultBudget)
+}
+
+// buildBudgetContext queries the graph and builds a budget-aware markdown context string.
+// budget is the maximum number of tokens to include in the output (estimated via graph.EstimateTokens).
+// Progressive degradation: hot beads always included, warm beads included if budget allows,
+// cold beads omitted when over budget. Per Research Pattern 4 and D-08.
+func buildBudgetContext(ctx context.Context, c *graph.Client, budget int) string {
+	// Query for tiered phase beads (5 warm beads per Open Question 1 recommendation).
+	hot, warm, cold, err := c.QueryTiered(ctx, "gsd:phase", 5)
 	if err != nil {
-		slog.Warn("sessionStart: failed to query phase beads", "err", err)
+		slog.Warn("sessionStart: failed to query tiered phase beads", "err", err)
 	}
 
-	// Find the current phase: open status + highest gsd_phase metadata value.
-	var currentPhase *graph.Bead
-	var currentPhaseNum float64 = -1
-	for i := range phaseBeads {
-		b := &phaseBeads[i]
-		if b.Status != "open" {
-			continue
-		}
-		if b.Metadata == nil {
-			continue
-		}
-		phaseNum, ok := phaseNumAsFloat(b.Metadata["gsd_phase"])
-		if !ok {
-			continue
-		}
-		if currentPhase == nil || phaseNum > currentPhaseNum {
-			currentPhase = b
-			currentPhaseNum = phaseNum
+	var sb strings.Builder
+	sb.WriteString("## GSD Project State\n\n")
+	used := graph.EstimateTokens("## GSD Project State\n\n")
+
+	// Always include hot beads (active work — never omit per Pitfall 2).
+	for _, b := range hot {
+		chunk := graph.FormatHot(b)
+		sb.WriteString(chunk)
+		used += graph.EstimateTokens(chunk)
+	}
+
+	// Include warm beads if budget allows; degrade to cold format if tight.
+	for _, b := range warm {
+		warmChunk := graph.FormatWarm(b)
+		if used+graph.EstimateTokens(warmChunk) <= budget {
+			sb.WriteString(warmChunk)
+			used += graph.EstimateTokens(warmChunk)
+		} else {
+			// Degrade to cold: ID + title only.
+			coldChunk := graph.FormatCold(b)
+			if used+graph.EstimateTokens(coldChunk) <= budget {
+				sb.WriteString(coldChunk)
+				used += graph.EstimateTokens(coldChunk)
+			}
+			// If even cold doesn't fit, omit.
 		}
 	}
 
-	// Query for ready tasks.
+	// Include cold beads if budget allows.
+	for _, b := range cold {
+		coldChunk := graph.FormatCold(b)
+		if used+graph.EstimateTokens(coldChunk) <= budget {
+			sb.WriteString(coldChunk)
+			used += graph.EstimateTokens(coldChunk)
+		}
+	}
+
+	// Query for ready tasks — always included (active work).
 	readyBeads, err := c.ListReady(ctx)
 	if err != nil {
 		slog.Warn("sessionStart: failed to list ready beads", "err", err)
 	}
 
-	// Build the markdown string.
-	return formatSessionContext(currentPhase, readyBeads)
+	sb.WriteString("\n### Ready Tasks\n")
+	if len(readyBeads) == 0 {
+		sb.WriteString("(none)\n")
+	} else {
+		for _, t := range readyBeads {
+			sb.WriteString(fmt.Sprintf("- [%s] %s\n", t.ID, t.Title))
+		}
+	}
+
+	return sb.String()
 }
 
 // phaseNumAsFloat extracts a phase number as float64 from a metadata value.

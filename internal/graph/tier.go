@@ -100,6 +100,18 @@ func formatCold(b TieredBead) string {
 	return fmt.Sprintf("- [%s] %s\n", b.ID, b.Title)
 }
 
+// EstimateTokens is the exported form of estimateTokens for use by callers outside the graph package.
+func EstimateTokens(s string) int { return estimateTokens(s) }
+
+// FormatHot is the exported form of formatHot for use by callers outside the graph package.
+func FormatHot(b TieredBead) string { return formatHot(b) }
+
+// FormatWarm is the exported form of formatWarm for use by callers outside the graph package.
+func FormatWarm(b TieredBead) string { return formatWarm(b) }
+
+// FormatCold is the exported form of formatCold for use by callers outside the graph package.
+func FormatCold(b TieredBead) string { return formatCold(b) }
+
 // CompactBead writes the compact summary to bead metadata under the "gsd:compact" key.
 // Best-effort: errors are returned but callers (ClosePlan) should log and continue.
 // Per Research Pattern 5 and D-12.

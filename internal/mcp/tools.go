@@ -34,7 +34,7 @@ type closeResult struct {
 	Unblocked []graph.Bead `json:"unblocked"`
 }
 
-// registerTools registers all 17 GSD MCP tools on the server.
+// registerTools registers all 18 GSD MCP tools on the server.
 // Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
 // Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
 func registerTools(server *mcpsdk.Server, state *serverState) {
@@ -324,5 +324,18 @@ func registerTools(server *mcpsdk.Server, state *serverState) {
 			return toolError("invalid arguments: " + err.Error()), nil
 		}
 		return handleAdvancePhase(ctx, state, args)
+	})
+
+	// get_tiered_context — Returns hot/warm/cold classified beads with budget-fitted context_string (tool 18).
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "get_tiered_context",
+		Description: "Returns hot/warm/cold classified beads for a phase with a budget-fitted context_string and estimated token count.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number to get context for"},"budget_tokens":{"type":"integer","description":"Token budget (default 2000 if omitted)"}},"required":["phase_num"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args tieredContextArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleGetTieredContext(ctx, state, args)
 	})
 }

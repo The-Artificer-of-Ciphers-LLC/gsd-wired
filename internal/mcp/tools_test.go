@@ -33,7 +33,7 @@ func connectInProcess(t *testing.T, state *serverState) *mcpsdk.ClientSession {
 	return cs
 }
 
-// TestToolsRegistered verifies that registerTools adds exactly 17 tools to the server.
+// TestToolsRegistered verifies that registerTools adds exactly 18 tools to the server.
 func TestToolsRegistered(t *testing.T) {
 	state := &serverState{}
 	cs := connectInProcess(t, state)
@@ -42,12 +42,12 @@ func TestToolsRegistered(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools() returned error: %v", err)
 	}
-	if len(result.Tools) != 17 {
+	if len(result.Tools) != 18 {
 		names := make([]string, len(result.Tools))
 		for i, tool := range result.Tools {
 			names[i] = tool.Name
 		}
-		t.Errorf("expected 17 tools, got %d: %v", len(result.Tools), names)
+		t.Errorf("expected 18 tools, got %d: %v", len(result.Tools), names)
 	}
 
 	wantNames := []string{
@@ -68,6 +68,7 @@ func TestToolsRegistered(t *testing.T) {
 		"verify_phase",
 		"create_pr_summary",
 		"advance_phase",
+		"get_tiered_context",
 	}
 	toolMap := make(map[string]bool)
 	for _, tool := range result.Tools {
