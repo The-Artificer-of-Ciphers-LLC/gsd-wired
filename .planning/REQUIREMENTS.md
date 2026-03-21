@@ -33,9 +33,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **INIT-01**: User can initialize a new project via `/gsd-wired:init` slash command
 - [ ] **INIT-02**: Deep questioning flow captures project context (what, why, who, done criteria)
-- [ ] **INIT-03**: Questioning produces epic bead (project) + context beads (decisions, constraints)
-- [ ] **INIT-04**: PROJECT.md and config.json remain as human-readable files (hybrid state model)
-- [ ] **INIT-05**: `bd init` creates .beads/ directory with Dolt-backed storage
+- [x] **INIT-03**: Questioning produces epic bead (project) + context beads (decisions, constraints)
+- [x] **INIT-04**: PROJECT.md and config.json remain as human-readable files (hybrid state model)
+- [x] **INIT-05**: `bd init` creates .beads/ directory with Dolt-backed storage
 
 ### Research Phase
 
@@ -152,9 +152,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MAP-06 | Phase 2 | Complete |
 | INIT-01 | Phase 5 | Pending |
 | INIT-02 | Phase 5 | Pending |
-| INIT-03 | Phase 5 | Pending |
-| INIT-04 | Phase 5 | Pending |
-| INIT-05 | Phase 5 | Pending |
+| INIT-03 | Phase 5 | Complete |
+| INIT-04 | Phase 5 | Complete |
+| INIT-05 | Phase 5 | Complete |
 | RSRCH-01 | Phase 6 | Pending |
 | RSRCH-02 | Phase 6 | Pending |
 | RSRCH-03 | Phase 6 | Pending |

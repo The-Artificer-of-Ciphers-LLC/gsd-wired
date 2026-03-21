@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Graph Primitives** - bd CLI wrapper and GSD-to-beads domain mapping
 - [x] **Phase 3: MCP Server** - MCP server with lazy Dolt init and tool registration
 - [x] **Phase 4: Hook Integration** - All four Claude Code hooks with state persistence
-- [ ] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
+- [x] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
 - [ ] **Phase 6: Research + Planning** - Research agents coordinating as beads, plan creation with dependencies
 - [ ] **Phase 7: Execution + Verification** - Wave-based parallel execution and post-execution verification
 - [ ] **Phase 8: Ship + Status** - PR creation, phase advancement, and project status from graph
@@ -101,7 +101,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — init_project and get_status MCP tools with bead creation, file writing, and graph queries
+- [x] 05-01-PLAN.md — init_project and get_status MCP tools with bead creation, file writing, and graph queries
 - [x] 05-02-PLAN.md — SKILL.md files for /gsd-wired:init and /gsd-wired:status slash commands, CLI subcommands
 
 ### Phase 6: Research + Planning
@@ -198,7 +198,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 2. Graph Primitives | 2/2 | Complete | 2026-03-21 |
 | 3. MCP Server | 2/2 | Complete | 2026-03-21 |
 | 4. Hook Integration | 0/2 | Not started | - |
-| 5. Project Initialization | 0/2 | Not started | - |
+| 5. Project Initialization | 2/2 | Complete | 2026-03-21 |
 | 6. Research + Planning | 0/TBD | Not started | - |
 | 7. Execution + Verification | 0/TBD | Not started | - |
 | 8. Ship + Status | 0/TBD | Not started | - |
