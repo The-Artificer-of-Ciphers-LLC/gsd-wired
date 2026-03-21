@@ -81,11 +81,11 @@ Plans:
   3. PreToolUse hook injects relevant bead context before state-changing tool calls
   4. PostToolUse hook updates bead state after tool execution (progress, status changes)
   5. Hooks complete within latency budget (SessionStart <2s, PreCompact <200ms fast path, Pre/PostToolUse <500ms)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Extended hook types, hookState lazy init, SessionStart handler with context loading
+- [ ] 04-02-PLAN.md — PreCompact atomic buffer, PreToolUse context injection, PostToolUse event recording
 
 ### Phase 5: Project Initialization
 **Goal**: Users can initialize a new gsd-wired project through guided questioning that produces a beads graph
@@ -195,8 +195,8 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 |-------|----------------|--------|-----------|
 | 1. Binary Scaffold | 2/2 | Complete | 2026-03-21 |
 | 2. Graph Primitives | 2/2 | Complete | 2026-03-21 |
-| 3. MCP Server | 1/2 | In progress | - |
-| 4. Hook Integration | 0/TBD | Not started | - |
+| 3. MCP Server | 2/2 | Complete | 2026-03-21 |
+| 4. Hook Integration | 0/2 | Not started | - |
 | 5. Project Initialization | 0/TBD | Not started | - |
 | 6. Research + Planning | 0/TBD | Not started | - |
 | 7. Execution + Verification | 0/TBD | Not started | - |
