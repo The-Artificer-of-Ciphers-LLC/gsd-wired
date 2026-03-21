@@ -102,7 +102,7 @@ Plans:
 
 Plans:
 - [ ] 05-01-PLAN.md — init_project and get_status MCP tools with bead creation, file writing, and graph queries
-- [ ] 05-02-PLAN.md — SKILL.md files for /gsd-wired:init and /gsd-wired:status slash commands, CLI subcommands
+- [x] 05-02-PLAN.md — SKILL.md files for /gsd-wired:init and /gsd-wired:status slash commands, CLI subcommands
 
 ### Phase 6: Research + Planning
 **Goal**: Users can run research phases and create dependency-aware plans, all coordinated through beads

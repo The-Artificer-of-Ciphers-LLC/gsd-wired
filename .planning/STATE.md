@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 4 of 10 (Hook Integration)
-Plan: 3 of 3 in current phase
-Status: Phase 4 complete (including gap closure)
-Last activity: 2026-03-21 -- Phase 4 Plan 03 complete (gap closure: INFRA-06 Stage 2 + INFRA-08 bead state updates)
+Phase: 5 of 10 (Project Initialization)
+Plan: 2 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-21 -- Phase 5 Plan 02 complete (SKILL.md slash commands + CLI subcommands)
 
-Progress: [████████░░] 40%
+Progress: [████████░░] 44%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 4.6 min
-- Total execution time: 0.62 hours
+- Total plans completed: 10
+- Average duration: 4.4 min
+- Total execution time: 0.65 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [████████░░] 40%
 | 2. Graph Primitives | 2 | 6 min | 3 min |
 | 3. MCP Server | 2 | 11 min | 5.5 min |
 | 4. Hook Integration | 3 | 14 min | 4.7 min |
+| 5. Project Init | 2 | 10 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 4 min, 7 min, 5 min, 4 min
+- Last 5 plans: 4 min, 7 min, 5 min, 4 min, 2 min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -81,6 +82,13 @@ Recent decisions affecting current work:
 - [04-03]: syncPendingSnapshot uses QueryByLabel not LoadIndex to find phase bead — active open phase surfaced directly from graph
 - [04-03]: Snapshot file deletion is proof of sync — os.Remove only runs after UpdateBeadMetadata succeeds
 - [04-03]: updateBeadOnToolUse uses AddLabel(gsd:tool-use) not UpdateBeadMetadata — minimal change surface, satisfies INFRA-08
+- [05-01]: phaseNum=0 convention for project-level epic bead — CreatePhase accepts any int so 0 works without schema changes
+- [05-01]: Single init_project tool for bead creation + file writing — simpler SKILL.md, eventual consistency acceptable
+- [05-01]: Context child bead failures non-fatal in handleInitProject — partial context better than init failure
+- [05-01]: get_status replicates buildSessionContext query pattern directly — avoids hook package coupling in MCP server
+- [05-02]: SKILL.md files placed at plugin root skills/ (not inside .claude-plugin/) — auto-discovered as /gsd-wired:name slash commands
+- [05-02]: disable-model-invocation: true on init SKILL.md — user must explicitly invoke /gsd-wired:init
+- [05-02]: renderStatus extracted as pure function (io.Writer, phases, ready) — testable without graph client, same pattern as renderReadyTree
 
 ### Pending Todos
 
@@ -93,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 4 Plan 03 — gap closure)
-Stopped at: Phase 4 fully complete — INFRA-06 Stage 2 (snapshot sync) and INFRA-08 (bead state update) gaps closed. 121 tests pass across 7 packages. Ready for Phase 5.
+Last session: 2026-03-21 (Phase 5 Plan 02 — slash commands + CLI)
+Stopped at: Phase 5 Plan 02 complete — SKILL.md slash commands (/gsd-wired:init, /gsd-wired:status) and gsdw init/status CLI subcommands created. 7 packages pass go test ./... -race.
 Resume file: None
