@@ -86,6 +86,7 @@ Plans:
 Plans:
 - [x] 04-01-PLAN.md — Extended hook types, hookState lazy init, SessionStart handler with context loading
 - [x] 04-02-PLAN.md — PreCompact atomic buffer, PreToolUse context injection, PostToolUse event recording
+- [x] 04-03-PLAN.md — Gap closure: UpdateBeadMetadata, SessionStart syncs precompact snapshot, PostToolUse adds bead label
 
 ### Phase 5: Project Initialization
 **Goal**: Users can initialize a new gsd-wired project through guided questioning that produces a beads graph

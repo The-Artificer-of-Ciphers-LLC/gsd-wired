@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 4 of 10 (Hook Integration)
-Plan: 2 of 2 in current phase
-Status: Phase 4 complete
-Last activity: 2026-03-21 -- Phase 4 Plan 02 complete (PreCompact, PreToolUse, PostToolUse handlers — all four hooks wired)
+Plan: 3 of 3 in current phase
+Status: Phase 4 complete (including gap closure)
+Last activity: 2026-03-21 -- Phase 4 Plan 03 complete (gap closure: INFRA-06 Stage 2 + INFRA-08 bead state updates)
 
 Progress: [████████░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 4.6 min
-- Total execution time: 0.55 hours
+- Total execution time: 0.62 hours
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [████████░░] 40%
 | 1. Binary Scaffold | 2 | 14 min | 7 min |
 | 2. Graph Primitives | 2 | 6 min | 3 min |
 | 3. MCP Server | 2 | 11 min | 5.5 min |
-| 4. Hook Integration | 2 | 9 min | 4.5 min |
+| 4. Hook Integration | 3 | 14 min | 4.7 min |
 
 **Recent Trend:**
 - Last 5 plans: 4 min, 4 min, 7 min, 5 min, 4 min
@@ -78,6 +78,9 @@ Recent decisions affecting current work:
 - [04-02]: PreToolUse fast path for read-class tools exits before any graph or file I/O — zero overhead for Read/Glob/Grep
 - [04-02]: PreToolUse loads .gsdw/index.json as cheap context source (<1ms) before attempting 400ms graph query
 - [04-02]: PostToolUse records Write/Edit/Bash to JSONL (Agent excluded) — no additionalContext injection (deferred to v2/TOKEN-A01)
+- [04-03]: syncPendingSnapshot uses QueryByLabel not LoadIndex to find phase bead — active open phase surfaced directly from graph
+- [04-03]: Snapshot file deletion is proof of sync — os.Remove only runs after UpdateBeadMetadata succeeds
+- [04-03]: updateBeadOnToolUse uses AddLabel(gsd:tool-use) not UpdateBeadMetadata — minimal change surface, satisfies INFRA-08
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 4 Plan 02)
-Stopped at: Phase 4 complete — PreCompact, PreToolUse, PostToolUse handlers, all four hooks wired. 55 hook tests pass. Ready for Phase 5.
+Last session: 2026-03-21 (Phase 4 Plan 03 — gap closure)
+Stopped at: Phase 4 fully complete — INFRA-06 Stage 2 (snapshot sync) and INFRA-08 (bead state update) gaps closed. 121 tests pass across 7 packages. Ready for Phase 5.
 Resume file: None
