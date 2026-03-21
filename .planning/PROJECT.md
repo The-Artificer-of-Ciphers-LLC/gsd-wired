@@ -12,7 +12,9 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Single Go binary serves as MCP server, hook dispatcher, and CLI tool (INFRA-01) — Phase 1
+- [x] Plugin manifest registers MCP server and hooks (INFRA-04) — Phase 1
+- [x] Strict stdout discipline — no stray output breaking MCP stdio protocol (INFRA-09) — Phase 1
 
 ### Active
 
@@ -93,4 +95,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after initialization*
+*Last updated: 2026-03-21 after Phase 1 completion*
