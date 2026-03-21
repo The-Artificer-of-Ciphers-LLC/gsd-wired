@@ -1,0 +1,215 @@
+package mcp
+
+import (
+	"context"
+	"encoding/json"
+
+	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
+
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
+)
+
+// toolError returns a CallToolResult with IsError=true and a descriptive message.
+func toolError(msg string) *mcpsdk.CallToolResult {
+	return &mcpsdk.CallToolResult{
+		IsError: true,
+		Content: []mcpsdk.Content{&mcpsdk.TextContent{Text: msg}},
+	}
+}
+
+// toolResult marshals data as JSON and returns it in TextContent.
+func toolResult(data any) (*mcpsdk.CallToolResult, error) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		return toolError("marshal error: " + err.Error()), nil
+	}
+	return &mcpsdk.CallToolResult{
+		Content: []mcpsdk.Content{&mcpsdk.TextContent{Text: string(b)}},
+	}, nil
+}
+
+// closeResult is the response for close_plan: the closed bead plus newly unblocked beads.
+type closeResult struct {
+	Closed    *graph.Bead  `json:"closed"`
+	Unblocked []graph.Bead `json:"unblocked"`
+}
+
+// registerTools registers all 8 GSD MCP tools on the server.
+// Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
+// Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
+func registerTools(server *mcpsdk.Server, state *serverState) {
+	// create_phase — Creates a GSD phase as an epic bead.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "create_phase",
+		Description: "Creates a GSD phase as an epic bead in the beads graph.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"phase_num":{"type":"integer","description":"Phase number (1-99)"},"title":{"type":"string","description":"Phase title"},"goal":{"type":"string","description":"Phase goal description"},"acceptance":{"type":"string","description":"Acceptance criteria"},"req_ids":{"type":"array","items":{"type":"string"},"description":"Requirement IDs (e.g. INFRA-01)"}},"required":["phase_num","title","goal","acceptance"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		var args struct {
+			PhaseNum   int      `json:"phase_num"`
+			Title      string   `json:"title"`
+			Goal       string   `json:"goal"`
+			Acceptance string   `json:"acceptance"`
+			ReqIDs     []string `json:"req_ids"`
+		}
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		bead, err := state.client.CreatePhase(ctx, args.PhaseNum, args.Title, args.Goal, args.Acceptance, args.ReqIDs)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(bead)
+	})
+
+	// create_plan — Creates a GSD plan as a task bead under a phase epic.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "create_plan",
+		Description: "Creates a GSD plan as a task bead under a phase epic bead.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"plan_id":{"type":"string","description":"Plan ID (e.g. 03-01)"},"phase_num":{"type":"integer","description":"Phase number"},"parent_bead_id":{"type":"string","description":"Parent phase epic bead ID"},"title":{"type":"string","description":"Plan title"},"acceptance":{"type":"string","description":"Acceptance criteria"},"context":{"type":"string","description":"Plan context/description"},"req_ids":{"type":"array","items":{"type":"string"},"description":"Requirement IDs"},"dep_bead_ids":{"type":"array","items":{"type":"string"},"description":"Dependency bead IDs"}},"required":["plan_id","phase_num","parent_bead_id","title","acceptance","context"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		var args struct {
+			PlanID       string   `json:"plan_id"`
+			PhaseNum     int      `json:"phase_num"`
+			ParentBeadID string   `json:"parent_bead_id"`
+			Title        string   `json:"title"`
+			Acceptance   string   `json:"acceptance"`
+			Context      string   `json:"context"`
+			ReqIDs       []string `json:"req_ids"`
+			DepBeadIDs   []string `json:"dep_bead_ids"`
+		}
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		bead, err := state.client.CreatePlan(ctx, args.PlanID, args.PhaseNum, args.ParentBeadID, args.Title, args.Acceptance, args.Context, args.ReqIDs, args.DepBeadIDs)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(bead)
+	})
+
+	// get_bead — Retrieves a single bead by ID.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "get_bead",
+		Description: "Retrieves a single bead by ID.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string","description":"Bead ID"}},"required":["id"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		var args struct {
+			ID string `json:"id"`
+		}
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		bead, err := state.client.GetBead(ctx, args.ID)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(bead)
+	})
+
+	// list_ready — Lists all unblocked (ready) beads.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "list_ready",
+		Description: "Lists all unblocked (ready) beads with no limit.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{},"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		beads, err := state.client.ListReady(ctx)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(beads)
+	})
+
+	// query_by_label — Queries beads matching a label.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "query_by_label",
+		Description: "Queries beads matching a label (e.g. gsd:phase, INFRA-02).",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"label":{"type":"string","description":"Label to query (e.g. gsd:phase, INFRA-02)"}},"required":["label"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		var args struct {
+			Label string `json:"label"`
+		}
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		beads, err := state.client.QueryByLabel(ctx, args.Label)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(beads)
+	})
+
+	// claim_bead — Atomically claims a bead for the current agent.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "claim_bead",
+		Description: "Atomically claims a bead for the current agent (fails if already claimed).",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string","description":"Bead ID to claim"}},"required":["id"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		var args struct {
+			ID string `json:"id"`
+		}
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		bead, err := state.client.ClaimBead(ctx, args.ID)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(bead)
+	})
+
+	// close_plan — Closes a plan bead with reason, returns newly unblocked beads.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "close_plan",
+		Description: "Closes a plan bead with a reason and returns newly unblocked beads.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string","description":"Bead ID to close"},"reason":{"type":"string","description":"Close reason"}},"required":["id"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		var args struct {
+			ID     string `json:"id"`
+			Reason string `json:"reason"`
+		}
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		closed, unblocked, err := state.client.ClosePlan(ctx, args.ID, args.Reason)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(&closeResult{Closed: closed, Unblocked: unblocked})
+	})
+
+	// flush_writes — Flushes accumulated batch writes to Dolt (INFRA-10).
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "flush_writes",
+		Description: "Flushes accumulated batch writes to Dolt. Call after a series of create/update operations.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"message":{"type":"string","description":"Optional commit message"}},"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		if err := state.client.FlushWrites(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(map[string]string{"status": "flushed"})
+	})
+}
