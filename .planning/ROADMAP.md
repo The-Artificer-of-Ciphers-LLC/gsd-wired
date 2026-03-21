@@ -167,7 +167,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Graph-layer tiering: Tier/TieredBead types, classifyTier, estimateTokens, CompactBead, QueryTiered, compaction on ClosePlan
+- [x] 09-01-PLAN.md — Graph-layer tiering: Tier/TieredBead types, classifyTier, estimateTokens, CompactBead, QueryTiered, compaction on ClosePlan
 - [ ] 09-02-PLAN.md — Budget-aware SessionStart, get_tiered_context MCP tool (tool 18), execute_wave compacted dep summaries
 
 ### Phase 10: Coexistence
@@ -200,5 +200,5 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 6. Research + Planning | 2/2 | Complete | 2026-03-21 |
 | 7. Execution + Verification | 3/3 | Complete | 2026-03-21 |
 | 8. Ship + Status | 2/2 | Complete | 2026-03-21 |
-| 9. Token-Aware Context | 0/2 | Not started | - |
+| 9. Token-Aware Context | 1/2 | In Progress | - |
 | 10. Coexistence | 0/TBD | Not started | - |

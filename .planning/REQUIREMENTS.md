@@ -73,11 +73,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Token Optimization
 
-- [ ] **TOKEN-01**: Graph queries replace full markdown file reads (O(relevant) not O(total))
+- [x] **TOKEN-01**: Graph queries replace full markdown file reads (O(relevant) not O(total)) — Phase 9 Plan 01
 - [ ] **TOKEN-02**: Subagent prompts contain only claimed bead context, not full project state
-- [ ] **TOKEN-03**: Closed beads automatically compacted (summary replaces full content)
-- [ ] **TOKEN-04**: Token-aware context routing: hot beads (active) get full context, warm (recent) get summaries, cold (done) get IDs only
-- [ ] **TOKEN-05**: Context budget tracking estimates tokens per bead and fits within remaining window
+- [x] **TOKEN-03**: Closed beads automatically compacted (summary replaces full content) — Phase 9 Plan 01
+- [x] **TOKEN-04**: Token-aware context routing: hot beads (active) get full context, warm (recent) get summaries, cold (done) get IDs only — Phase 9 Plan 01
+- [x] **TOKEN-05**: Context budget tracking estimates tokens per bead and fits within remaining window — Phase 9 Plan 01
 - [ ] **TOKEN-06**: Tiered context injection in SessionStart based on available token budget
 
 ### Slash Commands
@@ -174,11 +174,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VRFY-03 | Phase 7 | Complete |
 | SHIP-01 | Phase 8 | Done |
 | SHIP-02 | Phase 8 | Done |
-| TOKEN-01 | Phase 9 | Pending |
+| TOKEN-01 | Phase 9 | Done |
 | TOKEN-02 | Phase 9 | Pending |
-| TOKEN-03 | Phase 9 | Pending |
-| TOKEN-04 | Phase 9 | Pending |
-| TOKEN-05 | Phase 9 | Pending |
+| TOKEN-03 | Phase 9 | Done |
+| TOKEN-04 | Phase 9 | Done |
+| TOKEN-05 | Phase 9 | Done |
 | TOKEN-06 | Phase 9 | Pending |
 | CMD-01 | Phase 5 | Pending |
 | CMD-02 | Phase 8 | Done |

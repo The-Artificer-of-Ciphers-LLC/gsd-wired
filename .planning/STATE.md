@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 8 of 10 (Ship + Status)
-Plan: 2 of 2 in current phase
-Status: Phase complete — ready for Phase 9 or Phase 10
-Last activity: 2026-03-21 -- Phase 8 Plan 02 complete (gsdw ship CLI stub + /gsd-wired:ship SKILL.md)
+Phase: 9 of 10 (Token-Aware Context)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-21 -- Phase 9 Plan 01 complete (graph-layer tiering, compaction on close)
 
-Progress: [████████░░] 70%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -34,9 +34,10 @@ Progress: [████████░░] 70%
 | 5. Project Init | 2 | 10 min | 5 min |
 | 6. Research + Planning | 2 | 9 min | 4.5 min |
 | 7. Execution + Verification | 3/3 | 12 min | 4 min |
+| 9. Token-Aware Context | 1/2 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 4 min, 2 min, 4 min, 8 min, 2 min
+- Last 5 plans: 2 min, 4 min, 8 min, 2 min, 5 min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -118,6 +119,11 @@ Recent decisions affecting current work:
 - [08-02]: ship.go follows exact execute.go/verify.go stub pattern — consistency with existing CLI commands
 - [08-02]: SKILL.md no-changes-to-ship path still calls advance_phase — phase state always advances even without commits
 - [08-02]: Error handling stops at gh failure before advance_phase — PR creation and phase advancement atomic from user perspective
+- [09-01]: count-based warm (last N closed by ClosedAt desc) over time-based threshold — deterministic, project-lifecycle independent (Research Open Question 1)
+- [09-01]: classifyTier takes warmIDs map[string]bool (not time.Time) — avoids non-deterministic tests (Research Pitfall 4)
+- [09-01]: tier types, pure functions, CompactBead, QueryTiered all in new tier.go — co-located with Bead type in graph package
+- [09-01]: CompactBead only called inside ClosePlan post-close — structural guard against compacting open beads (Research Pitfall 3)
+- [09-01]: FAKE_BD_QUERY_TIERED_RESPONSE env var added to fake_bd query subcommand for QueryTiered test isolation
 
 ### Pending Todos
 
@@ -130,6 +136,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 8 Plan 02 complete)
-Stopped at: Phase 8 Plan 02 complete — gsdw ship CLI stub (ship.go + ship_test.go) wired into root.go, /gsd-wired:ship SKILL.md with 7-step ship flow. Phase 8 fully complete.
+Last session: 2026-03-21 (Phase 9 Plan 01 complete)
+Stopped at: Phase 9 Plan 01 complete — graph-layer tiering (tier.go: Tier constants, TieredBead, classifyTier, estimateTokens, CompactBead, QueryTiered) + ClosePlan compaction. 189 tests pass.
 Resume file: None
