@@ -68,8 +68,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Ship Phase
 
-- [ ] **SHIP-01**: PR creation with bead-sourced summary (requirements covered, phases completed)
-- [ ] **SHIP-02**: Phase completion updates bead state and triggers next phase readiness
+- [x] **SHIP-01**: PR creation with bead-sourced summary (requirements covered, phases completed) — Phase 8 Plan 01
+- [x] **SHIP-02**: Phase completion updates bead state and triggers next phase readiness — Phase 8 Plan 01
 
 ### Token Optimization
 
@@ -83,7 +83,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Slash Commands
 
 - [ ] **CMD-01**: `/gsd-wired:init` — Initialize new project with deep questioning
-- [ ] **CMD-02**: `/gsd-wired:status` — Show project state from beads graph
+- [x] **CMD-02**: `/gsd-wired:status` — Show project state from beads graph — Phase 8 Plan 01
 - [x] **CMD-03**: `/gsd-wired:plan` — Create phase plan (task beads with dependencies)
 - [x] **CMD-04**: `/gsd-wired:execute` — Execute current wave of unblocked tasks
 - [x] **CMD-05**: `/gsd-wired:verify` — Verify phase against success criteria
@@ -172,8 +172,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VRFY-01 | Phase 7 | Complete |
 | VRFY-02 | Phase 7 | Complete |
 | VRFY-03 | Phase 7 | Complete |
-| SHIP-01 | Phase 8 | Pending |
-| SHIP-02 | Phase 8 | Pending |
+| SHIP-01 | Phase 8 | Done |
+| SHIP-02 | Phase 8 | Done |
 | TOKEN-01 | Phase 9 | Pending |
 | TOKEN-02 | Phase 9 | Pending |
 | TOKEN-03 | Phase 9 | Pending |
@@ -181,7 +181,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TOKEN-05 | Phase 9 | Pending |
 | TOKEN-06 | Phase 9 | Pending |
 | CMD-01 | Phase 5 | Pending |
-| CMD-02 | Phase 8 | Pending |
+| CMD-02 | Phase 8 | Done |
 | CMD-03 | Phase 6 | Pending |
 | CMD-04 | Phase 7 | Pending |
 | CMD-05 | Phase 7 | Pending |

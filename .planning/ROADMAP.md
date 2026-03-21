@@ -151,7 +151,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — create_pr_summary + advance_phase MCP tools (tools 16-17), get_status enrichment
+- [x] 08-01-PLAN.md — create_pr_summary + advance_phase MCP tools (tools 16-17), get_status enrichment
 - [ ] 08-02-PLAN.md — gsdw ship CLI stub, /gsd-wired:ship SKILL.md slash command
 
 ### Phase 9: Token-Aware Context

@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 7 of 10 (Execution + Verification)
-Plan: 3 of 3 in current phase (COMPLETE)
-Status: Phase 7 complete — ready for Phase 8
-Last activity: 2026-03-21 -- Phase 7 Plan 03 complete (/gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands)
+Phase: 8 of 10 (Ship + Status)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-21 -- Phase 8 Plan 01 complete (create_pr_summary + advance_phase MCP tools, get_status enrichment)
 
 Progress: [████████░░] 60%
 
@@ -111,6 +111,10 @@ Recent decisions affecting current work:
 - [07-03]: verify SKILL.md uses detail field (not raw criterion) in remediation task titles per Pitfall 4
 - [07-03]: ready has disable-model-invocation: false — lightweight informational, no agent spawning unlike execute/verify/plan/research
 - [07-03]: Remediation task id pattern is {phase}-fix-{N} (e.g., 07-fix-1) for uniqueness and traceability
+- [08-01]: reqPattern defined locally in create_pr_summary.go — reqLabelPattern is in cli package, avoid cross-package coupling
+- [08-01]: advance_phase reuses phaseNumFromMeta from execute_wave.go (same mcp package) — no duplication needed
+- [08-01]: CompletedPhases populated in existing phase bead loop in get_status — single QueryByLabel, zero extra graph I/O
+- [08-01]: NextPhase uses pre-queried phases list after ClosePlan — avoids extra QueryByLabel call post-close
 
 ### Pending Todos
 
@@ -123,6 +127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 7 Plan 03 complete)
-Stopped at: Phase 7 Plan 03 complete — /gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands. Phase 7 fully complete.
+Last session: 2026-03-21 (Phase 8 Plan 01 complete)
+Stopped at: Phase 8 Plan 01 complete — create_pr_summary (tool 16) + advance_phase (tool 17) + get_status completed_phases enrichment. 17 MCP tools registered.
 Resume file: None
