@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: MCP Server** - MCP server with lazy Dolt init and tool registration
 - [x] **Phase 4: Hook Integration** - All four Claude Code hooks with state persistence
 - [x] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
-- [ ] **Phase 6: Research + Planning** - Research agents coordinating as beads, plan creation with dependencies
+- [x] **Phase 6: Research + Planning** - Research agents coordinating as beads, plan creation with dependencies
 - [ ] **Phase 7: Execution + Verification** - Wave-based parallel execution and post-execution verification
 - [ ] **Phase 8: Ship + Status** - PR creation, phase advancement, and project status from graph
 - [ ] **Phase 9: Token-Aware Context** - Hot/warm/cold tiering, budget tracking, context injection
@@ -119,7 +119,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — run_research + synthesize_research MCP tools, research CLI subcommand, /gsd-wired:research SKILL.md
-- [ ] 06-02-PLAN.md — create_plan_beads MCP tool, plan CLI subcommand, /gsd-wired:plan SKILL.md with inline checker
+- [x] 06-02-PLAN.md — create_plan_beads MCP tool, plan CLI subcommand, /gsd-wired:plan SKILL.md with inline checker
 
 ### Phase 7: Execution + Verification
 **Goal**: Users can execute waves of parallel tasks and verify phase completion against success criteria
