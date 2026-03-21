@@ -84,7 +84,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Extended hook types, hookState lazy init, SessionStart handler with context loading
+- [x] 04-01-PLAN.md — Extended hook types, hookState lazy init, SessionStart handler with context loading
 - [ ] 04-02-PLAN.md — PreCompact atomic buffer, PreToolUse context injection, PostToolUse event recording
 
 ### Phase 5: Project Initialization

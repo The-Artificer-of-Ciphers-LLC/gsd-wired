@@ -13,7 +13,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **INFRA-02**: MCP server exposes tools via official Go SDK (v1.4.1) with lazy Dolt initialization
 - [x] **INFRA-03**: bd CLI wrapper layer shells out to `bd --json` for all graph operations
 - [x] **INFRA-04**: Plugin manifest (.claude-plugin/plugin.json) registers MCP server, hooks, and slash commands
-- [ ] **INFRA-05**: SessionStart hook loads active project state from beads graph into context
+- [x] **INFRA-05**: SessionStart hook loads active project state from beads graph into context
 - [ ] **INFRA-06**: PreCompact hook saves in-progress work state to beads (two-stage: fast local write, async Dolt commit)
 - [ ] **INFRA-07**: PreToolUse hook injects relevant bead context before tool execution
 - [ ] **INFRA-08**: PostToolUse hook updates bead state after tool execution (progress, status changes)
@@ -138,7 +138,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-02 | Phase 3 | Pending |
 | INFRA-03 | Phase 2 | Complete |
 | INFRA-04 | Phase 1 | Pending |
-| INFRA-05 | Phase 4 | Pending |
+| INFRA-05 | Phase 4 | Complete |
 | INFRA-06 | Phase 4 | Pending |
 | INFRA-07 | Phase 4 | Pending |
 | INFRA-08 | Phase 4 | Pending |

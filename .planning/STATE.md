@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 3 of 10 (MCP Server)
-Plan: 2 of 2 in current phase (phase complete)
-Status: Phase 3 complete — ready for Phase 4
-Last activity: 2026-03-21 -- Phase 3 Plan 02 complete (8 MCP tools registered, Serve() wired, 14 mcp tests)
+Phase: 4 of 10 (Hook Integration)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-21 -- Phase 4 Plan 01 complete (hook type system + SessionStart handler)
 
-Progress: [██████░░░░] 30%
+Progress: [███████░░░] 35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 5 min
-- Total execution time: 0.47 hours
+- Total execution time: 0.55 hours
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [██████░░░░] 30%
 | 1. Binary Scaffold | 2 | 14 min | 7 min |
 | 2. Graph Primitives | 2 | 6 min | 3 min |
 | 3. MCP Server | 2 | 11 min | 5.5 min |
+| 4. Hook Integration | 1 (of 2) | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min, 9 min, 4 min, 4 min, 7 min
+- Last 5 plans: 9 min, 4 min, 4 min, 7 min, 5 min
 - Trend: stable
 
 *Updated after each plan completion*
@@ -69,6 +70,10 @@ Recent decisions affecting current work:
 - [03-02]: NewInMemoryTransports for tool handler tests — faster than subprocess, avoids bd dependency for protocol-level tests
 - [03-02]: toolError/toolResult helpers — consistent IsError=true pattern, eliminates repeated Content slice construction
 - [03-02]: closeResult struct — explicit JSON shape for wave-awareness (who gets unblocked when a plan closes)
+- [04-01]: hookState validates bdPath existence on init (os.Stat) so init() returns error immediately rather than deferring to first graph call
+- [04-01]: buildSessionContext always returns string, never error — partial context better than nothing, errors logged to slog.Warn
+- [04-01]: handleSessionStart sets hs.beadsDir from input.CWD before init() — CWD drives the beads directory for hook context
+- [04-01]: Dispatcher creates fresh hookState per invocation — hooks are short-lived, no state reuse needed
 
 ### Pending Todos
 
@@ -81,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 3 Plan 02)
-Stopped at: Phase 3 Plan 02 complete — 8 MCP tools registered, Serve() wired, 14 mcp tests pass. Phase 3 complete. Ready for Phase 4 (Hook Dispatcher).
+Last session: 2026-03-21 (Phase 4 Plan 01)
+Stopped at: Phase 4 Plan 01 complete — per-event hook types, hookState, SessionStart handler, dispatcher routing. 28 hook tests pass. Ready for Phase 4 Plan 02 (PreCompact, PreToolUse, PostToolUse handlers).
 Resume file: None
