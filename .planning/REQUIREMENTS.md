@@ -12,7 +12,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **INFRA-01**: Single Go binary serves as MCP server (stdio), hook dispatcher (subcommand), and CLI tool
 - [ ] **INFRA-02**: MCP server exposes tools via official Go SDK (v1.4.1) with lazy Dolt initialization
 - [ ] **INFRA-03**: bd CLI wrapper layer shells out to `bd --json` for all graph operations
-- [ ] **INFRA-04**: Plugin manifest (.claude-plugin/plugin.json) registers MCP server, hooks, and slash commands
+- [x] **INFRA-04**: Plugin manifest (.claude-plugin/plugin.json) registers MCP server, hooks, and slash commands
 - [ ] **INFRA-05**: SessionStart hook loads active project state from beads graph into context
 - [ ] **INFRA-06**: PreCompact hook saves in-progress work state to beads (two-stage: fast local write, async Dolt commit)
 - [ ] **INFRA-07**: PreToolUse hook injects relevant bead context before tool execution
