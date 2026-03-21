@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Hook Integration** - All four Claude Code hooks with state persistence
 - [x] **Phase 5: Project Initialization** - Init slash command with deep questioning flow producing beads
 - [x] **Phase 6: Research + Planning** - Research agents coordinating as beads, plan creation with dependencies
-- [ ] **Phase 7: Execution + Verification** - Wave-based parallel execution and post-execution verification
+- [x] **Phase 7: Execution + Verification** - Wave-based parallel execution and post-execution verification
 - [ ] **Phase 8: Ship + Status** - PR creation, phase advancement, and project status from graph
 - [ ] **Phase 9: Token-Aware Context** - Hot/warm/cold tiering, budget tracking, context injection
 - [ ] **Phase 10: Coexistence** - .planning/ fallback reading and gradual adoption path
@@ -138,7 +138,7 @@ Plans:
 Plans:
 - [x] 07-01-PLAN.md — execute_wave + verify_phase MCP tools (tools 14-15), fake_bd extension, tool count update to 15
 - [x] 07-02-PLAN.md — gsdw execute and gsdw verify CLI stubs with root.go wiring
-- [ ] 07-03-PLAN.md — /gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands
+- [x] 07-03-PLAN.md — /gsd-wired:execute, /gsd-wired:verify, /gsd-wired:ready SKILL.md slash commands
 
 ### Phase 8: Ship + Status
 **Goal**: Users can ship completed phases as PRs and view project state from the beads graph

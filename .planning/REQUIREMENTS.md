@@ -57,8 +57,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **EXEC-02**: Each execution subagent claims a task bead and receives only that bead's context chain
 - [x] **EXEC-03**: Subagent context includes: task description, success criteria, parent epic summary, dependency bead summaries
 - [x] **EXEC-04**: On task completion, subagent closes bead with results, triggering next wave
-- [ ] **EXEC-05**: Atomic git commits per completed task with bead ID in commit message
-- [ ] **EXEC-06**: Agent output validated at orchestrator before downstream consumption (error amplification prevention)
+- [x] **EXEC-05**: Atomic git commits per completed task with bead ID in commit message
+- [x] **EXEC-06**: Agent output validated at orchestrator before downstream consumption (error amplification prevention)
 
 ### Verification Phase
 
@@ -88,7 +88,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CMD-04**: `/gsd-wired:execute` — Execute current wave of unblocked tasks
 - [x] **CMD-05**: `/gsd-wired:verify` — Verify phase against success criteria
 - [ ] **CMD-06**: `/gsd-wired:ship` — Create PR and advance to next phase
-- [ ] **CMD-07**: `/gsd-wired:ready` — Show unblocked tasks (next wave)
+- [x] **CMD-07**: `/gsd-wired:ready` — Show unblocked tasks (next wave)
 
 ### Coexistence
 
@@ -167,8 +167,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXEC-02 | Phase 7 | Complete |
 | EXEC-03 | Phase 7 | Complete |
 | EXEC-04 | Phase 7 | Complete |
-| EXEC-05 | Phase 7 | Pending |
-| EXEC-06 | Phase 7 | Pending |
+| EXEC-05 | Phase 7 | Complete |
+| EXEC-06 | Phase 7 | Complete |
 | VRFY-01 | Phase 7 | Complete |
 | VRFY-02 | Phase 7 | Complete |
 | VRFY-03 | Phase 7 | Complete |
@@ -186,7 +186,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CMD-04 | Phase 7 | Pending |
 | CMD-05 | Phase 7 | Pending |
 | CMD-06 | Phase 8 | Pending |
-| CMD-07 | Phase 7 | Pending |
+| CMD-07 | Phase 7 | Complete |
 | COMPAT-01 | Phase 10 | Pending |
 | COMPAT-02 | Phase 10 | Pending |
 | COMPAT-03 | Phase 10 | Pending |
