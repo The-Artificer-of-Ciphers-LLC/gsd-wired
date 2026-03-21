@@ -1,0 +1,8 @@
+{
+  "name": "gsd-wired",
+  "version": "0.1.0",
+  "description": "Token-efficient development lifecycle on a versioned graph",
+  "author": {
+    "name": "The Artificer of Ciphers LLC"
+  }
+}
