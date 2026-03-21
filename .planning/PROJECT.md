@@ -45,6 +45,10 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] Verification against success criteria via verify_phase (VRFY-01, VRFY-02) — Phase 7
 - [x] Failed criteria produce remediation task beads (VRFY-03) — Phase 7
 - [x] /gsd-wired:execute, :verify, :ready slash commands (CMD-04, CMD-05, CMD-07) — Phase 7
+- [x] PR creation with bead-sourced summary (SHIP-01) — Phase 8
+- [x] Phase completion updates bead state, triggers next phase (SHIP-02) — Phase 8
+- [x] /gsd-wired:status shows state from beads graph (CMD-02) — Phase 8
+- [x] /gsd-wired:ship slash command (CMD-06) — Phase 8
 
 ### Active
 
@@ -125,4 +129,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 7 completion*
+*Last updated: 2026-03-21 after Phase 8 completion*
