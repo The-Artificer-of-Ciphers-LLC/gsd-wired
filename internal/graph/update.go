@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 )
 
 // ClaimBead atomically claims a bead for the current user.
@@ -51,6 +52,14 @@ func (c *Client) ClosePlan(ctx context.Context, beadID, reason string) (*Bead, [
 	}
 	if len(closed) == 0 {
 		return nil, nil, fmt.Errorf("bd close returned empty response")
+	}
+
+	// Step 2b: Compact the closed bead (best-effort, D-12).
+	// Only compact closed beads (guard: we just closed it above).
+	// Per Research Pattern 5: compaction is a write-time operation triggered on close.
+	summary := compactSummary(&closed[0])
+	if _, err := c.CompactBead(ctx, beadID, summary); err != nil {
+		slog.Warn("ClosePlan: compaction failed (best-effort)", "bead_id", beadID, "err", err)
 	}
 
 	// Step 3: Snapshot ready beads after close; diff gives newly unblocked.
