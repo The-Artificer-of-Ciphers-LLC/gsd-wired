@@ -117,6 +117,14 @@ func main() {
 		os.Exit(0)
 
 	case "query":
+		// Check if FAKE_BD_QUERY_TIERED_RESPONSE env var is set — used for QueryTiered tests.
+		if tieredFile := os.Getenv("FAKE_BD_QUERY_TIERED_RESPONSE"); tieredFile != "" {
+			data, err := os.ReadFile(tieredFile)
+			if err == nil {
+				fmt.Print(string(data))
+				os.Exit(0)
+			}
+		}
 		// Check if querying by label.
 		for i, a := range args {
 			if a == "label=gsd:phase" || (i > 0 && args[i-1] == "label" && a == "gsd:phase") {
