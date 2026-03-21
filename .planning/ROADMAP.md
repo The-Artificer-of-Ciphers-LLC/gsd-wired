@@ -115,12 +115,11 @@ Plans:
   4. `/gsd-wired:plan` decomposes a phase epic into task beads with dependency relationships
   5. Each task bead has success criteria, estimated complexity, and file touch list
   6. Plan checker agent validates the plan achieves the phase goal before execution begins
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
+- [ ] 06-01-PLAN.md — run_research + synthesize_research MCP tools, research CLI subcommand, /gsd-wired:research SKILL.md
+- [ ] 06-02-PLAN.md — create_plan_beads MCP tool, plan CLI subcommand, /gsd-wired:plan SKILL.md with inline checker
 
 ### Phase 7: Execution + Verification
 **Goal**: Users can execute waves of parallel tasks and verify phase completion against success criteria
@@ -199,7 +198,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 3. MCP Server | 2/2 | Complete | 2026-03-21 |
 | 4. Hook Integration | 0/2 | Not started | - |
 | 5. Project Initialization | 2/2 | Complete | 2026-03-21 |
-| 6. Research + Planning | 0/TBD | Not started | - |
+| 6. Research + Planning | 0/2 | Not started | - |
 | 7. Execution + Verification | 0/TBD | Not started | - |
 | 8. Ship + Status | 0/TBD | Not started | - |
 | 9. Token-Aware Context | 0/TBD | Not started | - |
