@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 1 of 10 (Binary Scaffold)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-21 -- Roadmap created with 10 phases covering 56 requirements
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-21 -- Plan 01 complete (Go binary scaffold, TDD, all 11 tests pass)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 5%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 5 min
+- Total execution time: 0.08 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1. Binary Scaffold | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: -
+- Last 5 plans: 5 min
 - Trend: -
 
 *Updated after each plan completion*
@@ -45,6 +45,10 @@ Recent decisions affecting current work:
 - [Roadmap]: 10 phases derived from 56 requirements at fine granularity
 - [Roadmap]: Phases 9 and 10 can run in parallel (independent dependencies)
 - [Roadmap]: bd CLI wrapping for v1, direct Go import is Phase 6/optimization path
+- [01-01]: go-sdk v1.4.1 used as official MCP library — authoritative, Google co-maintained
+- [01-01]: runtime/debug.ReadBuildInfo() for version hash — works with go install, no ldflags required
+- [01-01]: Injected io.Reader/io.Writer in hook.Dispatch() — testable without os pipe mocking
+- [01-01]: Pre-logger slog default in main() before Execute() — prevents stdout pollution
 
 ### Pending Todos
 
@@ -52,11 +56,11 @@ None yet.
 
 ### Blockers/Concerns
 
-- bd and dolt binaries not currently on PATH -- must be installed before Phase 1 execution
-- Go 1.25.x must match Beads' Go version for import compatibility
+- bd is confirmed on PATH at ~/.local/bin/bd (blocker resolved in practice)
+- Go 1.26.1 installed at /opt/homebrew/bin/go (satisfies go-sdk v1.4.1 requirement of Go 1.25+)
 
 ## Session Continuity
 
 Last session: 2026-03-21
-Stopped at: Roadmap created, ready to plan Phase 1
+Stopped at: Completed 01-01-PLAN.md — Go binary scaffold with all four subcommands
 Resume file: None

@@ -37,7 +37,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Go binary skeleton: Cobra CLI, slog logging, MCP serve, hook dispatcher, bd passthrough
+- [x] 01-01-PLAN.md — Go binary skeleton: Cobra CLI, slog logging, MCP serve, hook dispatcher, bd passthrough
 - [ ] 01-02-PLAN.md — Plugin registration files and integration test suite
 
 ### Phase 2: Graph Primitives
@@ -193,7 +193,7 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Binary Scaffold | 0/2 | Not started | - |
+| 1. Binary Scaffold | 1/2 | In progress | - |
 | 2. Graph Primitives | 0/TBD | Not started | - |
 | 3. MCP Server | 0/TBD | Not started | - |
 | 4. Hook Integration | 0/TBD | Not started | - |
