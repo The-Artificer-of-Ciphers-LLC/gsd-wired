@@ -34,7 +34,7 @@ type closeResult struct {
 	Unblocked []graph.Bead `json:"unblocked"`
 }
 
-// registerTools registers all 8 GSD MCP tools on the server.
+// registerTools registers all 10 GSD MCP tools on the server.
 // Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
 // Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
 func registerTools(server *mcpsdk.Server, state *serverState) {
@@ -211,5 +211,27 @@ func registerTools(server *mcpsdk.Server, state *serverState) {
 			return toolError(err.Error()), nil
 		}
 		return toolResult(map[string]string{"status": "flushed"})
+	})
+
+	// init_project — Initializes a new gsd-wired project with bead creation and file writing.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "init_project",
+		Description: "Initialize a new gsd-wired project: runs bd init if needed, creates project epic bead + context beads, writes PROJECT.md and .gsdw/config.json.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"project_name":{"type":"string","description":"Project name"},"what":{"type":"string","description":"What the project builds"},"why":{"type":"string","description":"Why it exists"},"who":{"type":"string","description":"Target users"},"done_criteria":{"type":"string","description":"What done looks like"},"tech_stack":{"type":"string","description":"Technology stack"},"constraints":{"type":"string","description":"Project constraints"},"risks":{"type":"string","description":"Known risks"},"mode":{"type":"string","enum":["full","quick","pr"],"description":"Init mode: full (all questions), quick (essentials), pr (import from PR/issue)"},"pr_url":{"type":"string","description":"PR or issue URL for pr mode"}},"required":["project_name","what","why","done_criteria","mode"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		var args initProjectArgs
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		return handleInitProject(ctx, state, args)
+	})
+
+	// get_status — Returns current project status from the beads graph.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "get_status",
+		Description: "Returns current project status from beads graph: project name, current phase, ready tasks, phase counts.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{},"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		return handleGetStatus(ctx, state)
 	})
 }
