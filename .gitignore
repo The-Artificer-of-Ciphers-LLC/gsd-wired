@@ -8,3 +8,6 @@
 
 # OS files
 .DS_Store
+
+# GSD-wired local index and state (created at runtime, not committed)
+/.gsdw/
