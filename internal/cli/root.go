@@ -28,7 +28,7 @@ func NewRootCmd() *cobra.Command {
 	root.PersistentFlags().StringVar(&logLevel, "log-level", "error", "Log level (error|info|debug)")
 	root.PersistentFlags().StringVar(&logFormat, "log-format", "text", "Log format (text|json)")
 
-	root.AddCommand(NewVersionCmd(), NewServeCmd(), NewHookCmd(), NewBdCmd(), NewReadyCmd(), NewInitCmd(), NewStatusCmd())
+	root.AddCommand(NewVersionCmd(), NewServeCmd(), NewHookCmd(), NewBdCmd(), NewReadyCmd(), NewInitCmd(), NewStatusCmd(), NewResearchCmd())
 
 	return root
 }
