@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -167,8 +168,14 @@ func TestServeRespondesToInitialize(t *testing.T) {
 		t.Fatalf("create stdin pipe: %v", err)
 	}
 
-	var stdoutBuf, stderrBuf bytes.Buffer
-	cmd.Stdout = &stdoutBuf
+	// Use StdoutPipe to avoid the race between the exec goroutine writing to
+	// bytes.Buffer and the test goroutine reading from it concurrently.
+	stdoutPipe, err := cmd.StdoutPipe()
+	if err != nil {
+		t.Fatalf("create stdout pipe: %v", err)
+	}
+
+	var stderrBuf bytes.Buffer
 	cmd.Stderr = &stderrBuf
 
 	if err := cmd.Start(); err != nil {
@@ -180,22 +187,32 @@ func TestServeRespondesToInitialize(t *testing.T) {
 		t.Fatalf("write initialize request: %v", err)
 	}
 
-	// Wait for a response line to appear (poll with timeout)
-	deadline := time.Now().Add(8 * time.Second)
-	var responseLine string
-	for time.Now().Before(deadline) {
-		data := stdoutBuf.Bytes()
-		if idx := bytes.IndexByte(data, '\n'); idx >= 0 {
-			responseLine = string(data[:idx])
-			break
+	// Read the first response line from the server via a goroutine with a channel
+	// so we can apply a timeout without a race.
+	lineCh := make(chan string, 1)
+	go func() {
+		scanner := bufio.NewScanner(stdoutPipe)
+		if scanner.Scan() {
+			lineCh <- scanner.Text()
+		} else {
+			lineCh <- ""
 		}
-		time.Sleep(50 * time.Millisecond)
+	}()
+
+	var responseLine string
+	select {
+	case line := <-lineCh:
+		responseLine = line
+	case <-time.After(8 * time.Second):
+		stdinPipe.Close()
+		cmd.Wait()
+		t.Fatalf("no response line from gsdw serve within timeout\nstderr: %s", stderrBuf.String())
 	}
 
 	if responseLine == "" {
 		stdinPipe.Close()
 		cmd.Wait()
-		t.Fatalf("no response line from gsdw serve within timeout\nstderr: %s", stderrBuf.String())
+		t.Fatalf("empty response line from gsdw serve\nstderr: %s", stderrBuf.String())
 	}
 
 	// Validate the response is JSON-RPC 2.0
