@@ -33,6 +33,12 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] PROJECT.md and config.json created as human-readable files (INIT-04) — Phase 5
 - [x] bd init creates .beads/ with Dolt-backed storage (INIT-05) — Phase 5
 - [x] /gsd-wired:init slash command registered via skills/ (CMD-01) — Phase 5
+- [x] Research creates epic + 4 child beads coordinated by agents (RSRCH-01, RSRCH-02) — Phase 6
+- [x] Research results stored in beads, synthesizer produces summary (RSRCH-03, RSRCH-04) — Phase 6
+- [x] /gsd-wired:plan decomposes phase into task beads with dependencies (PLAN-01, PLAN-02) — Phase 6
+- [x] Task beads have success criteria, complexity, file touch list (PLAN-03) — Phase 6
+- [x] Plan checker validates coverage before execution (PLAN-04) — Phase 6
+- [x] /gsd-wired:plan slash command registered via skills/ (CMD-03) — Phase 6
 
 ### Active
 
@@ -113,4 +119,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 5 completion*
+*Last updated: 2026-03-21 after Phase 6 completion*
