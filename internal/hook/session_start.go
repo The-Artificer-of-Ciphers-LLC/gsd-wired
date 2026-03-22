@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/compat"
 	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
 )
 
@@ -102,6 +103,15 @@ func handleSessionStart(ctx context.Context, raw json.RawMessage, hs *hookState,
 	// Fast path: check if .beads/ exists at the CWD.
 	beadsPath := filepath.Join(input.CWD, ".beads")
 	if _, err := os.Stat(beadsPath); os.IsNotExist(err) {
+		// .beads/ absent — check for .planning/ fallback (COMPAT-01, D-10).
+		if compat.DetectPlanning(input.CWD) {
+			fb, fbErr := compat.BuildFallbackStatus(input.CWD)
+			if fbErr == nil {
+				ctx := formatFallbackContext(fb)
+				return writeOutput(w, HookOutput{AdditionalContext: ctx})
+			}
+			slog.Warn("sessionStart: .planning/ fallback failed", "err", fbErr)
+		}
 		hint := "gsd-wired: No .beads/ directory found. Run /gsd-wired:init to initialize."
 		return writeOutput(w, HookOutput{AdditionalContext: hint})
 	}
@@ -221,6 +231,47 @@ func phaseNumAsFloat(v any) (float64, bool) {
 		return float64(n), true
 	}
 	return 0, false
+}
+
+// formatFallbackContext formats a FallbackStatus (from .planning/) into a markdown string
+// suitable for additionalContext in SessionStart. Prepends the compatibility mode indicator
+// per D-01. Only reads — never writes to .planning/ (D-09, COMPAT-03).
+func formatFallbackContext(fb compat.FallbackStatus) string {
+	var sb strings.Builder
+	sb.WriteString("gsd-wired: Running in .planning/ compatibility mode\n\n")
+	sb.WriteString("## GSD Project State (.planning/ mode)\n\n")
+
+	if fb.ProjectName != "" {
+		sb.WriteString(fmt.Sprintf("**Project:** %s\n", fb.ProjectName))
+	}
+	if fb.CoreValue != "" {
+		sb.WriteString(fmt.Sprintf("**Core Value:** %s\n", fb.CoreValue))
+	}
+
+	s := fb.State
+	if s.CurrentPhase > 0 {
+		progress := s.Progress
+		if progress == "" {
+			progress = "(unknown)"
+		}
+		sb.WriteString(fmt.Sprintf("**Current Phase:** %d — %s\n", s.CurrentPhase, progress))
+	}
+	if s.CurrentPlan > 0 && s.TotalPlans > 0 {
+		sb.WriteString(fmt.Sprintf("**Plan:** %d of %d\n", s.CurrentPlan, s.TotalPlans))
+	}
+
+	if len(fb.Phases) > 0 {
+		sb.WriteString("\n### Phases\n")
+		for _, p := range fb.Phases {
+			check := "[ ]"
+			if p.Complete {
+				check = "[x]"
+			}
+			sb.WriteString(fmt.Sprintf("- %s Phase %d: %s\n", check, p.Number, p.Name))
+		}
+	}
+
+	return sb.String()
 }
 
 // formatSessionContext builds the markdown string from phase and ready task data.
