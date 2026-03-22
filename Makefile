@@ -19,7 +19,7 @@ test:
 ##        MACOS_SIGN_PASSWORD   — the .p12 export password you set when exporting
 ##        MACOS_NOTARY_ISSUER_ID — Issuer ID from App Store Connect
 ##        MACOS_NOTARY_KEY_ID   — Key ID from App Store Connect
-##        MACOS_NOTARY_KEY      — base64-encoded .p8:  base64 -i ~/.private_keys/AuthKey_XXXXX.p8
+##        MACOS_NOTARY_KEY      — base64-encoded .p8:  base64 -i ~/.private_keys/AuthKey_2H33PL2R8M.p8
 ##
 ## Usage:
 ##   make release-mac                    # full signed release (pushes to GitHub + updates brew tap)
