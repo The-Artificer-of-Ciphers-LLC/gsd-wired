@@ -11,3 +11,6 @@
 
 # GSD-wired local index and state (created at runtime, not committed)
 /.gsdw/
+
+# GoReleaser
+/dist/

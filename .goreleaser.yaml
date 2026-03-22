@@ -1,0 +1,114 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: gsdw
+    binary: gsdw
+    main: ./cmd/gsdw
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/version.version={{.Version}}
+      - -X github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/version.commit={{.Commit}}
+      - -X github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/version.date={{.Date}}
+
+archives:
+  - id: gsdw
+    builds: [gsdw]
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+signs:
+  - artifacts: checksum
+    cmd: gpg
+    args: ["--batch", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
+    stdin: "{{ .Env.GPG_PASSWORD }}"
+
+notarize:
+  macos:
+    - sign:
+        certificate: "{{.Env.MACOS_SIGN_P12}}"
+        password: "{{.Env.MACOS_SIGN_PASSWORD}}"
+      notarize:
+        issuer_id: "{{.Env.MACOS_NOTARY_ISSUER_ID}}"
+        key_id: "{{.Env.MACOS_NOTARY_KEY_ID}}"
+        key: "{{.Env.MACOS_NOTARY_KEY}}"
+        wait: true
+        timeout: 10m
+
+homebrew_casks:
+  - name: gsdw-cc
+    repository:
+      owner: The-Artificer-of-Ciphers-LLC
+      name: homebrew-gsdw
+      branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    homepage: "https://github.com/The-Artificer-of-Ciphers-LLC/gsd-wired"
+    description: "GSD + Beads/Dolt workflow orchestration for Claude Code"
+    license: "MIT"
+    skip_upload: auto
+    postinstall: |
+      system_command "/usr/bin/xattr",
+        args: ["-dr", "com.apple.quarantine", "#{staged_path}"]
+
+dockers:
+  - id: gsdw
+    ids: [gsdw]
+    dockerfile: Dockerfile.container
+    image_templates:
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title=gsdw"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/amd64"
+    extra_files:
+      - Dockerfile.container
+  - id: gsdw-arm64
+    ids: [gsdw]
+    dockerfile: Dockerfile.container
+    image_templates:
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+    extra_files:
+      - Dockerfile.container
+
+docker_manifests:
+  - name_template: "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
+    image_templates:
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
+  - name_template: "ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest"
+    image_templates:
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
