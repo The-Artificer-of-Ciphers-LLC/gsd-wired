@@ -73,12 +73,11 @@ homebrew_casks:
     skip_upload: auto
 
 dockers:
-  - id: gsdw
+  - id: gsdw-amd64
     ids: [gsdw]
     dockerfile: Dockerfile.container
     image_templates:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest"
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-amd64"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
@@ -102,9 +101,9 @@ dockers:
 docker_manifests:
   - name_template: "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
     image_templates:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-amd64"
       - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
   - name_template: "ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest"
     image_templates:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-amd64"
       - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
