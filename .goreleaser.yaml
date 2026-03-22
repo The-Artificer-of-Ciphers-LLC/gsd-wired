@@ -72,9 +72,6 @@ homebrew_casks:
     description: "GSD + Beads/Dolt workflow orchestration for Claude Code"
     license: "MIT"
     skip_upload: auto
-    postinstall: |
-      system_command "/usr/bin/xattr",
-        args: ["-dr", "com.apple.quarantine", "#{staged_path}"]
 
 dockers:
   - id: gsdw
