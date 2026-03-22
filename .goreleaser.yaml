@@ -68,6 +68,7 @@ homebrew_casks:
 dockers:
   - id: gsdw-amd64
     ids: [gsdw]
+    use: docker
     dockerfile: Dockerfile.container
     image_templates:
       - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-amd64"
@@ -82,6 +83,7 @@ dockers:
       - Dockerfile.container
   - id: gsdw-arm64
     ids: [gsdw]
+    use: docker
     dockerfile: Dockerfile.container
     image_templates:
       - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"

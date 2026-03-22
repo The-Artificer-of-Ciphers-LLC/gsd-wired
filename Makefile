@@ -37,7 +37,7 @@ release-mac:
 
 ## release-mac-snapshot: dry run of the macOS release (no publish, no tag required)
 release-mac-snapshot:
-	goreleaser release --snapshot --clean
+	goreleaser release --snapshot --clean --skip=docker
 
 ## help: show this help
 help:
