@@ -42,7 +42,10 @@
   3. Pushing a git tag triggers the GitHub Actions pipeline and publishes binaries for linux/amd64, linux/arm64, darwin/amd64, darwin/arm64 to GitHub Releases
   4. The macOS binary passes Gatekeeper — no "unidentified developer" warning on first launch
   5. `docker pull ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest` succeeds and pulls a multi-arch image
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 11-01-PLAN.md — Version ldflags injection, --json flag, GoReleaser config, Dockerfile
+- [ ] 11-02-PLAN.md — GitHub Actions release workflow, infrastructure verification checkpoint
 
 ### Phase 12: Setup UX
 **Goal**: A developer who just installed gsdw can verify their environment and get guided to a working state in one command
@@ -83,7 +86,7 @@
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v1.0 | 22/22 | Complete | 2026-03-22 |
-| 11. Distribution Infrastructure | v1.0 Install | 0/TBD | Not started | - |
+| 11. Distribution Infrastructure | v1.0 Install | 0/2 | Planning complete | - |
 | 12. Setup UX | v1.0 Install | 0/TBD | Not started | - |
 | 13. Container Support | v1.0 Install | 0/TBD | Not started | - |
 | 14. Connectivity | v1.0 Install | 0/TBD | Not started | - |
