@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 14 — Connectivity
-Plan: 1 of 2 in current phase
+Plan: 2 of 2 in current phase
 Status: Complete
-Last activity: 2026-03-22 -- Plan 14-01 complete: connection config package, env var injection into graph client
+Last activity: 2026-03-22 -- Plan 14-02 complete: gsdw connect wizard, gsdw doctor Connection section, NewConnectCmd wired into root
 
-Progress: [██████░░░░] 65% (Installation Toolkit milestone)
+Progress: [███████░░░] 75% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -172,6 +172,10 @@ Prior v1.0 decisions (preserved for continuity):
 - [14-01]: FAKE_BD_ENV_CAPTURE_FILE added to fake_bd — captures full env map as JSON for hermetic env var verification without running real bd
 - [14-01]: url.QueryEscape used in buildDSN for user/password — safe encoding for special characters in MySQL DSN format
 - [14-01]: classifyTCPError checks both 'no such host' and 'lookup' substrings — covers cross-platform DNS error message variations
+- [14-02]: connectOpts injects detectServerFn and healthCheckFn separately — detectServerFn uses no auth (2s timeout) for auto-detect; healthCheckFn uses GSDW_DB_PASSWORD for authenticated health check
+- [14-02]: readLine helper wraps bufio ReadString+TrimSpace — avoids repeated pattern in wizard branches
+- [14-02]: renderDoctor extended via new parameters not a separate function — keeps single render call site in NewDoctorCmd RunE, nil-safe for existing tests
+- [14-02]: defaultStartContainer uses container.DetectRuntime with empty DetectOpts — real defaults for production path; wizard tests inject startContainerFn directly
 
 ### Pending Todos
 
@@ -185,6 +189,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 14 Plan 01 execution — completed)
-Stopped at: Completed 14-01-PLAN.md. Connection config package (Config struct, Load/Save/CheckConnectivity, two-phase TCP+SQL health check) and graph client env var injection (BEADS_DOLT_SERVER_HOST/PORT). go-sql-driver/mysql v1.9.3 added.
+Last session: 2026-03-22 (Phase 14 Plan 02 execution — completed)
+Stopped at: Completed 14-02-PLAN.md. gsdw connect wizard (auto-detect, container start, remote config, fallback), gsdw doctor Connection section, NewConnectCmd wired into root. Phase 14 complete.
 Resume file: None

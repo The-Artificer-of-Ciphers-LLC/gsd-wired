@@ -28,7 +28,7 @@
 - [ ] **Phase 11: Distribution Infrastructure** — GoReleaser pipeline, brew tap, signed macOS binary, ghcr.io image, `go install`
 - [ ] **Phase 12: Setup UX** — `gsdw check-deps`, `gsdw setup` wizard, `gsdw doctor` health check
 - [x] **Phase 13: Container Support** — Docker/Podman and Apple Container runtime, `gsdw container` subcommand, compose fragment
-- [ ] **Phase 14: Connectivity** — `gsdw connect` wizard, `.gsdw/connection.json`, client.go env var injection, remote fallback
+- [x] **Phase 14: Connectivity** — `gsdw connect` wizard, `.gsdw/connection.json`, client.go env var injection, remote fallback
 
 ## Phase Details
 
@@ -98,7 +98,7 @@ Plans:
 | 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
 | 12. Setup UX | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 | 13. Container Support | v1.0 Install | 2/2 | Complete | 2026-03-22 |
-| 14. Connectivity | v1.0 Install | 1/2 | Executing | - |
+| 14. Connectivity | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 
 ---
 
