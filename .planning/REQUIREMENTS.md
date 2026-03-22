@@ -28,11 +28,11 @@ Requirements for v1.0 release — installation toolkit and distribution packagin
 
 - [ ] **CNTR-01**: `gsdw container start` launches Dolt server container via detected runtime (Docker, Podman, or Apple Container)
 - [ ] **CNTR-02**: `gsdw container stop` cleanly stops the Dolt container
-- [ ] **CNTR-03**: Docker/Podman support using `dolthub/dolt-sql-server` image with port 3307 mapping
-- [ ] **CNTR-04**: Drop-in `gsdw.compose.yaml` fragment that merges with existing docker-compose via `-f` flag (never modifies user's files)
-- [ ] **CNTR-05**: Apple Container support gated on macOS 26 + Apple Silicon detection
-- [ ] **CNTR-06**: Container runtime auto-detection priority: Apple Container (if macOS 26) → Docker → Podman
-- [ ] **CNTR-07**: Data volume persistence: host `.beads/dolt/` mounted into container
+- [x] **CNTR-03**: Docker/Podman support using `dolthub/dolt-sql-server` image with port 3307 mapping
+- [x] **CNTR-04**: Drop-in `gsdw.compose.yaml` fragment that merges with existing docker-compose via `-f` flag (never modifies user's files)
+- [x] **CNTR-05**: Apple Container support gated on macOS 26 + Apple Silicon detection
+- [x] **CNTR-06**: Container runtime auto-detection priority: Apple Container (if macOS 26) → Docker → Podman
+- [x] **CNTR-07**: Data volume persistence: host `.beads/dolt/` mounted into container
 
 ### Connectivity
 
@@ -88,11 +88,11 @@ Which phases cover which requirements.
 | SETUP-05 | Phase 12 | Complete (12-02) |
 | CNTR-01 | Phase 13 | Pending |
 | CNTR-02 | Phase 13 | Pending |
-| CNTR-03 | Phase 13 | Pending |
-| CNTR-04 | Phase 13 | Pending |
-| CNTR-05 | Phase 13 | Pending |
-| CNTR-06 | Phase 13 | Pending |
-| CNTR-07 | Phase 13 | Pending |
+| CNTR-03 | Phase 13 | Complete (13-01) |
+| CNTR-04 | Phase 13 | Complete (13-01) |
+| CNTR-05 | Phase 13 | Complete (13-01) |
+| CNTR-06 | Phase 13 | Complete (13-01) |
+| CNTR-07 | Phase 13 | Complete (13-01) |
 | CONN-01 | Phase 14 | Pending |
 | CONN-02 | Phase 14 | Pending |
 | CONN-03 | Phase 14 | Pending |

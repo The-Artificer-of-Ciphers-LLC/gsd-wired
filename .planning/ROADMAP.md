@@ -73,7 +73,7 @@ Plans:
   5. On macOS 15 or older, attempting Apple Container produces a clear error directing the developer to Docker or Podman
 **Plans:** 2 plans
 Plans:
-- [ ] 13-01-PLAN.md — Runtime abstraction (Runtime interface, Docker/Podman/Apple Container implementations, DetectRuntime, compose fragment writer)
+- [x] 13-01-PLAN.md — Runtime abstraction (Runtime interface, Docker/Podman/Apple Container implementations, DetectRuntime, compose fragment writer)
 - [ ] 13-02-PLAN.md — CLI subcommands (gsdw container start/stop with pre-flight checks, wired into root)
 
 ### Phase 14: Connectivity

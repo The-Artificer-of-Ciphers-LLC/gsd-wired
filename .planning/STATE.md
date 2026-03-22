@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** v1.0 Installation Toolkit — Phase 12: Setup UX
+**Current focus:** v1.0 Installation Toolkit — Phase 13: Container Support
 
 ## Current Position
 
-Phase: 12 — Setup UX
-Plan: 2 of 2 in current phase
-Status: Complete
-Last activity: 2026-03-22 -- Phase 12 Plan 02 complete (gsdw setup interactive wizard)
+Phase: 13 — Container Support
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-22 -- Plan 13-01 complete: container runtime abstraction + compose fragment writer
 
-Progress: [████░░░░░░] 40% (Installation Toolkit milestone)
+Progress: [████░░░░░░] 45% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -160,6 +160,10 @@ Prior v1.0 decisions (preserved for continuity):
 - [12-02]: brewAvailable passed as bool parameter to runSetup — testable without PATH manipulation
 - [12-02]: numbered menu options built dynamically (brew first if available, then go install, then download) — order deterministic
 - [12-02]: printNextSteps extracted as separate function — both all-OK and missing-dep paths share same guidance block
+- [13-01]: DetectOpts with function fields (LookPath, MacOSVersion, Arch) for hermetic runtime detection tests — consistent with 12-01 PATH isolation pattern
+- [13-01]: GSDW_MOCK_MACOS_MAJOR env var injection in isMacOS26OrNewer() — keeps deps package API stable without injectable opts struct
+- [13-01]: Podman uses 0.0.0.0 port binding (not 127.0.0.1) — required for macOS per research Pitfall 6
+- [13-01]: AppleContainerRuntime.StartArgs omits DOLT_ROOT_HOST env var — Apple Container handles env differently
 
 ### Pending Todos
 
@@ -173,6 +177,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 12 Plan 02 execution — completed)
-Stopped at: Completed 12-02-PLAN.md. gsdw setup interactive wizard implemented and tested. Phase 12 complete.
+Last session: 2026-03-22 (Phase 13 Plan 01 execution — completed)
+Stopped at: Completed 13-01-PLAN.md. Container runtime abstraction layer (Runtime interface, DockerRuntime, PodmanRuntime, AppleContainerRuntime), compose fragment writer, and Apple Container priority in deps.CheckAll implemented and tested.
 Resume file: None
