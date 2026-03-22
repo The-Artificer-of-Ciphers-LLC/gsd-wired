@@ -1,0 +1,110 @@
+# Requirements: gsd-wired (Installation Toolkit)
+
+**Defined:** 2026-03-22
+**Core Value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
+
+## v1 Requirements
+
+Requirements for v1.0 release — installation toolkit and distribution packaging.
+
+### Distribution
+
+- [ ] **DIST-01**: Cross-platform binaries built via GoReleaser (linux/mac, arm64/amd64) published to GitHub Releases
+- [ ] **DIST-02**: Homebrew cask via tap repo (`brew install The-Artificer-of-Ciphers-LLC/tap/gsdw`)
+- [ ] **DIST-03**: macOS binary signed and notarized with ADC (no App Store) — Gatekeeper approved
+- [ ] **DIST-04**: Container image for gsdw published to ghcr.io with multi-arch support
+- [ ] **DIST-05**: `go install github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/cmd/gsdw@latest` works cleanly (CGO_ENABLED=0)
+- [ ] **DIST-06**: GitHub Actions CI/CD pipeline triggers GoReleaser on tag push
+
+### Setup UX
+
+- [ ] **SETUP-01**: `gsdw setup` interactive wizard guides developer through full installation (deps, container runtime, connection)
+- [ ] **SETUP-02**: `gsdw check-deps` detects bd, dolt, Go, container runtime with version checks and install instructions
+- [ ] **SETUP-03**: `gsdw doctor` non-destructive health check reports status of all dependencies, containers, and connections
+- [ ] **SETUP-04**: Dependency detection checks `$(go env GOPATH)/bin` in addition to PATH (avoids false negatives)
+- [ ] **SETUP-05**: Setup wizard offers install methods for missing dependencies (brew, go install, binary download)
+
+### Container Support
+
+- [ ] **CNTR-01**: `gsdw container start` launches Dolt server container via detected runtime (Docker, Podman, or Apple Container)
+- [ ] **CNTR-02**: `gsdw container stop` cleanly stops the Dolt container
+- [ ] **CNTR-03**: Docker/Podman support using `dolthub/dolt-sql-server` image with port 3307 mapping
+- [ ] **CNTR-04**: Drop-in `gsdw.compose.yaml` fragment that merges with existing docker-compose via `-f` flag (never modifies user's files)
+- [ ] **CNTR-05**: Apple Container support gated on macOS 26 + Apple Silicon detection
+- [ ] **CNTR-06**: Container runtime auto-detection priority: Apple Container (if macOS 26) → Docker → Podman
+- [ ] **CNTR-07**: Data volume persistence: host `.beads/dolt/` mounted into container
+
+### Connectivity
+
+- [ ] **CONN-01**: `gsdw connect` configures connection to Dolt server (local container or remote host)
+- [ ] **CONN-02**: Connection config stored in `.gsdw/connection.json` (host, port, mode)
+- [ ] **CONN-03**: `internal/graph/client.go` injects `BEADS_DOLT_SERVER_HOST` and `BEADS_DOLT_SERVER_PORT` env vars on every bd exec when container mode is configured
+- [ ] **CONN-04**: Health check confirms Dolt server is reachable before proceeding
+- [ ] **CONN-05**: Remote host connectivity with reachability check and common error troubleshooting
+- [ ] **CONN-06**: Automatic fallback from unreachable remote to local container with developer confirmation
+
+## v2 Requirements
+
+Deferred to future release.
+
+### Advanced Distribution
+
+- **DIST-A01**: Windows binary support via GoReleaser
+- **DIST-A02**: Scoop/Chocolatey package manager support for Windows
+- **DIST-A03**: Linux package managers (apt, dnf, pacman)
+
+### Advanced Container
+
+- **CNTR-A01**: Container health monitoring dashboard in `gsdw doctor`
+- **CNTR-A02**: Container auto-update for Dolt image
+- **CNTR-A03**: Multi-container orchestration (Dolt + backup agent)
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| App Store distribution | ADC signing + notarization sufficient for developer tools |
+| Windows containers | Linux containers via Docker/Podman cover Windows users |
+| Kubernetes deployment | Overkill for single-developer tool; compose is sufficient |
+| Custom Dolt image | Official `dolthub/dolt-sql-server` is maintained and sufficient |
+| GUI installer | CLI-native tool, CLI installation is appropriate |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| DIST-01 | TBD | Pending |
+| DIST-02 | TBD | Pending |
+| DIST-03 | TBD | Pending |
+| DIST-04 | TBD | Pending |
+| DIST-05 | TBD | Pending |
+| DIST-06 | TBD | Pending |
+| SETUP-01 | TBD | Pending |
+| SETUP-02 | TBD | Pending |
+| SETUP-03 | TBD | Pending |
+| SETUP-04 | TBD | Pending |
+| SETUP-05 | TBD | Pending |
+| CNTR-01 | TBD | Pending |
+| CNTR-02 | TBD | Pending |
+| CNTR-03 | TBD | Pending |
+| CNTR-04 | TBD | Pending |
+| CNTR-05 | TBD | Pending |
+| CNTR-06 | TBD | Pending |
+| CNTR-07 | TBD | Pending |
+| CONN-01 | TBD | Pending |
+| CONN-02 | TBD | Pending |
+| CONN-03 | TBD | Pending |
+| CONN-04 | TBD | Pending |
+| CONN-05 | TBD | Pending |
+| CONN-06 | TBD | Pending |
+
+**Coverage:**
+- v1 requirements: 24 total
+- Mapped to phases: 0
+- Unmapped: 24
+
+---
+*Requirements defined: 2026-03-22*
+*Last updated: 2026-03-22 after Installation Toolkit milestone definition*
