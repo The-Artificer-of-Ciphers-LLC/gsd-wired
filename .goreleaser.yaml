@@ -64,7 +64,7 @@ homebrew_casks:
       owner: The-Artificer-of-Ciphers-LLC
       name: homebrew-gsdw
       branch: main
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      token: "{{ .Env.GSDWHOMEBREW }}"
     commit_author:
       name: goreleaserbot
       email: bot@goreleaser.com
