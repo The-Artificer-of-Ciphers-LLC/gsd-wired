@@ -26,8 +26,8 @@ Requirements for v1.0 release — installation toolkit and distribution packagin
 
 ### Container Support
 
-- [ ] **CNTR-01**: `gsdw container start` launches Dolt server container via detected runtime (Docker, Podman, or Apple Container)
-- [ ] **CNTR-02**: `gsdw container stop` cleanly stops the Dolt container
+- [x] **CNTR-01**: `gsdw container start` launches Dolt server container via detected runtime (Docker, Podman, or Apple Container)
+- [x] **CNTR-02**: `gsdw container stop` cleanly stops the Dolt container
 - [x] **CNTR-03**: Docker/Podman support using `dolthub/dolt-sql-server` image with port 3307 mapping
 - [x] **CNTR-04**: Drop-in `gsdw.compose.yaml` fragment that merges with existing docker-compose via `-f` flag (never modifies user's files)
 - [x] **CNTR-05**: Apple Container support gated on macOS 26 + Apple Silicon detection

@@ -27,7 +27,7 @@
 
 - [ ] **Phase 11: Distribution Infrastructure** — GoReleaser pipeline, brew tap, signed macOS binary, ghcr.io image, `go install`
 - [ ] **Phase 12: Setup UX** — `gsdw check-deps`, `gsdw setup` wizard, `gsdw doctor` health check
-- [ ] **Phase 13: Container Support** — Docker/Podman and Apple Container runtime, `gsdw container` subcommand, compose fragment
+- [x] **Phase 13: Container Support** — Docker/Podman and Apple Container runtime, `gsdw container` subcommand, compose fragment
 - [ ] **Phase 14: Connectivity** — `gsdw connect` wizard, `.gsdw/connection.json`, client.go env var injection, remote fallback
 
 ## Phase Details
@@ -74,7 +74,7 @@ Plans:
 **Plans:** 2 plans
 Plans:
 - [x] 13-01-PLAN.md — Runtime abstraction (Runtime interface, Docker/Podman/Apple Container implementations, DetectRuntime, compose fragment writer)
-- [ ] 13-02-PLAN.md — CLI subcommands (gsdw container start/stop with pre-flight checks, wired into root)
+- [x] 13-02-PLAN.md — CLI subcommands (gsdw container start/stop with pre-flight checks, wired into root)
 
 ### Phase 14: Connectivity
 **Goal**: gsdw knows how to reach the Dolt server and automatically passes that configuration to every bd command, with graceful handling when the server is unreachable
@@ -94,7 +94,7 @@ Plans:
 | 1-10 | v1.0 | 22/22 | Complete | 2026-03-22 |
 | 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
 | 12. Setup UX | v1.0 Install | 2/2 | Complete | 2026-03-22 |
-| 13. Container Support | v1.0 Install | 0/2 | Planned | - |
+| 13. Container Support | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 | 14. Connectivity | v1.0 Install | 0/TBD | Not started | - |
 
 ---

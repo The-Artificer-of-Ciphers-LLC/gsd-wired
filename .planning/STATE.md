@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 13 — Container Support
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-22 -- Plan 13-01 complete: container runtime abstraction + compose fragment writer
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-03-22 -- Plan 13-02 complete: gsdw container start/stop CLI subcommands
 
-Progress: [████░░░░░░] 45% (Installation Toolkit milestone)
+Progress: [█████░░░░░] 55% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -164,6 +164,9 @@ Prior v1.0 decisions (preserved for continuity):
 - [13-01]: GSDW_MOCK_MACOS_MAJOR env var injection in isMacOS26OrNewer() — keeps deps package API stable without injectable opts struct
 - [13-01]: Podman uses 0.0.0.0 port binding (not 127.0.0.1) — required for macOS per research Pitfall 6
 - [13-01]: AppleContainerRuntime.StartArgs omits DOLT_ROOT_HOST env var — Apple Container handles env differently
+- [13-02]: startOpts/stopOpts structs inject all dependencies (detectFn, composeFn, execFn, checkPort, statFn) — same hermetic test pattern as 12-01/13-01
+- [13-02]: composeFn only called for docker/podman runtimes — apple-container skips compose fragment (native container handles env differently)
+- [13-02]: defaultCheckPort uses net.Listen on 127.0.0.1:{port}, closes listener on success — port free returns nil, error if occupied
 
 ### Pending Todos
 
@@ -177,6 +180,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 13 Plan 01 execution — completed)
-Stopped at: Completed 13-01-PLAN.md. Container runtime abstraction layer (Runtime interface, DockerRuntime, PodmanRuntime, AppleContainerRuntime), compose fragment writer, and Apple Container priority in deps.CheckAll implemented and tested.
+Last session: 2026-03-22 (Phase 13 Plan 02 execution — completed)
+Stopped at: Completed 13-02-PLAN.md. gsdw container start/stop CLI subcommands with runtime detection, pre-flight checks (beads dir, port), compose fragment for Docker/Podman, wired into root. Phase 13 complete.
 Resume file: None
