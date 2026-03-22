@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7: Execution + Verification** - Wave-based parallel execution and post-execution verification
 - [x] **Phase 8: Ship + Status** - PR creation, phase advancement, and project status from graph
 - [x] **Phase 9: Token-Aware Context** - Hot/warm/cold tiering, budget tracking, context injection
-- [ ] **Phase 10: Coexistence** - .planning/ fallback reading and gradual adoption path
+- [x] **Phase 10: Coexistence** - .planning/ fallback reading and gradual adoption path
 
 ## Phase Details
 

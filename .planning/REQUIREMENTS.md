@@ -94,7 +94,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **COMPAT-01**: Plugin detects .planning/ directory and reads it as fallback when beads not initialized
 - [x] **COMPAT-02**: Existing GSD STATE.md/ROADMAP.md parseable into bead-equivalent queries
-- [ ] **COMPAT-03**: New work always goes to beads graph; .planning/ files are read-only fallback
+- [x] **COMPAT-03**: New work always goes to beads graph; .planning/ files are read-only fallback
 
 ## v2 Requirements
 
@@ -189,7 +189,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CMD-07 | Phase 7 | Complete |
 | COMPAT-01 | Phase 10 | Done |
 | COMPAT-02 | Phase 10 | Done |
-| COMPAT-03 | Phase 10 | Pending |
+| COMPAT-03 | Phase 10 | Done |
 
 **Coverage:**
 - v1 requirements: 56 total

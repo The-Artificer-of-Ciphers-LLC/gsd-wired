@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 ## Current Position
 
 Phase: 10 of 10 (Coexistence)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-22 -- Phase 10 Plan 01 complete — internal/compat package with pure parsers (TDD, 17 tests)
+Plan: 2 of 2 in current phase
+Status: Complete — v1.0 milestone achieved
+Last activity: 2026-03-22 -- Phase 10 Plan 02 complete — .planning/ fallback wired into SessionStart hook and get_status MCP tool (TDD, 8 tests, -race clean)
 
-Progress: [█████████░] 93%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
-- Average duration: 4.2 min
-- Total execution time: 0.79 hours
+- Total plans completed: 15
+- Average duration: 4.3 min
+- Total execution time: 0.86 hours
 
 **By Phase:**
 
@@ -35,7 +35,7 @@ Progress: [█████████░] 93%
 | 6. Research + Planning | 2 | 9 min | 4.5 min |
 | 7. Execution + Verification | 3/3 | 12 min | 4 min |
 | 9. Token-Aware Context | 2/2 | 10 min | 5 min |
-| 10. Coexistence | 1/2 | 4 min | 4 min |
+| 10. Coexistence | 2/2 | 9 min | 4.5 min |
 
 **Recent Trend:**
 - Last 5 plans: 2 min, 4 min, 8 min, 2 min, 5 min
@@ -134,6 +134,9 @@ Recent decisions affecting current work:
 - [10-01]: ParseRoadmap two-pass design: first pass extracts phase rows, second pass enriches with goals from Phase Details
 - [10-01]: All parsers return partial results on malformed/empty input — non-fatal by design (fallback path must be resilient)
 - [10-01]: Zero write operations in compat package enforced structurally — D-09 compliance verified
+- [10-02]: formatFallbackContext in session_start.go emits compatibility mode prefix, project name, core value, phase/plan counters, phase checkbox list — concise for context window
+- [10-02]: fallbackStatusResult maps FallbackStatus to statusResult — OpenPhases counts !Complete phases, CurrentPhase matched by State.CurrentPhase vs Phases list, ReadyTasks stays empty (no graph)
+- [10-02]: state.beadsDir set during sync.Once even on failure — DetectPlanning correctly receives project root for .planning/ check
 
 ### Pending Todos
 
@@ -146,6 +149,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 10 Plan 01 complete)
-Stopped at: Phase 10 Plan 01 complete — internal/compat package (ParseState, ParseRoadmap, ParseProject, DetectPlanning, BuildFallbackStatus), TDD, 17 tests pass with -race.
+Last session: 2026-03-22 (Phase 10 Plan 02 complete — v1.0 milestone)
+Stopped at: Phase 10 Plan 02 complete — .planning/ fallback wired into SessionStart hook (formatFallbackContext) and get_status MCP tool (fallbackStatusResult). All 220 tests pass with -race. v1.0 milestone achieved.
 Resume file: None
