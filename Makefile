@@ -33,7 +33,7 @@ release-mac:
 	@test -n "$$MACOS_NOTARY_KEY"       || (echo "ERROR: MACOS_NOTARY_KEY is not set. See 'make help'."; exit 1)
 	@test -n "$$GSDWHOMEBREW"           || (echo "ERROR: GSDWHOMEBREW is not set (homebrew tap PAT). See 'make help'."; exit 1)
 	@echo "==> All env vars present. Starting goreleaser release..."
-	goreleaser release --clean
+	goreleaser release --clean --skip=docker
 
 ## release-mac-snapshot: dry run of the macOS release (no publish, no tag required)
 release-mac-snapshot:
