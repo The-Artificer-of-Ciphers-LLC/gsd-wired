@@ -50,8 +50,8 @@ func TestCheckAll_AllFound(t *testing.T) {
 	makeFakeGo(t, dir, gopath)
 	makeFakeBinary(t, dir, "docker", "24.0.5")
 
-	origPath := os.Getenv("PATH")
-	t.Setenv("PATH", dir+string(os.PathListSeparator)+origPath)
+	// Use only the temp dir on PATH for a hermetic test environment.
+	t.Setenv("PATH", dir)
 
 	result := deps.CheckAll()
 
@@ -74,8 +74,8 @@ func TestCheckAll_BdMissing(t *testing.T) {
 	makeFakeGo(t, dir, gopath)
 	makeFakeBinary(t, dir, "docker", "24.0.5")
 
-	origPath := os.Getenv("PATH")
-	t.Setenv("PATH", dir+string(os.PathListSeparator)+origPath)
+	// Use only the temp dir on PATH to prevent finding real bd from ~/.local/bin or elsewhere.
+	t.Setenv("PATH", dir)
 
 	result := deps.CheckAll()
 
@@ -116,13 +116,13 @@ func TestCheckAll_GoPathFallback(t *testing.T) {
 	}
 	makeFakeBinary(t, gopathBin, "bd", "1.4.2")
 
-	// Other deps on normal PATH
+	// Other deps on normal PATH (isolated to temp dir for hermetic tests)
 	makeFakeBinary(t, dir, "dolt", "1.40.0")
 	makeFakeGo(t, dir, gopath)
 	makeFakeBinary(t, dir, "docker", "24.0.5")
 
-	origPath := os.Getenv("PATH")
-	t.Setenv("PATH", dir+string(os.PathListSeparator)+origPath)
+	// Use only the temp dir on PATH so bd is NOT found via PATH lookup.
+	t.Setenv("PATH", dir)
 
 	result := deps.CheckAll()
 
@@ -152,8 +152,8 @@ func TestCheckAll_InstallHelp(t *testing.T) {
 	// Only go is present (needed to resolve GOPATH)
 	makeFakeGo(t, dir, gopath)
 
-	origPath := os.Getenv("PATH")
-	t.Setenv("PATH", dir+string(os.PathListSeparator)+origPath)
+	// Isolated PATH — only temp dir, so bd/dolt/docker are all missing.
+	t.Setenv("PATH", dir)
 
 	result := deps.CheckAll()
 
@@ -172,8 +172,8 @@ func TestCheckAll_FourDeps(t *testing.T) {
 	gopath := t.TempDir()
 	makeFakeGo(t, dir, gopath)
 
-	origPath := os.Getenv("PATH")
-	t.Setenv("PATH", dir+string(os.PathListSeparator)+origPath)
+	// Isolated PATH for hermetic test.
+	t.Setenv("PATH", dir)
 
 	result := deps.CheckAll()
 
@@ -203,8 +203,8 @@ func TestCheckAll_VersionParsing(t *testing.T) {
 	makeFakeGo(t, dir, gopath)
 	makeFakeBinary(t, dir, "docker", "24.0.5")
 
-	origPath := os.Getenv("PATH")
-	t.Setenv("PATH", dir+string(os.PathListSeparator)+origPath)
+	// Isolated PATH for hermetic test.
+	t.Setenv("PATH", dir)
 
 	result := deps.CheckAll()
 
@@ -240,8 +240,8 @@ func TestCheckAll_ContainerRuntimeDockerThenPodman(t *testing.T) {
 	makeFakeGo(t, dir, gopath)
 	makeFakeBinary(t, dir, "podman", "4.9.0")
 
-	origPath := os.Getenv("PATH")
-	t.Setenv("PATH", dir+string(os.PathListSeparator)+origPath)
+	// Use only the temp dir on PATH to ensure docker is not found from the system.
+	t.Setenv("PATH", dir)
 
 	result := deps.CheckAll()
 
