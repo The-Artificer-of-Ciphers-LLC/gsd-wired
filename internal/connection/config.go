@@ -29,15 +29,37 @@ type Config struct {
 
 // LocalConfig holds configuration for the local Dolt container.
 type LocalConfig struct {
-	Host string `json:"host"`
-	Port string `json:"port"`
+	Host string   `json:"host"`
+	Port FlexPort `json:"port"`
 }
 
 // RemoteConfig holds configuration for a remote Dolt server.
 type RemoteConfig struct {
-	Host string `json:"host"`
-	Port string `json:"port"`
-	User string `json:"user"`
+	Host string   `json:"host"`
+	Port FlexPort `json:"port"`
+	User string   `json:"user"`
+}
+
+// FlexPort is a string type that unmarshals from both JSON strings ("3307")
+// and JSON numbers (3307). This prevents silent parse failures when
+// connection.json is hand-edited with numeric port values.
+type FlexPort string
+
+// UnmarshalJSON accepts both "3307" (string) and 3307 (number) from JSON.
+func (f *FlexPort) UnmarshalJSON(data []byte) error {
+	// Try string first (most common from gsdw connect wizard).
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		*f = FlexPort(s)
+		return nil
+	}
+	// Fall back to number (hand-edited JSON).
+	var n json.Number
+	if err := json.Unmarshal(data, &n); err == nil {
+		*f = FlexPort(n.String())
+		return nil
+	}
+	return fmt.Errorf("port must be string or number, got %s", string(data))
 }
 
 // ActiveHostPort returns the host and port based on the active_mode.
@@ -46,14 +68,14 @@ type RemoteConfig struct {
 // and Local.Port (default "3307").
 func (c *Config) ActiveHostPort() (host, port string) {
 	if c.ActiveMode == "remote" {
-		return c.Remote.Host, c.Remote.Port
+		return c.Remote.Host, string(c.Remote.Port)
 	}
 	// local mode with defaults
 	host = c.Local.Host
 	if host == "" {
 		host = "127.0.0.1"
 	}
-	port = c.Local.Port
+	port = string(c.Local.Port)
 	if port == "" {
 		port = "3307"
 	}

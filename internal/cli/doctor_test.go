@@ -200,7 +200,7 @@ func TestRenderDoctor_ConnectionConfigured_OK(t *testing.T) {
 	result := makeOKResult()
 	connCfg := &connection.Config{
 		ActiveMode: "local",
-		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
 	}
 	var buf bytes.Buffer
 	renderDoctor(&buf, result, "", "", connCfg, nil)
@@ -227,7 +227,7 @@ func TestRenderDoctor_ConnectionConfigured_Fail(t *testing.T) {
 	result := makeOKResult()
 	connCfg := &connection.Config{
 		ActiveMode: "local",
-		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
 	}
 	healthErr := fmt.Errorf("connection refused")
 	var buf bytes.Buffer

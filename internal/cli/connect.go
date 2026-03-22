@@ -198,8 +198,8 @@ func handleRemoteFallback(opts connectOpts, gsdwDir string, reader *bufio.Reader
 		// Save local as active mode, preserve remote settings.
 		cfg := &connection.Config{
 			ActiveMode: "local",
-			Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
-			Remote:     connection.RemoteConfig{Host: host, Port: port, User: user},
+			Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
+			Remote:     connection.RemoteConfig{Host: host, Port: connection.FlexPort(port), User: user},
 			Configured: time.Now().UTC().Format(time.RFC3339),
 		}
 		if err := opts.saveConfigFn(gsdwDir, cfg); err != nil {
@@ -212,8 +212,8 @@ func handleRemoteFallback(opts connectOpts, gsdwDir string, reader *bufio.Reader
 	// Session-only: keep active_mode="remote" but local container is running.
 	cfg := &connection.Config{
 		ActiveMode: "remote",
-		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
-		Remote:     connection.RemoteConfig{Host: host, Port: port, User: user},
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
+		Remote:     connection.RemoteConfig{Host: host, Port: connection.FlexPort(port), User: user},
 		Configured: time.Now().UTC().Format(time.RFC3339),
 	}
 	if err := opts.saveConfigFn(gsdwDir, cfg); err != nil {
@@ -228,7 +228,7 @@ func handleRemoteFallback(opts connectOpts, gsdwDir string, reader *bufio.Reader
 func doSaveLocalConfig(opts connectOpts, gsdwDir, host, port string) error {
 	cfg := &connection.Config{
 		ActiveMode: "local",
-		Local:      connection.LocalConfig{Host: host, Port: port},
+		Local:      connection.LocalConfig{Host: host, Port: connection.FlexPort(port)},
 		Configured: time.Now().UTC().Format(time.RFC3339),
 	}
 	if err := opts.saveConfigFn(gsdwDir, cfg); err != nil {
@@ -242,7 +242,7 @@ func doSaveLocalConfig(opts connectOpts, gsdwDir, host, port string) error {
 func doSaveRemoteConfig(opts connectOpts, gsdwDir, host, port, user string) error {
 	cfg := &connection.Config{
 		ActiveMode: "remote",
-		Remote:     connection.RemoteConfig{Host: host, Port: port, User: user},
+		Remote:     connection.RemoteConfig{Host: host, Port: connection.FlexPort(port), User: user},
 		Configured: time.Now().UTC().Format(time.RFC3339),
 	}
 	if err := opts.saveConfigFn(gsdwDir, cfg); err != nil {

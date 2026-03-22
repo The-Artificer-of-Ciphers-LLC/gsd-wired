@@ -26,7 +26,7 @@ func TestClientRunInjectsConnEnvVars(t *testing.T) {
 
 	cfg := &connection.Config{
 		ActiveMode: "local",
-		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
 		Configured: "2026-01-01T00:00:00Z",
 	}
 	if err := connection.SaveConnection(gsdwDir, cfg); err != nil {
@@ -110,7 +110,7 @@ func TestClientConnConfigFromGsdwDir(t *testing.T) {
 
 	cfg := &connection.Config{
 		ActiveMode: "local",
-		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
 		Configured: "2026-01-01T00:00:00Z",
 	}
 	if err := connection.SaveConnection(gsdwDir, cfg); err != nil {

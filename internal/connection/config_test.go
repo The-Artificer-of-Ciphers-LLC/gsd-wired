@@ -12,8 +12,8 @@ import (
 func TestConfigRoundTrip(t *testing.T) {
 	cfg := Config{
 		ActiveMode: "local",
-		Local:      LocalConfig{Host: "127.0.0.1", Port: "3307"},
-		Remote:     RemoteConfig{Host: "db.example.com", Port: "3306", User: "dev"},
+		Local:      LocalConfig{Host: "127.0.0.1", Port: FlexPort("3307")},
+		Remote:     RemoteConfig{Host: "db.example.com", Port: FlexPort("3306"), User: "dev"},
 		Configured: "2026-03-22T00:00:00Z",
 	}
 
@@ -53,7 +53,7 @@ func TestConfigRoundTrip(t *testing.T) {
 
 // TestActiveHostPort_Local: local mode returns Local.Host and Local.Port.
 func TestActiveHostPort_Local(t *testing.T) {
-	cfg := Config{ActiveMode: "local", Local: LocalConfig{Host: "127.0.0.1", Port: "3307"}}
+	cfg := Config{ActiveMode: "local", Local: LocalConfig{Host: "127.0.0.1", Port: FlexPort("3307")}}
 	host, port := cfg.ActiveHostPort()
 	if host != "127.0.0.1" {
 		t.Errorf("host: got %q, want %q", host, "127.0.0.1")
@@ -65,7 +65,7 @@ func TestActiveHostPort_Local(t *testing.T) {
 
 // TestActiveHostPort_Remote: remote mode returns Remote.Host and Remote.Port.
 func TestActiveHostPort_Remote(t *testing.T) {
-	cfg := Config{ActiveMode: "remote", Remote: RemoteConfig{Host: "db.example.com", Port: "3306"}}
+	cfg := Config{ActiveMode: "remote", Remote: RemoteConfig{Host: "db.example.com", Port: FlexPort("3306")}}
 	host, port := cfg.ActiveHostPort()
 	if host != "db.example.com" {
 		t.Errorf("host: got %q, want %q", host, "db.example.com")
@@ -90,7 +90,7 @@ func TestActiveHostPort_LocalDefaults(t *testing.T) {
 // TestSaveConnectionAtomic: writes to temp dir, connection.json exists, no .tmp file remains.
 func TestSaveConnectionAtomic(t *testing.T) {
 	dir := t.TempDir()
-	cfg := &Config{ActiveMode: "local", Local: LocalConfig{Host: "127.0.0.1", Port: "3307"}}
+	cfg := &Config{ActiveMode: "local", Local: LocalConfig{Host: "127.0.0.1", Port: FlexPort("3307")}}
 
 	if err := SaveConnection(dir, cfg); err != nil {
 		t.Fatalf("SaveConnection: %v", err)
@@ -126,7 +126,7 @@ func TestLoadConnection_Valid(t *testing.T) {
 	dir := t.TempDir()
 	cfg := &Config{
 		ActiveMode: "remote",
-		Remote:     RemoteConfig{Host: "db.example.com", Port: "3306", User: "admin"},
+		Remote:     RemoteConfig{Host: "db.example.com", Port: FlexPort("3306"), User: "admin"},
 		Configured: "2026-01-01T00:00:00Z",
 	}
 	if err := SaveConnection(dir, cfg); err != nil {
@@ -144,6 +144,29 @@ func TestLoadConnection_Valid(t *testing.T) {
 	}
 	if got.Remote.Host != cfg.Remote.Host {
 		t.Errorf("Remote.Host: got %q, want %q", got.Remote.Host, cfg.Remote.Host)
+	}
+}
+
+// TestFlexPort_NumericJSON: port as JSON number 3307 round-trips correctly.
+func TestFlexPort_NumericJSON(t *testing.T) {
+	jsonStr := `{"active_mode":"local","local":{"host":"127.0.0.1","port":3307},"configured":"2026-01-01T00:00:00Z"}`
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "connection.json"), []byte(jsonStr), 0644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	cfg, err := LoadConnection(dir)
+	if err != nil {
+		t.Fatalf("LoadConnection: %v", err)
+	}
+	if cfg == nil {
+		t.Fatal("LoadConnection returned nil")
+	}
+	host, port := cfg.ActiveHostPort()
+	if host != "127.0.0.1" {
+		t.Errorf("host: got %q, want %q", host, "127.0.0.1")
+	}
+	if port != "3307" {
+		t.Errorf("port: got %q, want %q", port, "3307")
 	}
 }
 

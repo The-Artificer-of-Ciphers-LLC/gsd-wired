@@ -185,7 +185,7 @@ func TestConnectExistingConfig_KeepCurrent(t *testing.T) {
 	tmpDir := t.TempDir()
 	existing := &connection.Config{
 		ActiveMode: "local",
-		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
 	}
 	opts := makeConnectOpts(t, "N\n", &saved, nil, nil, existing, nil, tmpDir)
 
@@ -209,7 +209,7 @@ func TestConnectExistingConfig_Reconfigure(t *testing.T) {
 	tmpDir := t.TempDir()
 	existing := &connection.Config{
 		ActiveMode: "local",
-		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
 	}
 	// "y" to reconfigure, "Y" to use auto-detected server
 	opts := makeConnectOpts(t, "y\nY\n", &saved, nil, nil, existing, nil, tmpDir)
