@@ -71,40 +71,40 @@ Deferred to future release.
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
+Which phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DIST-01 | TBD | Pending |
-| DIST-02 | TBD | Pending |
-| DIST-03 | TBD | Pending |
-| DIST-04 | TBD | Pending |
-| DIST-05 | TBD | Pending |
-| DIST-06 | TBD | Pending |
-| SETUP-01 | TBD | Pending |
-| SETUP-02 | TBD | Pending |
-| SETUP-03 | TBD | Pending |
-| SETUP-04 | TBD | Pending |
-| SETUP-05 | TBD | Pending |
-| CNTR-01 | TBD | Pending |
-| CNTR-02 | TBD | Pending |
-| CNTR-03 | TBD | Pending |
-| CNTR-04 | TBD | Pending |
-| CNTR-05 | TBD | Pending |
-| CNTR-06 | TBD | Pending |
-| CNTR-07 | TBD | Pending |
-| CONN-01 | TBD | Pending |
-| CONN-02 | TBD | Pending |
-| CONN-03 | TBD | Pending |
-| CONN-04 | TBD | Pending |
-| CONN-05 | TBD | Pending |
-| CONN-06 | TBD | Pending |
+| DIST-01 | Phase 11 | Pending |
+| DIST-02 | Phase 11 | Pending |
+| DIST-03 | Phase 11 | Pending |
+| DIST-04 | Phase 11 | Pending |
+| DIST-05 | Phase 11 | Pending |
+| DIST-06 | Phase 11 | Pending |
+| SETUP-01 | Phase 12 | Pending |
+| SETUP-02 | Phase 12 | Pending |
+| SETUP-03 | Phase 12 | Pending |
+| SETUP-04 | Phase 12 | Pending |
+| SETUP-05 | Phase 12 | Pending |
+| CNTR-01 | Phase 13 | Pending |
+| CNTR-02 | Phase 13 | Pending |
+| CNTR-03 | Phase 13 | Pending |
+| CNTR-04 | Phase 13 | Pending |
+| CNTR-05 | Phase 13 | Pending |
+| CNTR-06 | Phase 13 | Pending |
+| CNTR-07 | Phase 13 | Pending |
+| CONN-01 | Phase 14 | Pending |
+| CONN-02 | Phase 14 | Pending |
+| CONN-03 | Phase 14 | Pending |
+| CONN-04 | Phase 14 | Pending |
+| CONN-05 | Phase 14 | Pending |
+| CONN-06 | Phase 14 | Pending |
 
 **Coverage:**
 - v1 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24
+- Mapped to phases: 24
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-22*
-*Last updated: 2026-03-22 after Installation Toolkit milestone definition*
+*Last updated: 2026-03-22 after Installation Toolkit roadmap (Phases 11-14)*

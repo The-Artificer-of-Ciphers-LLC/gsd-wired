@@ -5,25 +5,25 @@
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** v1.0 Installation Toolkit — brew, containers, dependency detection, connectivity
+**Current focus:** v1.0 Installation Toolkit — Phase 11: Distribution Infrastructure
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 11 — Distribution Infrastructure
 Plan: —
-Status: Defining requirements for Installation Toolkit
-Last activity: 2026-03-22 -- Starting v1.0 Installation Toolkit milestone
+Status: Roadmap created, ready to plan Phase 11
+Last activity: 2026-03-22 -- v1.0 Installation Toolkit roadmap defined (Phases 11-14, 24 requirements)
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
-**Velocity:**
-- Total plans completed: 15
+**Velocity (v1.0 core):**
+- Total plans completed: 22
 - Average duration: 4.3 min
-- Total execution time: 0.86 hours
+- Total execution time: ~1.6 hours
 
-**By Phase:**
+**By Phase (v1.0 core):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
@@ -33,9 +33,10 @@ Progress: [██████████] 100%
 | 4. Hook Integration | 3 | 14 min | 4.7 min |
 | 5. Project Init | 2 | 10 min | 5 min |
 | 6. Research + Planning | 2 | 9 min | 4.5 min |
-| 7. Execution + Verification | 3/3 | 12 min | 4 min |
-| 9. Token-Aware Context | 2/2 | 10 min | 5 min |
-| 10. Coexistence | 2/2 | 9 min | 4.5 min |
+| 7. Execution + Verification | 3 | 12 min | 4 min |
+| 8. Ship + Status | 2 | 9 min | 4.5 min |
+| 9. Token-Aware Context | 2 | 10 min | 5 min |
+| 10. Coexistence | 2 | 9 min | 4.5 min |
 
 **Recent Trend:**
 - Last 5 plans: 2 min, 4 min, 8 min, 2 min, 5 min
@@ -50,9 +51,19 @@ Progress: [██████████] 100%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Roadmap]: 10 phases derived from 56 requirements at fine granularity
-- [Roadmap]: Phases 9 and 10 can run in parallel (independent dependencies)
-- [Roadmap]: bd CLI wrapping for v1, direct Go import is Phase 6/optimization path
+- [Roadmap v1.0 Install]: 4 phases (11-14) derived from 24 requirements at fine granularity
+- [Roadmap v1.0 Install]: Phase 11 (Distribution) has no source dependencies — GoReleaser config only
+- [Roadmap v1.0 Install]: Phase 12 before Phase 13 — container subcommand reuses dependency detection infrastructure
+- [Roadmap v1.0 Install]: Phase 13 combines Docker, Podman, and Apple Container into one phase (runtime abstraction unifies all three)
+- [Roadmap v1.0 Install]: CNTR-05/CNTR-06 (Apple Container) in Phase 13, not a separate phase — same container subcommand, additive runtime branch
+- [Research]: beads bug #2073 confirmed — must inject BEADS_DOLT_SERVER_* as env vars directly, never rely on config.yaml port
+- [Research]: Use `homebrew_casks` (not `brews`) in GoReleaser — `brews` deprecated since v2.10, removed in v3
+- [Research]: Apple Container requires macOS 26 + Apple Silicon — gate with sw_vers check before any container run attempt
+- [Research]: `gsdw.compose.yaml` fragment (not compose.override.yml) — never modify user's existing compose files
+- [Research]: volume mount before bd init pitfall — setup must check .beads/dolt/ exists and run bd init if needed
+- [Research]: dockers_v2 is alpha — pin GoReleaser to v2.14.3 in GitHub Actions, do not use latest
+
+Prior v1.0 decisions (preserved for continuity):
 - [01-01]: go-sdk v1.4.1 used as official MCP library — authoritative, Google co-maintained
 - [01-01]: runtime/debug.ReadBuildInfo() for version hash — works with go install, no ldflags required
 - [01-01]: Injected io.Reader/io.Writer in hook.Dispatch() — testable without os pipe mocking
@@ -120,12 +131,12 @@ Recent decisions affecting current work:
 - [08-02]: ship.go follows exact execute.go/verify.go stub pattern — consistency with existing CLI commands
 - [08-02]: SKILL.md no-changes-to-ship path still calls advance_phase — phase state always advances even without commits
 - [08-02]: Error handling stops at gh failure before advance_phase — PR creation and phase advancement atomic from user perspective
-- [09-01]: count-based warm (last N closed by ClosedAt desc) over time-based threshold — deterministic, project-lifecycle independent (Research Open Question 1)
-- [09-01]: classifyTier takes warmIDs map[string]bool (not time.Time) — avoids non-deterministic tests (Research Pitfall 4)
+- [09-01]: count-based warm (last N closed by ClosedAt desc) over time-based threshold — deterministic, project-lifecycle independent
+- [09-01]: classifyTier takes warmIDs map[string]bool (not time.Time) — avoids non-deterministic tests
 - [09-01]: tier types, pure functions, CompactBead, QueryTiered all in new tier.go — co-located with Bead type in graph package
-- [09-01]: CompactBead only called inside ClosePlan post-close — structural guard against compacting open beads (Research Pitfall 3)
+- [09-01]: CompactBead only called inside ClosePlan post-close — structural guard against compacting open beads
 - [09-01]: FAKE_BD_QUERY_TIERED_RESPONSE env var added to fake_bd query subcommand for QueryTiered test isolation
-- [09-02]: buildSessionContext becomes thin wrapper (calls buildBudgetContext with 2000 token default) — existing call site in handleSessionStart unchanged
+- [09-02]: buildSessionContext becomes thin wrapper (calls buildBudgetContext with 2000 token default) — existing call site unchanged
 - [09-02]: Exported EstimateTokens/FormatHot/FormatWarm/FormatCold added to tier.go as wrappers — hook package calls graph package without duplicating logic
 - [09-02]: extractCompact in execute_wave.go reads Metadata['gsd:compact'] first, falls back to CloseReason — backward compatible
 - [09-02]: get_tiered_context (tool 18) defaults budget_tokens to 2000 when 0/omitted — consistent with SessionStart default
@@ -134,21 +145,22 @@ Recent decisions affecting current work:
 - [10-01]: ParseRoadmap two-pass design: first pass extracts phase rows, second pass enriches with goals from Phase Details
 - [10-01]: All parsers return partial results on malformed/empty input — non-fatal by design (fallback path must be resilient)
 - [10-01]: Zero write operations in compat package enforced structurally — D-09 compliance verified
-- [10-02]: formatFallbackContext in session_start.go emits compatibility mode prefix, project name, core value, phase/plan counters, phase checkbox list — concise for context window
-- [10-02]: fallbackStatusResult maps FallbackStatus to statusResult — OpenPhases counts !Complete phases, CurrentPhase matched by State.CurrentPhase vs Phases list, ReadyTasks stays empty (no graph)
+- [10-02]: formatFallbackContext in session_start.go emits compatibility mode prefix, project name, core value, phase/plan counters, phase checkbox list
+- [10-02]: fallbackStatusResult maps FallbackStatus to statusResult — OpenPhases counts !Complete phases, ReadyTasks stays empty (no graph)
 - [10-02]: state.beadsDir set during sync.Once even on failure — DetectPlanning correctly receives project root for .planning/ check
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- bd is confirmed on PATH at ~/.local/bin/bd (blocker resolved in practice)
-- Go 1.26.1 installed at /opt/homebrew/bin/go (satisfies go-sdk v1.4.1 requirement of Go 1.25+)
+- dockers_v2 is alpha in GoReleaser v2.14.3 — pin version in GitHub Actions, do not use latest tag
+- Apple Container requires macOS 26 + Apple Silicon — narrow audience, must gate explicitly with sw_vers check
+- beads bug #2073 — BEADS_DOLT_SERVER_* env var injection is the required workaround, not config.yaml
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 10 Plan 02 complete — v1.0 milestone)
-Stopped at: Phase 10 Plan 02 complete — .planning/ fallback wired into SessionStart hook (formatFallbackContext) and get_status MCP tool (fallbackStatusResult). All 220 tests pass with -race. v1.0 milestone achieved.
+Last session: 2026-03-22 (v1.0 Installation Toolkit roadmap created — Phases 11-14)
+Stopped at: Roadmap written. Ready to plan Phase 11 (Distribution Infrastructure).
 Resume file: None
