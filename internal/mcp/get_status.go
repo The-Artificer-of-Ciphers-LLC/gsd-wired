@@ -7,6 +7,7 @@ import (
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/compat"
 	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
 )
 
@@ -49,6 +50,15 @@ type taskInfo struct {
 // and continues with partial data. Never returns IsError=true for query failures.
 func handleGetStatus(ctx context.Context, state *serverState) (*mcpsdk.CallToolResult, error) {
 	if err := state.init(ctx); err != nil {
+		// .beads/ init failed — try .planning/ fallback (COMPAT-01, D-10).
+		// state.beadsDir is set during init() even on failure.
+		if compat.DetectPlanning(state.beadsDir) {
+			fb, fbErr := compat.BuildFallbackStatus(state.beadsDir)
+			if fbErr == nil {
+				return toolResult(fallbackStatusResult(fb))
+			}
+			slog.Warn("get_status: .planning/ fallback failed", "err", fbErr)
+		}
 		return toolError(err.Error()), nil
 	}
 
@@ -142,6 +152,55 @@ func handleGetStatus(ctx context.Context, state *serverState) (*mcpsdk.CallToolR
 	}
 
 	return toolResult(result)
+}
+
+// fallbackStatusResult converts a FallbackStatus (from .planning/) into a statusResult.
+// Used when .beads/ is absent but .planning/ is present. Read-only — never writes to .planning/ (D-09, COMPAT-03).
+func fallbackStatusResult(fb compat.FallbackStatus) *statusResult {
+	result := &statusResult{
+		ProjectName:     fb.ProjectName,
+		TotalPhases:     len(fb.Phases),
+		ReadyTasks:      []taskInfo{},           // no bead graph = no ready tasks
+		CompletedPhases: []completedPhaseInfo{}, // initialize to empty slice for clean JSON
+	}
+
+	// Count open/completed phases from the parsed phase list.
+	for _, p := range fb.Phases {
+		if !p.Complete {
+			result.OpenPhases++
+		} else {
+			result.CompletedPhases = append(result.CompletedPhases, completedPhaseInfo{
+				PhaseNum: p.Number,
+				Title:    p.Name,
+			})
+		}
+	}
+
+	// Find the current phase from STATE.md — the first open phase matching CurrentPhase.
+	currentPhaseNum := fb.State.CurrentPhase
+	if currentPhaseNum > 0 {
+		for _, p := range fb.Phases {
+			if p.Number == currentPhaseNum && !p.Complete {
+				result.CurrentPhase = &phaseInfo{
+					BeadID:   "", // no bead ID in .planning/ mode
+					Title:    p.Name,
+					PhaseNum: p.Number,
+					Status:   "open",
+					Goal:     p.Goal,
+				}
+				break
+			}
+		}
+		// If the current phase number wasn't found in Phases (e.g., sparse ROADMAP), create a minimal phaseInfo.
+		if result.CurrentPhase == nil && currentPhaseNum > 0 {
+			result.CurrentPhase = &phaseInfo{
+				PhaseNum: currentPhaseNum,
+				Status:   "open",
+			}
+		}
+	}
+
+	return result
 }
 
 // phaseNumFromMetadata extracts a phase number as float64 from bead metadata.
