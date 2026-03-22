@@ -59,6 +59,7 @@ notarize:
 
 homebrew_casks:
   - name: gsdw-cc
+    binary: gsdw
     repository:
       owner: The-Artificer-of-Ciphers-LLC
       name: homebrew-gsdw
