@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -36,10 +37,11 @@ type CheckResult struct {
 
 // installHelp contains actionable install instructions per binary.
 var installHelp = map[string]string{
-	"bd":     "go install github.com/steveyegge/beads/cmd/bd@latest\n  or: brew install steveyegge/tap/beads",
-	"dolt":   "brew install dolthub/tap/dolt\n  or: curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | bash",
-	"go":     "brew install go\n  or: download from https://go.dev/dl/",
-	"docker": "brew install --cask docker\n  or: brew install podman",
+	"bd":        "go install github.com/steveyegge/beads/cmd/bd@latest\n  or: brew install steveyegge/tap/beads",
+	"dolt":      "brew install dolthub/tap/dolt\n  or: curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | bash",
+	"go":        "brew install go\n  or: download from https://go.dev/dl/",
+	"docker":    "brew install --cask docker\n  or: brew install podman",
+	"container": "Requires macOS 26 Tahoe + Apple Silicon. See https://github.com/apple/container",
 }
 
 // CheckAll detects bd, dolt, Go, and container runtime (docker/podman).
@@ -103,14 +105,18 @@ func checkBinary(name, binary, help string, tryGoPath bool) Dep {
 	return dep
 }
 
-// checkContainerRuntime tries docker first, then podman.
+// checkContainerRuntime tries Apple Container first (macOS 26+), then docker, then podman.
 // Returns a Dep with Name="Container Runtime".
 func checkContainerRuntime() Dep {
 	dep := Dep{Name: "Container Runtime"}
 
-	for _, binary := range []string{"docker", "podman"} {
+	for _, binary := range []string{"container", "docker", "podman"} {
 		p, err := exec.LookPath(binary)
 		if err != nil {
+			continue
+		}
+		// Apple Container requires macOS 26+. Skip on older versions.
+		if binary == "container" && !isMacOS26OrNewer() {
 			continue
 		}
 		dep.Binary = binary
@@ -124,6 +130,33 @@ func checkContainerRuntime() Dep {
 	dep.Status = StatusFail
 	dep.InstallHelp = installHelp["docker"]
 	return dep
+}
+
+// isMacOS26OrNewer returns true if the current macOS major version is >= 26.
+// GSDW_MOCK_MACOS_MAJOR env var overrides the version check for testing.
+func isMacOS26OrNewer() bool {
+	// Test injection point.
+	if mock := os.Getenv("GSDW_MOCK_MACOS_MAJOR"); mock != "" {
+		major, err := strconv.Atoi(mock)
+		if err == nil {
+			return major >= 26
+		}
+	}
+
+	out, err := exec.Command("sw_vers", "-productVersion").Output()
+	if err != nil {
+		return false
+	}
+	ver := strings.TrimSpace(string(out))
+	parts := strings.SplitN(ver, ".", 2)
+	if len(parts) < 1 {
+		return false
+	}
+	major, err := strconv.Atoi(parts[0])
+	if err != nil {
+		return false
+	}
+	return major >= 26
 }
 
 // lookInGoPath attempts to find binary in $(go env GOPATH)/bin.
