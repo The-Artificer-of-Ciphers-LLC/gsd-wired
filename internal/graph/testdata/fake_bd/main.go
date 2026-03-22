@@ -35,6 +35,22 @@ func main() {
 		_ = os.WriteFile(captureFile, data, 0644)
 	}
 
+	// Handle env capture mode: write selected env vars to FAKE_BD_ENV_CAPTURE_FILE as JSON map.
+	envCaptureFile := os.Getenv("FAKE_BD_ENV_CAPTURE_FILE")
+	if envCaptureFile != "" {
+		envMap := make(map[string]string)
+		for _, e := range os.Environ() {
+			idx := strings.Index(e, "=")
+			if idx < 0 {
+				continue
+			}
+			k, v := e[:idx], e[idx+1:]
+			envMap[k] = v
+		}
+		data, _ := json.Marshal(envMap)
+		_ = os.WriteFile(envCaptureFile, data, 0644)
+	}
+
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "fake_bd: no command given")
 		os.Exit(1)

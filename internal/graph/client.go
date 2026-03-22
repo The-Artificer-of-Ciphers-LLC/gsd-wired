@@ -8,14 +8,28 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"path/filepath"
+
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/connection"
 )
 
 // Client wraps the bd CLI via exec.Command for all beads graph operations.
 // All operations set BEADS_DIR env and append --json flag automatically.
 type Client struct {
-	bdPath    string // resolved at construction via exec.LookPath
-	beadsDir  string // path to .beads/ directory (sets BEADS_DIR env)
-	batchMode bool   // if true, write ops prepend --dolt-auto-commit=batch (INFRA-10)
+	bdPath     string             // resolved at construction via exec.LookPath
+	beadsDir   string             // path to .beads/ directory (sets BEADS_DIR env)
+	batchMode  bool               // if true, write ops prepend --dolt-auto-commit=batch (INFRA-10)
+	connConfig *connection.Config // cached connection config, nil if not configured
+}
+
+// loadConnConfig attempts to load connection.json from the .gsdw/ directory
+// that is a sibling of beadsDir. Per Pitfall 4: derive from beadsDir, not cwd walk-up.
+// Returns nil (no error) if the file does not exist.
+func loadConnConfig(beadsDir string) *connection.Config {
+	gsdwDir := filepath.Join(filepath.Dir(beadsDir), ".gsdw")
+	cfg, _ := connection.LoadConnection(gsdwDir)
+	// cfg is nil if file doesn't exist — that's fine, no env vars injected.
+	return cfg
 }
 
 // NewClient creates a new Client by looking up bd on PATH.
@@ -25,7 +39,7 @@ func NewClient(beadsDir string) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("bd not found on PATH — install beads first: %w", err)
 	}
-	return &Client{bdPath: bdPath, beadsDir: beadsDir}, nil
+	return &Client{bdPath: bdPath, beadsDir: beadsDir, connConfig: loadConnConfig(beadsDir)}, nil
 }
 
 // NewClientBatch creates a new Client with batch write mode enabled.
@@ -36,19 +50,19 @@ func NewClientBatch(beadsDir string) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("bd not found on PATH — install beads first: %w", err)
 	}
-	return &Client{bdPath: bdPath, beadsDir: beadsDir, batchMode: true}, nil
+	return &Client{bdPath: bdPath, beadsDir: beadsDir, batchMode: true, connConfig: loadConnConfig(beadsDir)}, nil
 }
 
 // NewClientWithPath creates a Client with an explicit bd binary path.
 // Intended for testing — bypasses exec.LookPath.
 func NewClientWithPath(bdPath, beadsDir string) *Client {
-	return &Client{bdPath: bdPath, beadsDir: beadsDir}
+	return &Client{bdPath: bdPath, beadsDir: beadsDir, connConfig: loadConnConfig(beadsDir)}
 }
 
 // NewClientWithPathBatch creates a Client with an explicit bd binary path and batch mode enabled.
 // Intended for testing — bypasses exec.LookPath.
 func NewClientWithPathBatch(bdPath, beadsDir string) *Client {
-	return &Client{bdPath: bdPath, beadsDir: beadsDir, batchMode: true}
+	return &Client{bdPath: bdPath, beadsDir: beadsDir, batchMode: true, connConfig: loadConnConfig(beadsDir)}
 }
 
 // runWrite executes a mutating bd command. When batchMode is true, it prepends
@@ -83,7 +97,15 @@ func (c *Client) run(ctx context.Context, args ...string) ([]byte, error) {
 	args = append(args, "--json")
 
 	cmd := exec.CommandContext(ctx, c.bdPath, args...)
-	cmd.Env = append(os.Environ(), "BEADS_DIR="+c.beadsDir)
+	envVars := []string{"BEADS_DIR=" + c.beadsDir}
+	if c.connConfig != nil {
+		host, port := c.connConfig.ActiveHostPort()
+		envVars = append(envVars,
+			"BEADS_DOLT_SERVER_HOST="+host,
+			"BEADS_DOLT_SERVER_PORT="+port,
+		)
+	}
+	cmd.Env = append(os.Environ(), envVars...)
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
