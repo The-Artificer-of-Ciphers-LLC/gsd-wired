@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-03-21)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** Phases 9+10 (Token-Aware Context + Coexistence — can run in parallel)
+**Current focus:** v1.0 MILESTONE COMPLETE — all 10 phases verified
 
 ## Current Position
 

@@ -55,8 +55,13 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] Hot/warm/cold tiering (TOKEN-04) — Phase 9
 - [x] Token budget tracking with estimateTokens (TOKEN-05) — Phase 9
 - [x] Tiered injection in SessionStart based on budget (TOKEN-06) — Phase 9
+- [x] Plugin detects .planning/ and reads as fallback (COMPAT-01) — Phase 10
+- [x] STATE.md and ROADMAP.md parseable into bead-equivalent queries (COMPAT-02) — Phase 10
+- [x] New work always goes to beads; .planning/ is read-only (COMPAT-03) — Phase 10
 
 ### Active
+
+(All v1 requirements validated — milestone complete)
 
 - [ ] Claude Code plugin with MCP server wrapping bd CLI for graph operations
 - [ ] SessionStart hook loads project context from beads graph on session start
@@ -135,4 +140,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-21 after Phase 8 completion*
+*Last updated: 2026-03-22 after v1.0 milestone completion (all 10 phases)*
