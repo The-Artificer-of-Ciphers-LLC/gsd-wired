@@ -40,23 +40,14 @@ changelog:
       - "^test:"
       - "^chore:"
 
-signs:
-  - artifacts: checksum
-    cmd: gpg
-    args: ["--batch", "--pinentry-mode", "loopback", "--passphrase", "{{ .Env.GPG_PASSWORD }}", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
-
-notarize:
-  macos:
-    - enabled: '{{ isEnvSet "MACOS_SIGN_P12" }}'
-      sign:
-        certificate: "{{.Env.MACOS_SIGN_P12}}"
-        password: "{{.Env.MACOS_SIGN_PASSWORD}}"
-      notarize:
-        issuer_id: "{{.Env.MACOS_NOTARY_ISSUER_ID}}"
-        key_id: "{{.Env.MACOS_NOTARY_KEY_ID}}"
-        key: "{{.Env.MACOS_NOTARY_KEY}}"
-        wait: true
-        timeout: 10m
+binary_signs:
+  - id: macos-sign
+    cmd: ./scripts/sign-and-notarize.sh
+    args: ["${artifact}"]
+    artifacts: binary
+    ids: [gsdw]
+    signature: "${artifact}.sig"
+    output: true
 
 homebrew_casks:
   - name: gsdw-cc
