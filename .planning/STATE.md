@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-21)
 
 ## Current Position
 
-Phase: 9 of 10 (Token-Aware Context)
-Plan: 2 of 2 in current phase (COMPLETE)
-Status: Phase 9 Complete
-Last activity: 2026-03-21 -- Phase 9 Plan 02 complete (budget-aware SessionStart, get_tiered_context tool 18, execute_wave compaction)
+Phase: 10 of 10 (Coexistence)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-22 -- Phase 10 Plan 01 complete — internal/compat package with pure parsers (TDD, 17 tests)
 
-Progress: [█████████░] 87%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 4.3 min
-- Total execution time: 0.74 hours
+- Total plans completed: 13
+- Average duration: 4.2 min
+- Total execution time: 0.79 hours
 
 **By Phase:**
 
@@ -35,6 +35,7 @@ Progress: [█████████░] 87%
 | 6. Research + Planning | 2 | 9 min | 4.5 min |
 | 7. Execution + Verification | 3/3 | 12 min | 4 min |
 | 9. Token-Aware Context | 2/2 | 10 min | 5 min |
+| 10. Coexistence | 1/2 | 4 min | 4 min |
 
 **Recent Trend:**
 - Last 5 plans: 2 min, 4 min, 8 min, 2 min, 5 min
@@ -128,6 +129,11 @@ Recent decisions affecting current work:
 - [09-02]: Exported EstimateTokens/FormatHot/FormatWarm/FormatCold added to tier.go as wrappers — hook package calls graph package without duplicating logic
 - [09-02]: extractCompact in execute_wave.go reads Metadata['gsd:compact'] first, falls back to CloseReason — backward compatible
 - [09-02]: get_tiered_context (tool 18) defaults budget_tokens to 2000 when 0/omitted — consistent with SessionStart default
+- [10-01]: Package-level compiled regexp patterns in compat package — same convention as reqLabelPattern from 02-02
+- [10-01]: Pure parse functions (string in, struct out) with all file I/O in BuildFallbackStatus — makes parsers trivially testable
+- [10-01]: ParseRoadmap two-pass design: first pass extracts phase rows, second pass enriches with goals from Phase Details
+- [10-01]: All parsers return partial results on malformed/empty input — non-fatal by design (fallback path must be resilient)
+- [10-01]: Zero write operations in compat package enforced structurally — D-09 compliance verified
 
 ### Pending Todos
 
@@ -140,6 +146,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21 (Phase 9 Plan 02 complete)
-Stopped at: Phase 9 Plan 02 complete — budget-aware SessionStart (buildBudgetContext, 2000 token default), get_tiered_context MCP tool (tool 18), execute_wave gsd:compact preference. All tests pass.
+Last session: 2026-03-22 (Phase 10 Plan 01 complete)
+Stopped at: Phase 10 Plan 01 complete — internal/compat package (ParseState, ParseRoadmap, ParseProject, DetectPlanning, BuildFallbackStatus), TDD, 17 tests pass with -race.
 Resume file: None

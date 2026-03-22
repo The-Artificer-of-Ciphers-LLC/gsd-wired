@@ -181,7 +181,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — internal/compat/ package: pure parsers for STATE.md, ROADMAP.md, PROJECT.md (TDD)
+- [x] 10-01-PLAN.md — internal/compat/ package: pure parsers for STATE.md, ROADMAP.md, PROJECT.md (TDD)
 - [ ] 10-02-PLAN.md — Wire .planning/ fallback into SessionStart hook and get_status MCP tool
 
 ## Progress
@@ -201,4 +201,4 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 7. Execution + Verification | 3/3 | Complete | 2026-03-21 |
 | 8. Ship + Status | 2/2 | Complete | 2026-03-21 |
 | 9. Token-Aware Context | 2/2 | Complete | 2026-03-21 |
-| 10. Coexistence | 0/2 | Not started | - |
+| 10. Coexistence | 1/2 | In progress | - |
