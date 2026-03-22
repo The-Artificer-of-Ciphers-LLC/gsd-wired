@@ -18,11 +18,11 @@ Requirements for v1.0 release — installation toolkit and distribution packagin
 
 ### Setup UX
 
-- [ ] **SETUP-01**: `gsdw setup` interactive wizard guides developer through full installation (deps in Phase 12, container runtime in Phase 13, connection in Phase 14)
+- [x] **SETUP-01**: `gsdw setup` interactive wizard guides developer through full installation (deps in Phase 12, container runtime in Phase 13, connection in Phase 14)
 - [x] **SETUP-02**: `gsdw check-deps` detects bd, dolt, Go, container runtime with version checks and install instructions
 - [x] **SETUP-03**: `gsdw doctor` non-destructive health check reports status of all dependencies, containers, and connections
 - [x] **SETUP-04**: Dependency detection checks `$(go env GOPATH)/bin` in addition to PATH (avoids false negatives)
-- [ ] **SETUP-05**: Setup wizard offers install methods for missing dependencies (brew, go install, binary download)
+- [x] **SETUP-05**: Setup wizard offers install methods for missing dependencies (brew, go install, binary download)
 
 ### Container Support
 
@@ -81,11 +81,11 @@ Which phases cover which requirements.
 | DIST-04 | Phase 11 | Complete (11-01) |
 | DIST-05 | Phase 11 | Complete (11-01) |
 | DIST-06 | Phase 11 | Pending |
-| SETUP-01 | Phase 12, 13, 14 | Pending |
+| SETUP-01 | Phase 12, 13, 14 | Partial (12-02: deps done; 13: container; 14: connect) |
 | SETUP-02 | Phase 12 | Complete (12-01) |
 | SETUP-03 | Phase 12 | Complete (12-01) |
 | SETUP-04 | Phase 12 | Complete (12-01) |
-| SETUP-05 | Phase 12 | Pending |
+| SETUP-05 | Phase 12 | Complete (12-02) |
 | CNTR-01 | Phase 13 | Pending |
 | CNTR-02 | Phase 13 | Pending |
 | CNTR-03 | Phase 13 | Pending |

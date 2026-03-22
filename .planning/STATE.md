@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 12 — Setup UX
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-22 -- Phase 12 Plan 01 complete (deps detection + check-deps + doctor)
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-03-22 -- Phase 12 Plan 02 complete (gsdw setup interactive wizard)
 
-Progress: [███░░░░░░░] 30% (Installation Toolkit milestone)
+Progress: [████░░░░░░] 40% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -156,6 +156,10 @@ Prior v1.0 decisions (preserved for continuity):
 - [12-01]: lookInGoPath uses exec.LookPath("go") first so tests can inject a fake go binary via PATH, not exec.Command("go") directly
 - [12-01]: renderDoctor delegates dep rendering inline — avoids coupling indentation style between check-deps and doctor commands
 - [12-01]: checkContainerRuntime iterates docker-then-podman slice — clean extension point for Apple Container in Phase 13
+- [12-02]: depInstallOptions map keyed on binary name — clean lookup for per-dep install methods without switch statements
+- [12-02]: brewAvailable passed as bool parameter to runSetup — testable without PATH manipulation
+- [12-02]: numbered menu options built dynamically (brew first if available, then go install, then download) — order deterministic
+- [12-02]: printNextSteps extracted as separate function — both all-OK and missing-dep paths share same guidance block
 
 ### Pending Todos
 
@@ -169,6 +173,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 12 Plan 01 execution — completed)
-Stopped at: Completed 12-01-PLAN.md. deps.CheckAll, gsdw check-deps, gsdw doctor all implemented and tested.
+Last session: 2026-03-22 (Phase 12 Plan 02 execution — completed)
+Stopped at: Completed 12-02-PLAN.md. gsdw setup interactive wizard implemented and tested. Phase 12 complete.
 Resume file: None
