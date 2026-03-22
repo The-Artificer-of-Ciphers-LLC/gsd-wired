@@ -46,7 +46,7 @@ binary_signs:
     args: ["${artifact}"]
     artifacts: binary
     ids: [gsdw]
-    signature: "${artifact}.sig"
+    signature: "${artifact}_{{ .Os }}_{{ .Arch }}.sig"
     output: true
 
 homebrew_casks:
