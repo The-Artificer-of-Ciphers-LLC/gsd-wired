@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 11 — Distribution Infrastructure
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-22 -- Phase 11 Plan 01 complete (checkpoint pending: homebrew tap setup)
+Plan: 2 of 2 in current phase
+Status: Executing (checkpoint:human-verify at Task 2)
+Last activity: 2026-03-22 -- Phase 11 Plan 02 Task 1 complete (checkpoint pending: end-to-end release verification)
 
-Progress: [█░░░░░░░░░] 10% (Installation Toolkit milestone)
+Progress: [██░░░░░░░░] 20% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Recent decisions affecting current work:
 - [11-01]: Used stable dockers section (not dockers_v2 alpha) — goreleaser not installed locally, stable approach safer
 - [11-01]: ldflags vars are package-level (not unexported) — allows TestLdflagsOverride to set directly without build flags
 - [11-01]: signs section retained with GPG config — can be removed if GPG not available at release time
+- [11-02]: Token name is GSDWHOMEBREW in release.yml — matches .goreleaser.yaml .Env.GSDWHOMEBREW reference exactly (plan template had wrong name)
 
 Prior v1.0 decisions (preserved for continuity):
 - [01-01]: go-sdk v1.4.1 used as official MCP library — authoritative, Google co-maintained
@@ -164,6 +165,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 11 Plan 01 execution — checkpoint:human-verify at Task 3)
-Stopped at: Completed 11-01-PLAN.md Tasks 1-2. Awaiting user to create homebrew-gsdw tap repo and HOMEBREW_TAP_TOKEN secret.
+Last session: 2026-03-22 (Phase 11 Plan 02 execution — checkpoint:human-verify at Task 2)
+Stopped at: Completed 11-02-PLAN.md Task 1. Awaiting user to verify release infrastructure and confirm GSDWHOMEBREW secret is configured.
 Resume file: None

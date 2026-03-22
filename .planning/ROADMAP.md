@@ -45,7 +45,7 @@
 **Plans:** 2 plans
 Plans:
 - [x] 11-01-PLAN.md — Version ldflags injection, --json flag, GoReleaser config, Dockerfile (checkpoint pending: homebrew tap)
-- [ ] 11-02-PLAN.md — GitHub Actions release workflow, infrastructure verification checkpoint
+- [~] 11-02-PLAN.md — GitHub Actions release workflow created (Task 1 done); checkpoint:human-verify at Task 2
 
 ### Phase 12: Setup UX
 **Goal**: A developer who just installed gsdw can verify their environment and get guided to a working state in one command
