@@ -31,8 +31,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Project Initialization
 
-- [ ] **INIT-01**: User can initialize a new project via `/gsd-wired:init` slash command
-- [ ] **INIT-02**: Deep questioning flow captures project context (what, why, who, done criteria)
+- [x] **INIT-01**: User can initialize a new project via `/gsd-wired:init` slash command
+- [x] **INIT-02**: Deep questioning flow captures project context (what, why, who, done criteria)
 - [x] **INIT-03**: Questioning produces epic bead (project) + context beads (decisions, constraints)
 - [x] **INIT-04**: PROJECT.md and config.json remain as human-readable files (hybrid state model)
 - [x] **INIT-05**: `bd init` creates .beads/ directory with Dolt-backed storage
@@ -82,7 +82,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Slash Commands
 
-- [ ] **CMD-01**: `/gsd-wired:init` — Initialize new project with deep questioning
+- [x] **CMD-01**: `/gsd-wired:init` — Initialize new project with deep questioning
 - [x] **CMD-02**: `/gsd-wired:status` — Show project state from beads graph — Phase 8 Plan 01
 - [x] **CMD-03**: `/gsd-wired:plan` — Create phase plan (task beads with dependencies)
 - [x] **CMD-04**: `/gsd-wired:execute` — Execute current wave of unblocked tasks
