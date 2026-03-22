@@ -18,7 +18,7 @@ Requirements for v1.0 release — installation toolkit and distribution packagin
 
 ### Setup UX
 
-- [ ] **SETUP-01**: `gsdw setup` interactive wizard guides developer through full installation (deps, container runtime, connection)
+- [ ] **SETUP-01**: `gsdw setup` interactive wizard guides developer through full installation (deps in Phase 12, container runtime in Phase 13, connection in Phase 14)
 - [ ] **SETUP-02**: `gsdw check-deps` detects bd, dolt, Go, container runtime with version checks and install instructions
 - [ ] **SETUP-03**: `gsdw doctor` non-destructive health check reports status of all dependencies, containers, and connections
 - [ ] **SETUP-04**: Dependency detection checks `$(go env GOPATH)/bin` in addition to PATH (avoids false negatives)
@@ -81,7 +81,7 @@ Which phases cover which requirements.
 | DIST-04 | Phase 11 | Complete (11-01) |
 | DIST-05 | Phase 11 | Complete (11-01) |
 | DIST-06 | Phase 11 | Pending |
-| SETUP-01 | Phase 12 | Pending |
+| SETUP-01 | Phase 12, 13, 14 | Pending |
 | SETUP-02 | Phase 12 | Pending |
 | SETUP-03 | Phase 12 | Pending |
 | SETUP-04 | Phase 12 | Pending |
