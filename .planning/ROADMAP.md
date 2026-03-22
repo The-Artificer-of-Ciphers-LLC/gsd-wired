@@ -56,7 +56,10 @@ Plans:
   2. `gsdw check-deps` finds bd and dolt even when they are in `$(go env GOPATH)/bin` but not in PATH
   3. `gsdw setup` walks the developer through dependency installation, offering brew, `go install`, or binary download for each missing tool
   4. `gsdw doctor` runs without modifying any files and prints a scannable status report for all dependencies, containers, and connections
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 12-01-PLAN.md — Dependency detection package (internal/deps), check-deps and doctor CLI commands
+- [ ] 12-02-PLAN.md — Interactive setup wizard with install method selection
 
 ### Phase 13: Container Support
 **Goal**: A developer can start a Dolt server in a container with a single command using whichever runtime is available on their machine
@@ -87,7 +90,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v1.0 | 22/22 | Complete | 2026-03-22 |
 | 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
-| 12. Setup UX | v1.0 Install | 0/TBD | Not started | - |
+| 12. Setup UX | v1.0 Install | 0/2 | Planned | - |
 | 13. Container Support | v1.0 Install | 0/TBD | Not started | - |
 | 14. Connectivity | v1.0 Install | 0/TBD | Not started | - |
 
