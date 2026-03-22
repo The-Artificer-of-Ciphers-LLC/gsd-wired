@@ -43,8 +43,7 @@ changelog:
 signs:
   - artifacts: checksum
     cmd: gpg
-    args: ["--batch", "--pinentry-mode", "loopback", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
-    stdin: "{{ .Env.GPG_PASSWORD }}"
+    args: ["--batch", "--pinentry-mode", "loopback", "--passphrase", "{{ .Env.GPG_PASSWORD }}", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
 
 notarize:
   macos:
