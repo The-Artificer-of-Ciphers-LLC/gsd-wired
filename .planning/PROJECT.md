@@ -61,26 +61,7 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 
 ### Active
 
-(All v1 requirements validated — milestone complete)
-
-- [ ] Claude Code plugin with MCP server wrapping bd CLI for graph operations
-- [ ] SessionStart hook loads project context from beads graph on session start
-- [ ] PreCompact hook saves in-progress state to beads before context compaction
-- [ ] PreToolCall hook intercepts calls to inject bead context or route through bd
-- [ ] PostToolCall hook updates bead state after execution (auto-close, progress)
-- [ ] Project initialization via deep questioning → context stored as beads
-- [ ] Phase = epic bead, Plan = task bead, Wave = dependency layer in the graph
-- [ ] Research agents (4 parallel) coordinate as epic + child beads — each researcher claims a child, synthesizer queries all when done
-- [ ] Subagents claim beads (bd update --claim), get that bead's context, work, close — minimal prompt overhead
-- [ ] Wave-based parallel execution where agents claim unblocked beads via bd ready
-- [ ] Post-execution verification against success criteria stored in beads
-- [ ] PR creation and milestone tracking via beads state
-- [ ] ROADMAP.md and STATE.md replaced by beads graph queries — no markdown bloat
-- [ ] PROJECT.md and config.json remain as human-readable files (hybrid state model)
-- [ ] GSD-specific metadata stored via bd's extensible fields (phase tags, requirement IDs, success criteria)
-- [ ] Coexistence: can read .planning/ as fallback if beads not initialized (migration path for existing GSD projects)
-- [ ] Token-aware routing: wire decides what context to load/compact based on budget
-- [ ] Tiered context in practice: hot beads get full context, closed beads get compacted
+(v1.0 complete — all requirements validated. Next milestone TBD.)
 
 ### Out of Scope
 
@@ -140,4 +121,9 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-22 after v1.0 milestone completion (all 10 phases)*
+## Current State
+
+**v1.0 shipped 2026-03-22.** 77 Go files, 12,373 LOC, 220 tests across 8 packages. 18 MCP tools, 8 slash commands, 4 hooks. Single binary `gsdw` installable via `go install`. Full GSD lifecycle: init → research → plan → execute → verify → ship.
+
+---
+*Last updated: 2026-03-22 after v1.0 milestone*
