@@ -266,6 +266,99 @@ func TestCheckAll_ContainerRuntimeDockerThenPodman(t *testing.T) {
 	}
 }
 
+// TestCheckAll_AppleContainerPriority verifies that 'container' binary takes priority over docker/podman
+// when on macOS 26+ (simulated via the GSDW_MOCK_MACOS_MAJOR env var).
+func TestCheckAll_AppleContainerPriority(t *testing.T) {
+	dir := t.TempDir()
+	gopath := t.TempDir()
+
+	makeFakeBinary(t, dir, "bd", "1.4.2")
+	makeFakeBinary(t, dir, "dolt", "1.40.0")
+	makeFakeGo(t, dir, gopath)
+	// Both container and docker present — container should win on macOS 26.
+	makeFakeBinary(t, dir, "container", "1.0.0")
+	makeFakeBinary(t, dir, "docker", "24.0.5")
+
+	t.Setenv("PATH", dir)
+	t.Setenv("GSDW_MOCK_MACOS_MAJOR", "26")
+
+	result := deps.CheckAll()
+
+	var crtDep *deps.Dep
+	for i := range result.Deps {
+		if result.Deps[i].Name == "Container Runtime" {
+			crtDep = &result.Deps[i]
+			break
+		}
+	}
+	if crtDep == nil {
+		t.Fatal("'Container Runtime' not in result.Deps")
+	}
+	if crtDep.Status != deps.StatusOK {
+		t.Errorf("expected container runtime OK via apple-container, got %v (help=%q)", crtDep.Status, crtDep.InstallHelp)
+	}
+	if crtDep.Binary != "container" {
+		t.Errorf("expected binary='container', got %q (docker should not have been selected)", crtDep.Binary)
+	}
+}
+
+// TestCheckAll_AppleContainerFallback verifies docker/podman is used when 'container' binary absent.
+func TestCheckAll_AppleContainerFallback(t *testing.T) {
+	dir := t.TempDir()
+	gopath := t.TempDir()
+
+	makeFakeBinary(t, dir, "bd", "1.4.2")
+	makeFakeBinary(t, dir, "dolt", "1.40.0")
+	makeFakeGo(t, dir, gopath)
+	// Only docker present (no 'container' binary).
+	makeFakeBinary(t, dir, "docker", "24.0.5")
+
+	t.Setenv("PATH", dir)
+	t.Setenv("GSDW_MOCK_MACOS_MAJOR", "26")
+
+	result := deps.CheckAll()
+
+	var crtDep *deps.Dep
+	for i := range result.Deps {
+		if result.Deps[i].Name == "Container Runtime" {
+			crtDep = &result.Deps[i]
+			break
+		}
+	}
+	if crtDep == nil {
+		t.Fatal("'Container Runtime' not in result.Deps")
+	}
+	if crtDep.Status != deps.StatusOK {
+		t.Errorf("expected container runtime OK via docker, got %v", crtDep.Status)
+	}
+	if crtDep.Binary != "docker" {
+		t.Errorf("expected binary='docker' when container not found, got %q", crtDep.Binary)
+	}
+}
+
+// TestCheckAll_AppleContainerInstallHelp verifies Apple Container install help is present when binary missing.
+func TestCheckAll_AppleContainerInstallHelp(t *testing.T) {
+	dir := t.TempDir()
+	gopath := t.TempDir()
+
+	// Only go present — all container runtimes missing.
+	makeFakeGo(t, dir, gopath)
+
+	t.Setenv("PATH", dir)
+	t.Setenv("GSDW_MOCK_MACOS_MAJOR", "26")
+
+	result := deps.CheckAll()
+
+	for _, d := range result.Deps {
+		if d.Name == "Container Runtime" && d.Status == deps.StatusFail {
+			if d.InstallHelp == "" {
+				t.Error("missing install help for Container Runtime")
+			}
+			return
+		}
+	}
+}
+
 // TestLookInGoPath verifies the GOPATH/bin fallback is used for go install'd binaries.
 // This is an integration-style test using the real `go env GOPATH`.
 func TestLookInGoPath(t *testing.T) {
