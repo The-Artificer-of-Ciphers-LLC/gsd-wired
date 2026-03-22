@@ -44,7 +44,7 @@
   5. `docker pull ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest` succeeds and pulls a multi-arch image
 **Plans:** 2 plans
 Plans:
-- [ ] 11-01-PLAN.md — Version ldflags injection, --json flag, GoReleaser config, Dockerfile
+- [x] 11-01-PLAN.md — Version ldflags injection, --json flag, GoReleaser config, Dockerfile (checkpoint pending: homebrew tap)
 - [ ] 11-02-PLAN.md — GitHub Actions release workflow, infrastructure verification checkpoint
 
 ### Phase 12: Setup UX
@@ -86,7 +86,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v1.0 | 22/22 | Complete | 2026-03-22 |
-| 11. Distribution Infrastructure | v1.0 Install | 0/2 | Planning complete | - |
+| 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
 | 12. Setup UX | v1.0 Install | 0/TBD | Not started | - |
 | 13. Container Support | v1.0 Install | 0/TBD | Not started | - |
 | 14. Connectivity | v1.0 Install | 0/TBD | Not started | - |

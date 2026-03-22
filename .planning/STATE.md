@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 ## Current Position
 
 Phase: 11 — Distribution Infrastructure
-Plan: —
-Status: Roadmap created, ready to plan Phase 11
-Last activity: 2026-03-22 -- v1.0 Installation Toolkit roadmap defined (Phases 11-14, 24 requirements)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-22 -- Phase 11 Plan 01 complete (checkpoint pending: homebrew tap setup)
 
-Progress: [░░░░░░░░░░] 0% (Installation Toolkit milestone)
+Progress: [█░░░░░░░░░] 10% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -62,6 +62,9 @@ Recent decisions affecting current work:
 - [Research]: `gsdw.compose.yaml` fragment (not compose.override.yml) — never modify user's existing compose files
 - [Research]: volume mount before bd init pitfall — setup must check .beads/dolt/ exists and run bd init if needed
 - [Research]: dockers_v2 is alpha — pin GoReleaser to v2.14.3 in GitHub Actions, do not use latest
+- [11-01]: Used stable dockers section (not dockers_v2 alpha) — goreleaser not installed locally, stable approach safer
+- [11-01]: ldflags vars are package-level (not unexported) — allows TestLdflagsOverride to set directly without build flags
+- [11-01]: signs section retained with GPG config — can be removed if GPG not available at release time
 
 Prior v1.0 decisions (preserved for continuity):
 - [01-01]: go-sdk v1.4.1 used as official MCP library — authoritative, Google co-maintained
@@ -161,6 +164,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (v1.0 Installation Toolkit roadmap created — Phases 11-14)
-Stopped at: Roadmap written. Ready to plan Phase 11 (Distribution Infrastructure).
+Last session: 2026-03-22 (Phase 11 Plan 01 execution — checkpoint:human-verify at Task 3)
+Stopped at: Completed 11-01-PLAN.md Tasks 1-2. Awaiting user to create homebrew-gsdw tap repo and HOMEBREW_TAP_TOKEN secret.
 Resume file: None

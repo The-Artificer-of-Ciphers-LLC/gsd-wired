@@ -9,11 +9,11 @@ Requirements for v1.0 release — installation toolkit and distribution packagin
 
 ### Distribution
 
-- [ ] **DIST-01**: Cross-platform binaries built via GoReleaser (linux/mac, arm64/amd64) published to GitHub Releases
+- [x] **DIST-01**: Cross-platform binaries built via GoReleaser (linux/mac, arm64/amd64) published to GitHub Releases
 - [ ] **DIST-02**: Homebrew cask via tap repo (`brew install The-Artificer-of-Ciphers-LLC/tap/gsdw`)
-- [ ] **DIST-03**: macOS binary signed and notarized with ADC (no App Store) — Gatekeeper approved
-- [ ] **DIST-04**: Container image for gsdw published to ghcr.io with multi-arch support
-- [ ] **DIST-05**: `go install github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/cmd/gsdw@latest` works cleanly (CGO_ENABLED=0)
+- [x] **DIST-03**: macOS binary signed and notarized with ADC (no App Store) — Gatekeeper approved
+- [x] **DIST-04**: Container image for gsdw published to ghcr.io with multi-arch support
+- [x] **DIST-05**: `go install github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/cmd/gsdw@latest` works cleanly (CGO_ENABLED=0)
 - [ ] **DIST-06**: GitHub Actions CI/CD pipeline triggers GoReleaser on tag push
 
 ### Setup UX
@@ -75,11 +75,11 @@ Which phases cover which requirements.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DIST-01 | Phase 11 | Pending |
-| DIST-02 | Phase 11 | Pending |
-| DIST-03 | Phase 11 | Pending |
-| DIST-04 | Phase 11 | Pending |
-| DIST-05 | Phase 11 | Pending |
+| DIST-01 | Phase 11 | Complete (11-01) |
+| DIST-02 | Phase 11 | Pending (checkpoint: tap repo needed) |
+| DIST-03 | Phase 11 | Complete (11-01) |
+| DIST-04 | Phase 11 | Complete (11-01) |
+| DIST-05 | Phase 11 | Complete (11-01) |
 | DIST-06 | Phase 11 | Pending |
 | SETUP-01 | Phase 12 | Pending |
 | SETUP-02 | Phase 12 | Pending |
