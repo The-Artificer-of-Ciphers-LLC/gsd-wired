@@ -1,8 +1,8 @@
 # Milestones
 
-## v1.0 — gsd-wired
+## v1.0 — gsd-wired (in progress)
 
-**Shipped:** 2026-03-22
+**Core complete:** 2026-03-22 | **Installation toolkit:** in progress
 **Phases:** 10 | **Plans:** 22 | **Tests:** 220
 **Go files:** 77 | **LOC:** 12,373 | **Commits:** 129
 

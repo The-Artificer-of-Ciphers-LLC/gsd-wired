@@ -61,7 +61,16 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 
 ### Active
 
-(v1.0 complete — all requirements validated. Next milestone TBD.)
+- [ ] Brew formula for gsdw binary distribution
+- [ ] `go install` path works end-to-end
+- [ ] Dependency detection (bd, dolt, Go) with guided install
+- [ ] Apple Container support for macOS
+- [ ] Docker/Podman standalone container support
+- [ ] Drop-in docker-compose fragment (non-destructive to existing files)
+- [ ] Container images for Dolt server + beads
+- [ ] Connection setup wizard (local or remote, collect host/port)
+- [ ] Health check and connectivity troubleshooting
+- [ ] Remote host fallback to local container on failure
 
 ### Out of Scope
 
@@ -123,7 +132,7 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Current State
 
-**v1.0 shipped 2026-03-22.** 77 Go files, 12,373 LOC, 220 tests across 8 packages. 18 MCP tools, 8 slash commands, 4 hooks. Single binary `gsdw` installable via `go install`. Full GSD lifecycle: init → research → plan → execute → verify → ship.
+**v1.0 core complete 2026-03-22.** 77 Go files, 12,373 LOC, 220 tests across 8 packages. 18 MCP tools, 8 slash commands, 4 hooks. Full GSD lifecycle built. Now adding installation toolkit and release packaging before tagging v1.0.
 
 ---
 *Last updated: 2026-03-22 after v1.0 milestone*

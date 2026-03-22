@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** v1.0 shipped. Planning next milestone.
+**Current focus:** v1.0 Installation Toolkit — brew, containers, dependency detection, connectivity
 
 ## Current Position
 
-Phase: 10 of 10 (Coexistence)
-Plan: 2 of 2 in current phase
-Status: Complete — v1.0 milestone achieved
-Last activity: 2026-03-22 -- Phase 10 Plan 02 complete — .planning/ fallback wired into SessionStart hook and get_status MCP tool (TDD, 8 tests, -race clean)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for Installation Toolkit
+Last activity: 2026-03-22 -- Starting v1.0 Installation Toolkit milestone
 
 Progress: [██████████] 100%
 
