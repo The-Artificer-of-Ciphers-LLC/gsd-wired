@@ -42,7 +42,11 @@ Doctor is strictly read-only — it will not modify any files.`,
 				connCfg, _ = connection.LoadConnection(gsdwDir)
 				if connCfg != nil {
 					host, port := connCfg.ActiveHostPort()
-					connHealthErr = connection.CheckConnectivity(host, port, connCfg.Remote.User, os.Getenv("GSDW_DB_PASSWORD"), 2*time.Second)
+					user := connCfg.Remote.User
+					if connCfg.ActiveMode == "local" && user == "" {
+						user = "root" // Dolt container default
+					}
+					connHealthErr = connection.CheckConnectivity(host, port, user, os.Getenv("GSDW_DB_PASSWORD"), 2*time.Second)
 				}
 			}
 

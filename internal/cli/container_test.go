@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -143,21 +144,27 @@ func TestRunContainerStart_NoRuntime_ReturnsError(t *testing.T) {
 	}
 }
 
-func TestRunContainerStart_MissingBeadsDir_ReturnsError(t *testing.T) {
+func TestRunContainerStart_MissingBeadsDir_AutoCreates(t *testing.T) {
 	rt := &fakeRuntime{name: "docker", binary: "/usr/local/bin/docker"}
 	opts := makeStartOpts(rt, nil)
+
+	// Use a temp dir so os.MkdirAll can create the beads/dolt subdir.
+	tmpDir := t.TempDir()
+	opts.beadsDoltDir = filepath.Join(tmpDir, ".beads", "dolt")
 	opts.statFn = func(path string) error {
-		return os.ErrNotExist
+		_, err := os.Stat(path)
+		return err
 	}
 
 	var buf bytes.Buffer
-	err := runContainerStart(&buf, opts)
-	if err == nil {
-		t.Fatal("expected error when .beads/dolt/ missing")
+	_ = runContainerStart(&buf, opts)
+	// May error on exec (fake runtime), but should NOT error on missing dir.
+	output := buf.String()
+	if strings.Contains(output, "bd init") {
+		t.Errorf("should auto-create dir, not suggest bd init, got:\n%s", output)
 	}
-
-	if !strings.Contains(err.Error(), "bd init") {
-		t.Errorf("expected 'bd init' guidance, got: %v", err)
+	if !strings.Contains(output, "Created") {
+		t.Errorf("expected 'Created' message for auto-created dir, got:\n%s", output)
 	}
 }
 

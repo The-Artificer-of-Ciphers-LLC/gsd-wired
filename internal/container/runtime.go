@@ -177,6 +177,7 @@ func (a *AppleContainerRuntime) StartArgs(cfg ContainerConfig) []string {
 		"run", "-d",
 		"--name", containerName,
 		"-p", fmt.Sprintf("127.0.0.1:%s:3306", hostPort),
+		"-e", "DOLT_ROOT_HOST=%",
 		"-v", fmt.Sprintf("%s:/var/lib/dolt", cfg.BeadsDoltDir),
 		"dolthub/dolt-sql-server:latest",
 	}
