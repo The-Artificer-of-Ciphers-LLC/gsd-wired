@@ -85,7 +85,10 @@ Plans:
   2. After running `gsdw connect`, every subsequent `bd` subprocess invocation in the session receives `BEADS_DOLT_SERVER_HOST` and `BEADS_DOLT_SERVER_PORT` as environment variables without any manual configuration
   3. Before any graph operation, gsdw confirms the Dolt server is reachable and prints a clear error with troubleshooting steps if it is not
   4. When the configured remote host is unreachable, gsdw offers to fall back to the local container and proceeds only after the developer confirms
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 14-01-PLAN.md — Connection config package (Config struct, Load/Save, health check, env var injection into client.go)
+- [ ] 14-02-PLAN.md — Connect wizard (auto-detect, container start, remote config, fallback) and doctor Connection section
 
 ## Progress
 
@@ -95,7 +98,7 @@ Plans:
 | 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
 | 12. Setup UX | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 | 13. Container Support | v1.0 Install | 2/2 | Complete | 2026-03-22 |
-| 14. Connectivity | v1.0 Install | 0/TBD | Not started | - |
+| 14. Connectivity | v1.0 Install | 0/2 | Planning complete | - |
 
 ---
 
