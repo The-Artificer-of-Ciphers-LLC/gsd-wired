@@ -49,6 +49,12 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 - [x] Phase completion updates bead state, triggers next phase (SHIP-02) — Phase 8
 - [x] /gsd-wired:status shows state from beads graph (CMD-02) — Phase 8
 - [x] /gsd-wired:ship slash command (CMD-06) — Phase 8
+- [x] Graph queries replace full file reads, O(relevant) not O(total) (TOKEN-01) — Phase 9
+- [x] Subagent prompts contain only claimed bead context (TOKEN-02) — Phase 9
+- [x] Closed beads automatically compacted (TOKEN-03) — Phase 9
+- [x] Hot/warm/cold tiering (TOKEN-04) — Phase 9
+- [x] Token budget tracking with estimateTokens (TOKEN-05) — Phase 9
+- [x] Tiered injection in SessionStart based on budget (TOKEN-06) — Phase 9
 
 ### Active
 
