@@ -58,7 +58,7 @@ Plans:
   4. `gsdw doctor` runs without modifying any files and prints a scannable status report for all dependencies, containers, and connections
 **Plans:** 2 plans
 Plans:
-- [ ] 12-01-PLAN.md — Dependency detection package (internal/deps), check-deps and doctor CLI commands
+- [x] 12-01-PLAN.md — Dependency detection package (internal/deps), check-deps and doctor CLI commands
 - [ ] 12-02-PLAN.md — Interactive setup wizard with install method selection
 
 ### Phase 13: Container Support
@@ -90,7 +90,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v1.0 | 22/22 | Complete | 2026-03-22 |
 | 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
-| 12. Setup UX | v1.0 Install | 0/2 | Planned | - |
+| 12. Setup UX | v1.0 Install | 1/2 | Executing | - |
 | 13. Container Support | v1.0 Install | 0/TBD | Not started | - |
 | 14. Connectivity | v1.0 Install | 0/TBD | Not started | - |
 

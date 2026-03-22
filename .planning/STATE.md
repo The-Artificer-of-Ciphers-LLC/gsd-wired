@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** v1.0 Installation Toolkit — Phase 11: Distribution Infrastructure
+**Current focus:** v1.0 Installation Toolkit — Phase 12: Setup UX
 
 ## Current Position
 
-Phase: 11 — Distribution Infrastructure
-Plan: 2 of 2 in current phase
-Status: Executing (checkpoint:human-verify at Task 2)
-Last activity: 2026-03-22 -- Phase 11 Plan 02 Task 1 complete (checkpoint pending: end-to-end release verification)
+Phase: 12 — Setup UX
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-22 -- Phase 12 Plan 01 complete (deps detection + check-deps + doctor)
 
-Progress: [██░░░░░░░░] 20% (Installation Toolkit milestone)
+Progress: [███░░░░░░░] 30% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -152,6 +152,10 @@ Prior v1.0 decisions (preserved for continuity):
 - [10-02]: formatFallbackContext in session_start.go emits compatibility mode prefix, project name, core value, phase/plan counters, phase checkbox list
 - [10-02]: fallbackStatusResult maps FallbackStatus to statusResult — OpenPhases counts !Complete phases, ReadyTasks stays empty (no graph)
 - [10-02]: state.beadsDir set during sync.Once even on failure — DetectPlanning correctly receives project root for .planning/ check
+- [12-01]: Tests use isolated temp-dir-only PATH to prevent real system binaries (bd at ~/.local/bin, docker) from interfering with hermetic tests
+- [12-01]: lookInGoPath uses exec.LookPath("go") first so tests can inject a fake go binary via PATH, not exec.Command("go") directly
+- [12-01]: renderDoctor delegates dep rendering inline — avoids coupling indentation style between check-deps and doctor commands
+- [12-01]: checkContainerRuntime iterates docker-then-podman slice — clean extension point for Apple Container in Phase 13
 
 ### Pending Todos
 
@@ -165,6 +169,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 11 Plan 02 execution — checkpoint:human-verify at Task 2)
-Stopped at: Completed 11-02-PLAN.md Task 1. Awaiting user to verify release infrastructure and confirm GSDWHOMEBREW secret is configured.
+Last session: 2026-03-22 (Phase 12 Plan 01 execution — completed)
+Stopped at: Completed 12-01-PLAN.md. deps.CheckAll, gsdw check-deps, gsdw doctor all implemented and tested.
 Resume file: None
