@@ -1,455 +1,413 @@
-# Architecture Research
+# Architecture Research — Container Integration Milestone
 
-**Domain:** Claude Code plugin -- MCP server + hooks orchestrator wrapping Beads/Dolt
+**Domain:** Container support for gsdw → bd → Dolt chain
 **Researched:** 2026-03-21
-**Confidence:** HIGH (all three integration surfaces verified against official docs)
+**Confidence:** HIGH (bd env vars verified from source, Dolt Docker verified from official docs, Apple Container networking verified from official how-to)
 
-## Standard Architecture
+---
 
-### System Overview
+## Context: What Already Exists
 
-```
-+---------------------------------------------------------------------+
-|                     Claude Code Runtime                              |
-|                                                                      |
-|  +---------------------------------------------------------------+  |
-|  |                  gsd-wired Plugin                              |  |
-|  |                                                                |  |
-|  |  +-----------+  +----------+  +-----------------+              |  |
-|  |  |  Skills   |  |  Agents  |  | Slash Commands  |              |  |
-|  |  | (SKILL.md)|  | (agent.md)|  | (commands/)    |              |  |
-|  |  +-----+-----+  +-----+----+  +-------+---------+             |  |
-|  |        |               |               |                       |  |
-|  |  +-----+---------------+---------------+---------+             |  |
-|  |  |              Hooks Layer (hooks.json)          |            |  |
-|  |  | SessionStart | PreToolUse | PostToolUse        |            |  |
-|  |  | PreCompact | SubagentStart | SubagentStop      |            |  |
-|  |  +----------------------------+-------------------+            |  |
-|  |                               | stdin/stdout JSON              |  |
-|  |  +----------------------------+-------------------+            |  |
-|  |  |         Hook Dispatcher (Go binary)            |            |  |
-|  |  | Receives hook events, routes to handler        |            |  |
-|  |  +----------------------------+-------------------+            |  |
-|  |                               |                                |  |
-|  |  +----------------------------+-------------------+            |  |
-|  |  |        MCP Server (Go, stdio transport)        |            |  |
-|  |  | Tools: gsd_init, gsd_phase, gsd_plan,          |            |  |
-|  |  |   gsd_wave, gsd_execute, gsd_verify,           |            |  |
-|  |  |   gsd_status, gsd_compact, gsd_context         |            |  |
-|  |  +----------------------------+-------------------+            |  |
-|  |                               |                                |  |
-|  +-------------------------------+--------------------------------+  |
-|                                  |                                   |
-|  +-------------------------------+--------------------------------+  |
-|  |             bd CLI Wrapper (Go library)                        |  |
-|  | Calls bd commands, parses JSON, maps GSD concepts              |  |
-|  | Phase=epic, Plan=task, Wave=dependency layer                   |  |
-|  +-------------------------------+--------------------------------+  |
-|                                  | exec bd --json                    |
-|  +-------------------------------+--------------------------------+  |
-|  |             bd CLI (external binary)                           |  |
-|  +-------------------------------+--------------------------------+  |
-|                                  |                                   |
-|  +-------------------------------+--------------------------------+  |
-|  |             Dolt Database (.beads/)                            |  |
-|  | Version-controlled SQL, hash-based IDs, cell-level merge      |  |
-|  +----------------------------------------------------------------+  |
-+----------------------------------------------------------------------+
-```
-
-### Component Responsibilities
-
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| Plugin Manifest | Identity, version, namespace for `gsd-wired:*` commands | `.claude-plugin/plugin.json` |
-| Slash Commands | User-facing entry points (`/gsd-wired:init`, `/gsd-wired:phase`, etc.) | Markdown files in `commands/` with `$ARGUMENTS` |
-| Skills | Model-invoked capabilities (auto-detected by Claude based on task) | `skills/*/SKILL.md` with frontmatter |
-| Agents | Specialized subagents (researcher, planner, executor, verifier) | `agents/*.md` with tool restrictions |
-| Hooks Layer | Lifecycle integration -- context injection, state persistence, routing | `hooks/hooks.json` pointing to Go binary |
-| Hook Dispatcher | Single Go binary handling all hook events via subcommand routing | `gsd-wired hook <event-name>` reads stdin JSON |
-| MCP Server | Tool exposure for graph operations and workflow orchestration | Go binary using `modelcontextprotocol/go-sdk`, stdio transport |
-| bd Wrapper | Go library that shells out to `bd` with `--json`, parses responses, maps GSD domain model | Internal Go package, not a separate binary |
-| bd CLI | External dependency -- graph operations on Dolt database | Installed separately (`go install`, `brew`, or `npm`) |
-| Dolt Database | Persistent storage -- issues, dependencies, metadata, audit trail | `.beads/` directory in project root |
-| Fallback Reader | Reads `.planning/` markdown files when beads not initialized | Go package for migration/coexistence path |
-
-## Recommended Project Structure
+The v1.0 binary (`gsdw`) has this connection chain:
 
 ```
-gsd-wired/
-  .claude-plugin/
-    plugin.json              # Plugin manifest (name, version, author)
-  commands/                  # Slash commands (user-invoked)
-    init.md                  # /gsd-wired:init -- project initialization
-    phase.md                 # /gsd-wired:phase -- create/transition phases
-    plan.md                  # /gsd-wired:plan -- create execution plans
-    execute.md               # /gsd-wired:execute -- run wave-based execution
-    verify.md                # /gsd-wired:verify -- post-execution verification
-    status.md                # /gsd-wired:status -- project status from graph
-    ship.md                  # /gsd-wired:ship -- PR creation and milestone close
-  agents/                    # Subagent definitions
-    researcher.md            # Research agent (parallel, 4x)
-    planner.md               # Plan creation agent
-    executor.md              # Wave execution agent
-    verifier.md              # Verification agent
-    synthesizer.md           # Research synthesis agent
-  skills/                    # Model-invoked skills
-    context-loading/
-      SKILL.md               # Auto-load bead context for current work
-    wave-detection/
-      SKILL.md               # Detect next ready wave from graph
-    token-budget/
-      SKILL.md               # Token-aware context selection
-  hooks/
-    hooks.json               # Hook configuration pointing to Go binary
-  .mcp.json                  # MCP server configuration (points to Go binary)
-  cmd/                       # Go binary entry points
-    gsd-wired/
-      main.go                # MCP server entry point
-    gsd-hook/
-      main.go                # Hook dispatcher entry point
-  internal/                  # Internal Go packages
-    mcp/                     # MCP server implementation
-      server.go              # Server setup, tool registration
-      tools/                 # Individual tool handlers
-        init.go
-        phase.go
-        plan.go
-        wave.go
-        status.go
-        compact.go
-    hooks/                   # Hook event handlers
-      dispatcher.go          # Route hook events to handlers
-      session_start.go       # Load project context from beads
-      pre_tool_use.go        # Intercept/route tool calls
-      post_tool_use.go       # Update bead state after execution
-      pre_compact.go         # Save state before compaction
-      subagent_start.go      # Inject bead context into subagents
-      subagent_stop.go       # Collect results, close beads
-      stop.go                # Final state persistence
-    beads/                   # bd CLI wrapper
-      client.go              # Execute bd commands, parse JSON
-      models.go              # Go types for beads entities
-      phase.go               # Phase=epic mapping
-      plan.go                # Plan=task mapping
-      wave.go                # Wave=dependency layer logic
-      context.go             # Context loading/tiering
-    domain/                  # GSD domain model
-      project.go             # Project state
-      phase.go               # Phase lifecycle
-      plan.go                # Plan/task model
-      wave.go                # Wave computation
-    context/                 # Token-aware context management
-      budget.go              # Token budget tracking
-      tiering.go             # Hot/warm/cold bead classification
-      selector.go            # Select context within budget
-    fallback/                # .planning/ compatibility
-      reader.go              # Read PROJECT.md, ROADMAP.md, STATE.md
-      migrator.go            # Future: migrate .planning/ to beads
-  go.mod
-  go.sum
-  Makefile                   # Build, install, test targets
+Claude Code
+    |
+    | stdio JSON-RPC
+    v
+gsdw (MCP server + hook dispatcher, single Go binary)
+    |
+    | exec.Command("bd", ..., "--json")
+    | env: BEADS_DIR=.beads/
+    v
+bd CLI (external binary, must be on PATH)
+    |
+    | MySQL wire protocol
+    | host: 127.0.0.1, port: 3307 (default)
+    v
+dolt sql-server (spawned by bd, running locally)
+    |
+    v
+.beads/dolt/ (Dolt repository on local filesystem)
 ```
 
-### Structure Rationale
+The `Client` struct in `internal/graph/client.go` resolves `bd` via `exec.LookPath("bd")` and sets `BEADS_DIR` on each invocation. It does not set any `BEADS_DOLT_SERVER_*` variables — those are inherited from the calling environment. This is the critical insight: **gsdw does not need to know about Dolt directly**. It only speaks to `bd`, and `bd` knows how to find Dolt.
 
-- **`cmd/` split into two binaries:** The MCP server (`gsd-wired`) runs as a long-lived stdio process. The hook dispatcher (`gsd-hook`) runs as a short-lived command per hook event. Separating them keeps startup fast for hooks (critical -- hooks block the agentic loop) while the MCP server can maintain state in memory.
-- **`internal/` for all Go packages:** Standard Go convention. Nothing is exported as a library; this is an application.
-- **`internal/beads/` wraps bd CLI:** Does not import beads Go packages directly. Shells out to `bd --json` so we stay decoupled from bd's internal API and can track any bd version. If bd's Go API stabilizes, this becomes the single swap point.
-- **`internal/hooks/` mirrors Claude Code hook events:** One file per hook event type for clarity. The dispatcher routes based on the `hook_event_name` field from stdin JSON.
-- **Plugin assets (`commands/`, `agents/`, `skills/`, `hooks/`) at root:** Required by Claude Code's plugin directory structure. These are markdown/JSON files, not Go code.
+---
 
-## Architectural Patterns
+## The Connection String Pattern
 
-### Pattern 1: Single Binary, Dual Mode
+`bd` connects to Dolt over MySQL wire protocol. The connection parameters are:
 
-**What:** One Go binary serves both as MCP server (long-lived) and hook dispatcher (short-lived), selected by subcommand.
-**When to use:** When you control the binary but need two execution modes. Claude Code's `.mcp.json` and `hooks.json` both point to the same binary with different arguments.
-**Trade-offs:** Simpler distribution (one binary to install) vs. slightly larger binary. Hook startup must be fast (<100ms) or it blocks the agentic loop.
+| Parameter | Default | Override Mechanism |
+|-----------|---------|-------------------|
+| Host | `127.0.0.1` | `BEADS_DOLT_SERVER_HOST` env var |
+| Port | `3307` | `BEADS_DOLT_SERVER_PORT` env var |
+| User | `root` | `BEADS_DOLT_SERVER_USER` env var |
+| Password | (empty) | `BEADS_DOLT_SERVER_PASS` env var |
+| Mode | server (auto-start) | `BEADS_DOLT_SERVER_MODE=1` env var |
 
-**Example:**
+**Priority chain for these values (highest → lowest):**
+1. Environment variables (`BEADS_DOLT_SERVER_*`)
+2. `.beads/metadata.json` (local, gitignored)
+3. `.beads/config.yaml` (team defaults)
+4. `~/.config/bd/config.yaml` (user global)
+
+Note: There is a known bug (beads issue #2073) where the global `~/.config/bd/config.yaml` `dolt.port` key is not consulted by the Dolt connector in some bd versions. Use environment variables or `.beads/metadata.json` as reliable overrides.
+
+**When `bd` sees `BEADS_DOLT_SERVER_HOST` pointing to a container:**
+- It skips spawning a local `dolt sql-server`
+- It connects to the specified host:port directly using MySQL protocol
+- The `.beads/dolt/` directory still holds the Dolt repository data (or it can be a volume mount in the container)
+
+---
+
+## Container Target Architecture
+
+The containerized Dolt server replaces the locally-spawned `dolt sql-server`. Everything above `bd` in the stack is unchanged.
+
+```
+Claude Code
+    |
+    v
+gsdw binary (unchanged)
+    |
+    | exec.Command("bd", ..., "--json")
+    | env: BEADS_DIR=.beads/
+    |     BEADS_DOLT_SERVER_HOST=127.0.0.1   <-- new
+    |     BEADS_DOLT_SERVER_PORT=3307          <-- new
+    v
+bd CLI (unchanged)
+    |
+    | MySQL wire protocol → localhost:3307
+    v
+[Container Runtime: Docker | Podman | Apple Container]
+    |
+    | port mapping: host:3307 → container:3306
+    v
+dolthub/dolt-sql-server container
+    |
+    v
+/var/lib/dolt/ (volume mount → host .beads/dolt/)
+```
+
+**The key architectural decision:** gsdw must inject `BEADS_DOLT_SERVER_HOST` and `BEADS_DOLT_SERVER_PORT` into the environment of every `bd` exec.Command call when a container is in use. Currently `client.go` does `cmd.Env = append(os.Environ(), "BEADS_DIR="+c.beadsDir)`. It needs to additionally append the Dolt server env vars when they are configured.
+
+---
+
+## Container Runtime Options
+
+### Option A: Docker / Podman (Recommended for v1)
+
+Both Docker and Podman use the same `-p HOST_PORT:CONTAINER_PORT` flag and are interchangeable for this use case. Port forwarding to localhost is reliable on both (on macOS, Podman machine has quirks with `127.0.0.1` — use `0.0.0.0` binding or rely on the VM's own forwarding, not explicit host IP specification in `-p`).
+
+**Run command:**
+```bash
+docker run -d \
+  --name gsdw-dolt \
+  -p 3307:3306 \
+  -e DOLT_ROOT_PASSWORD="" \
+  -e DOLT_ROOT_HOST=% \
+  -v "$(pwd)/.beads/dolt:/var/lib/dolt" \
+  dolthub/dolt-sql-server:latest
+```
+
+**Image:** `dolthub/dolt-sql-server:latest` (official, on Docker Hub)
+**Container port:** 3306 (MySQL default inside the container)
+**Host port:** 3307 (matches bd's default; avoids collision with any local MySQL on 3306)
+**Data volume:** `.beads/dolt` on host → `/var/lib/dolt` in container (persistence)
+
+**Podman drop-in:** Replace `docker` with `podman` — syntax is identical.
+
+### Option B: Apple Container (macOS 26 Tahoe only)
+
+Apple Container requires macOS 26 (Tahoe, released September 2025). It does not support macOS 15 Sequoia in any meaningful network topology. Do not promise support on Sequoia.
+
+**Run command:**
+```bash
+container run -d \
+  --name gsdw-dolt \
+  -p 127.0.0.1:3307:3306 \
+  -v "$(pwd)/.beads/dolt:/var/lib/dolt" \
+  dolthub/dolt-sql-server:latest
+```
+
+**Networking model:** Apple Container assigns dedicated IPs to containers within a VM network, but `-p` port forwarding to the host's loopback interface works the same as Docker from gsdw's perspective. From `bd`'s view, it connects to `127.0.0.1:3307` — no special handling needed vs. Docker.
+
+**OCI compatibility:** Apple Container pulls and runs standard OCI images, so `dolthub/dolt-sql-server` works without modification.
+
+**Gate this on macOS 26 detection.** Check `sw_vers -productVersion` and compare to `26.0`. If not macOS 26, emit a clear error: "Apple Container requires macOS 26 Tahoe. Use Docker or Podman instead."
+
+---
+
+## Drop-In docker-compose Fragment
+
+**Pattern: `compose.override.yml` (auto-discovered, non-destructive)**
+
+Docker Compose automatically reads both `compose.yml` (or `docker-compose.yml`) and `compose.override.yml` from the same directory. The override file is merged on top of the base. If `compose.override.yml` already exists in the user's project, gsdw must not overwrite it — check first and emit a warning.
+
+**Behavior:** Adding a brand new service to `compose.override.yml` that is not in the base `compose.yml` is safe — Compose merges by appending new services. No modification to the user's existing compose file is needed.
+
+**Fragment to write as `compose.override.yml` (or merge into it):**
+```yaml
+# gsdw — Dolt database for beads graph storage
+# Generated by: gsdw container setup
+# Safe to commit. Do not edit the data volume path.
+
+services:
+  gsdw-dolt:
+    image: dolthub/dolt-sql-server:latest
+    container_name: gsdw-dolt
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3307:3306"
+    environment:
+      DOLT_ROOT_HOST: "%"
+    volumes:
+      - ./.beads/dolt:/var/lib/dolt
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-P", "3306"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+```
+
+**Collision rule:** The service name `gsdw-dolt` and container name `gsdw-dolt` are namespaced to this tool. If the user's compose already has a service named `gsdw-dolt`, that is their problem to resolve. Document this assumption.
+
+**Alternative pattern — standalone compose file:**
+Write to `compose.gsdw.yml` and instruct users to run `docker compose -f compose.yml -f compose.gsdw.yml up`. This is strictly non-destructive but requires user action on every invocation. Prefer `compose.override.yml` for zero-friction.
+
+---
+
+## New Components Required
+
+### 1. Container Configuration in gsdw
+
+**New field on `graph.Client`:**
 ```go
-func main() {
-    if len(os.Args) > 1 && os.Args[1] == "hook" {
-        // Short-lived: read stdin JSON, dispatch, write stdout JSON, exit
-        hooks.Dispatch(os.Args[2]) // "SessionStart", "PreToolUse", etc.
-    } else {
-        // Long-lived: start MCP server on stdio
-        server := mcp.NewServer(&mcp.Implementation{
-            Name:    "gsd-wired",
-            Version: "0.1.0",
-        }, nil)
-        registerTools(server)
-        server.Run(context.Background(), &mcp.StdioTransport{})
-    }
+type Client struct {
+    bdPath      string
+    beadsDir    string
+    batchMode   bool
+    doltHost    string   // empty = use bd's default (local embedded)
+    doltPort    string   // empty = use bd's default (3307)
+    doltUser    string   // empty = use bd's default (root)
+    doltPass    string   // empty = use bd's default ("")
 }
 ```
 
-**Alternative considered:** Two separate binaries. Rejected because it doubles build/install complexity for minimal benefit. The hook path is a thin dispatcher that exits immediately.
-
-### Pattern 2: bd CLI as Data Access Layer
-
-**What:** All Dolt/beads operations go through `bd` CLI with `--json` flag, never through direct Dolt SQL or bd Go imports.
-**When to use:** When the upstream tool has a stable CLI but unstable Go API, or when you want version decoupling.
-**Trade-offs:** Subprocess overhead per operation (~10-50ms) vs. full API decoupling. Acceptable because hook events are infrequent (not in a hot loop).
-
-**Example:**
+**Modified `run()` in `client.go`:**
 ```go
-func (c *Client) Ready() ([]Issue, error) {
-    out, err := c.exec("ready", "--json")
-    if err != nil {
-        return nil, fmt.Errorf("bd ready: %w", err)
-    }
-    var issues []Issue
-    if err := json.Unmarshal(out, &issues); err != nil {
-        return nil, fmt.Errorf("parse bd ready: %w", err)
-    }
-    return issues, nil
+cmd.Env = append(os.Environ(), "BEADS_DIR="+c.beadsDir)
+if c.doltHost != "" {
+    cmd.Env = append(cmd.Env, "BEADS_DOLT_SERVER_HOST="+c.doltHost)
+    cmd.Env = append(cmd.Env, "BEADS_DOLT_SERVER_MODE=1")
+}
+if c.doltPort != "" {
+    cmd.Env = append(cmd.Env, "BEADS_DOLT_SERVER_PORT="+c.doltPort)
 }
 ```
 
-### Pattern 3: Hook Event Routing via stdin JSON
+**Config persistence:** Store container connection settings in `.beads/metadata.json` (already gitignored by bd) under a `gsdw` namespace key, or in `.planning/config.json` if that is the source of truth for gsdw config. Do not add a new config file.
 
-**What:** Claude Code passes hook context as JSON on stdin. The Go binary reads it, deserializes based on `hook_event_name`, dispatches to the appropriate handler, and writes JSON response to stdout.
-**When to use:** Always -- this is how Claude Code hooks work. The binary is invoked fresh each time.
-**Trade-offs:** No persistent state between hook invocations (must read from beads each time) vs. simplicity and crash safety.
+### 2. `gsdw container` Subcommand
 
-**Example:**
-```go
-func Dispatch(eventName string) {
-    input, _ := io.ReadAll(os.Stdin)
+New CLI subcommand with three sub-subcommands:
 
-    var response any
-    switch eventName {
-    case "SessionStart":
-        response = handleSessionStart(input)
-    case "PreToolUse":
-        response = handlePreToolUse(input)
-    case "PostToolUse":
-        response = handlePostToolUse(input)
-    case "PreCompact":
-        response = handlePreCompact(input)
-    }
+| Command | Action |
+|---------|--------|
+| `gsdw container setup` | Detect runtime (docker/podman/container), pull image, write compose fragment, print env vars to set |
+| `gsdw container start` | `docker run ...` or `docker compose up gsdw-dolt -d` |
+| `gsdw container stop` | `docker stop gsdw-dolt` or `docker compose stop gsdw-dolt` |
+| `gsdw container status` | `docker inspect gsdw-dolt`, parse health status, test MySQL connection |
+| `gsdw container logs` | `docker logs gsdw-dolt --tail 50` |
 
-    json.NewEncoder(os.Stdout).Encode(response)
-}
-```
+**Runtime detection order:** `apple container` (if macOS 26) → `docker` → `podman` → error.
 
-### Pattern 4: GSD Domain Mapping onto Beads Graph
+### 3. Health Check and Connection Wizard
 
-**What:** GSD concepts map to beads entities: Phase=epic bead, Plan=task bead, Wave=dependency layer (computed from `bd ready` at each step). Research=epic with 4 child tasks (one per researcher). Verification=task with success criteria in bead metadata.
-**When to use:** For all workflow orchestration. The mapping is the core intellectual property of this plugin.
-**Trade-offs:** Leverages beads' existing dependency graph vs. limited to what beads can express (no custom node types, only extensible fields on issues).
+`gsdw container setup` must be interactive (or have a `--yes` flag for non-interactive). Steps:
 
-### Pattern 5: Tiered Context Loading
+1. Detect container runtime (fail if none found)
+2. Check if `.beads/dolt/` exists (if not, `bd init` first)
+3. Check port 3307 availability (`net.Listen("tcp", "127.0.0.1:3307")`)
+4. Write compose fragment or run container
+5. Wait for health check (poll MySQL on `127.0.0.1:3307` with `root` / empty pass, max 30s)
+6. Write connection config to `.beads/metadata.json`: `{"dolt_server_host": "127.0.0.1", "dolt_server_port": 3307}`
+7. Print: "Container running. Add to your shell: `export BEADS_DOLT_SERVER_HOST=127.0.0.1 BEADS_DOLT_SERVER_PORT=3307`"
 
-**What:** Beads are classified as hot (currently executing), warm (same phase, open), or cold (closed/other phase). Hot beads get full context injected. Warm beads get summary. Cold beads get nothing (queryable on demand). Classification computed at SessionStart and updated at each PostToolUse.
-**When to use:** Always -- this is how token budgets stay manageable.
-**Trade-offs:** Complexity of tier management vs. dramatic token savings. The tier boundary decisions are the hardest engineering problem in this project.
+The shell export step is needed because `bd` reads env vars at invocation time, not from `.beads/metadata.json` reliably in all versions (see bug #2073). gsdw's `Client` will inject these vars itself, but when users run `bd` directly they need the env vars set.
 
-## Data Flow
+### 4. Dependency Detection Update
 
-### Session Lifecycle Flow
+Existing dependency detection (Homebrew formula milestone) must be extended:
 
-```
-Session Start
-    |
-    v
-[SessionStart Hook]
-    | Read PROJECT.md + bd stats --json
-    | Classify beads into hot/warm/cold tiers
-    | Return additionalContext with project state + hot bead details
-    v
-Claude receives project context automatically
-    |
-    v
-User invokes /gsd-wired:execute (or Claude auto-selects skill)
-    |
-    v
-[PreToolUse Hook] <-- fires for each tool Claude wants to use
-    | If MCP tool call to gsd-wired: inject current bead context
-    | If Bash/Write/Edit: check if within claimed bead scope
-    | Return: allow/deny + additionalContext
-    v
-[MCP Tool Executes] <-- e.g., gsd_wave tool
-    | Calls bd ready --json to find unblocked tasks
-    | Computes wave (set of tasks with no open deps)
-    | Returns wave tasks to Claude
-    v
-[PostToolUse Hook]
-    | If file was written: check if it satisfies a bead's criteria
-    | If bead completed: bd close <id> "completion message"
-    | Update tier classification
-    | Return additionalContext with updated state
-    v
-[SubagentStart Hook] <-- when Claude spawns researcher/executor
-    | Inject only the claimed bead's context (not full project)
-    | Return additionalContext scoped to that bead
-    v
-[SubagentStop Hook]
-    | Collect subagent results
-    | Update bead with results via bd update
-    | If all sibling beads closed: notify parent
-    v
-[PreCompact Hook] <-- before context window compaction
-    | Save in-progress state to beads via bd update
-    | Ensure nothing is lost when context is compressed
-    | Return: no decision control (observability only per docs)
-    v
-[Stop Hook]
-    | Persist any unsaved state
-    | Update session metadata in beads
-    v
-Session End
-```
+| Dependency | Detection | Install Guidance |
+|------------|-----------|-----------------|
+| `docker` | `exec.LookPath("docker")` | "Install Docker Desktop from docker.com" |
+| `podman` | `exec.LookPath("podman")` | "Install Podman: `brew install podman`" |
+| `container` | `exec.LookPath("container")` | "Requires macOS 26. Install from github.com/apple/container" |
 
-### Wave Execution Flow (Multi-Agent)
+At least one runtime is required when container mode is requested. If none found, fail with guidance.
+
+---
+
+## Network Topology
 
 ```
-Orchestrator (main thread)
-    |
-    +-- bd ready --json --> Returns: [task-a, task-b, task-c] (Wave 1)
-    |
-    +-- Spawn Agent 1 --> bd update task-a --claim
-    |   |                  [SubagentStart: inject task-a context]
-    |   |                  Agent works on task-a
-    |   |                  [SubagentStop: bd close task-a "done"]
-    |
-    +-- Spawn Agent 2 --> bd update task-b --claim
-    |   |                  [SubagentStart: inject task-b context]
-    |   |                  Agent works on task-b
-    |   |                  [SubagentStop: bd close task-b "done"]
-    |
-    +-- Spawn Agent 3 --> bd update task-c --claim
-    |   |                  [SubagentStart: inject task-c context]
-    |   |                  Agent works on task-c
-    |   |                  [SubagentStop: bd close task-c "done"]
-    |
-    +-- All Wave 1 complete
-    |
-    +-- bd ready --json --> Returns: [task-d, task-e] (Wave 2)
-    |
-    +-- ... repeat ...
+Host macOS
+├── Port 3307 (loopback: 127.0.0.1:3307)
+│   ↕ port-forward
+└── Container Runtime VM
+    └── Dolt container
+        └── Port 3306 (MySQL, bound to 0.0.0.0)
 ```
 
-### Key Data Flows
+gsdw binary → bd binary → `127.0.0.1:3307` → container port forward → Dolt SQL server → `/var/lib/dolt` (volume mounted from `.beads/dolt/`)
 
-1. **Context injection:** SessionStart hook reads beads graph, computes tiers, returns `additionalContext` string that Claude receives as session context. This is the primary mechanism for Claude to "know" project state without reading markdown files.
+**Why 3307 instead of 3306?** Users commonly have MySQL running on 3306. bd's default for server mode is already 3307. Using 3307 avoids collision with zero configuration.
 
-2. **State persistence:** PostToolUse and PreCompact hooks write state back to beads via `bd update`. This ensures progress is captured even if the session crashes or compacts. The beads graph is the source of truth, not the conversation context.
+**Network isolation (docker-compose users):** If gsdw-dolt is added to an existing compose setup, it shares the default network by default. Add `networks: [gsdw]` with a dedicated network definition if isolation is needed. For the compose fragment gsdw writes, use the default network for simplicity — the database port is bound to `127.0.0.1` only, so it is not reachable from other machines even without network isolation.
 
-3. **Subagent scoping:** SubagentStart hook reads the specific bead the subagent will work on and injects only that bead's context. This is how token consumption stays lean -- subagents never see the full project graph.
+---
 
-4. **Wave computation:** The MCP `gsd_wave` tool queries `bd ready --json` to get unblocked tasks, groups them by dependency depth, and returns the current wave. This is a computed view, not stored state.
+## Data Persistence Model
 
-## Scaling Considerations
+**Invariant:** Dolt data must survive container restarts.
 
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| 1-5 phases, <50 beads | Single project, single Dolt DB, no optimization needed |
-| 5-20 phases, 50-500 beads | `bd compact` becomes essential -- run at phase transitions to summarize closed beads. Tier classification critical for context budget. |
-| 20+ phases, 500+ beads | Consider Dolt branching per phase to isolate query scope. May need `bd query` with custom SQL instead of `bd ready` for performance. |
-
-### Scaling Priorities
-
-1. **First bottleneck: Hook latency.** Every hook invocation shells out to the Go binary, which may shell out to `bd`. If hook processing exceeds ~200ms, the agentic loop feels sluggish. Mitigation: keep hook handlers minimal; cache bead state in a temp file between hook invocations within a session.
-2. **Second bottleneck: Context window pressure.** As projects grow, even tiered loading may exceed budgets. Mitigation: aggressive compaction, summary-only for warm beads, and `bd compact` at every phase transition.
-
-## Anti-Patterns
-
-### Anti-Pattern 1: Fat Hooks
-
-**What people do:** Put complex orchestration logic (multi-step bd queries, wave computation, subagent spawning) inside hook handlers.
-**Why it's wrong:** Hooks block the agentic loop. They run synchronously. A 2-second hook means Claude waits 2 seconds before every tool use. Hooks also cannot spawn subagents -- only the MCP server and skills can trigger those.
-**Do this instead:** Hooks should do minimal state read/write. Push orchestration logic into MCP tools and skills that Claude invokes when ready.
-
-### Anti-Pattern 2: Direct Dolt SQL from Hooks
-
-**What people do:** Import Dolt Go client and query the database directly, bypassing `bd`.
-**Why it's wrong:** Couples to bd's internal schema (which is not stable). Risks schema version conflicts. Loses bd's built-in conflict resolution and compaction logic.
-**Do this instead:** Always go through `bd` CLI with `--json`. Accept the subprocess overhead. It keeps you decoupled.
-
-### Anti-Pattern 3: Stateful Hook Binary
-
-**What people do:** Try to maintain in-memory state across hook invocations (e.g., daemon mode for the hook binary).
-**Why it's wrong:** Claude Code invokes hooks as fresh processes each time. There is no persistent process for command-type hooks. The binary starts, reads stdin, writes stdout, exits.
-**Do this instead:** Use the beads graph as persistent state. For hot-path caching, write a session state file to a temp directory (keyed by `session_id` from hook input) and read it back on next invocation.
-
-### Anti-Pattern 4: Duplicating bd's Data Model
-
-**What people do:** Define custom SQL tables in Dolt alongside beads' schema, or store GSD state in a parallel system.
-**Why it's wrong:** Two sources of truth. Beads' compaction and dependency tracking will not know about your custom tables.
-**Do this instead:** Use bd's extensible fields for GSD-specific metadata (phase tags, requirement IDs, success criteria, token budgets). Beads issues support arbitrary metadata -- use it.
-
-### Anti-Pattern 5: Monolithic Slash Commands
-
-**What people do:** Put the entire workflow (init + research + plan + execute + verify) behind a single slash command.
-**Why it's wrong:** Claude Code is already an agent. Give it tools and context, and let it orchestrate. A single command that tries to do everything fights against Claude's natural agentic flow.
-**Do this instead:** Each slash command maps to one workflow phase. Skills and agents handle the orchestration within that phase. Claude decides when to transition.
-
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| bd CLI | Subprocess exec with `--json` flag | Must be on PATH or specified via `BEADS_PATH` env var |
-| Dolt | Accessed only through bd (never directly) | `.beads/` directory must exist (via `bd init`) |
-| Claude Code | Plugin directory loaded via `--plugin-dir` or marketplace install | Hooks via command type, MCP via stdio transport |
-| GitHub (optional) | `gh` CLI for PR creation from within executor agent | Not a hard dependency; PR workflow is optional |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| Hooks layer to Hook dispatcher | stdin/stdout JSON (Claude Code spawns process) | One process per event, must exit quickly |
-| MCP server to Claude Code | JSON-RPC 2.0 over stdio (long-lived connection) | Uses `modelcontextprotocol/go-sdk` |
-| Hook dispatcher to bd wrapper | Go function call (same binary) | No IPC overhead |
-| MCP server to bd wrapper | Go function call (same binary) | No IPC overhead |
-| bd wrapper to bd CLI | `exec.Command("bd", ...)` subprocess | ~10-50ms per invocation |
-| Skills/Agents to MCP tools | Claude invokes MCP tools based on skill instructions | Skills guide Claude; MCP tools do the work |
-| Slash commands to Skills/Agents | Commands set context; Claude uses skills to fulfill | Commands are entry points, skills are capabilities |
-
-## Build Order (Dependency Chain)
-
-The components have clear dependency ordering that maps to implementation phases:
+`.beads/dolt/` on the host is the canonical Dolt repository. This is the same directory bd uses in embedded mode. The volume mount is:
 
 ```
-Layer 0 (no deps):     bd wrapper (internal/beads/)
-                        domain model (internal/domain/)
-
-Layer 1 (needs L0):     MCP server with basic tools (internal/mcp/)
-                        Hook dispatcher skeleton (internal/hooks/)
-
-Layer 2 (needs L1):     SessionStart hook (context loading)
-                        Plugin manifest + .mcp.json
-                        Basic slash commands
-
-Layer 3 (needs L2):     PreToolUse / PostToolUse hooks (state management)
-                        SubagentStart / SubagentStop hooks (subagent scoping)
-                        Agent definitions (researcher, executor, etc.)
-
-Layer 4 (needs L3):     Context tiering (internal/context/)
-                        PreCompact hook (state preservation)
-                        Wave execution orchestration
-                        Skills (auto-invoked capabilities)
-
-Layer 5 (needs L4):     Fallback reader (internal/fallback/)
-                        Token budget optimization
-                        Full workflow (init to ship)
+Host: <project>/.beads/dolt/
+Container: /var/lib/dolt/
 ```
 
-**Implication for roadmap:** Each layer is a natural phase boundary. Layer 0-1 is foundation. Layer 2 is "it works at all." Layer 3 is "it works with subagents." Layer 4 is "it works efficiently." Layer 5 is "it works for migration users."
+**Migration path (embedded → container):**
+1. Stop embedded server: `bd dolt stop`
+2. Start container (data directory already populated)
+3. Set env vars / update metadata.json
+4. Verify: `bd ls` should return existing beads
+
+**Migration path (container → embedded):**
+1. Stop container
+2. Unset `BEADS_DOLT_SERVER_HOST` / remove from metadata.json
+3. bd auto-starts embedded server from the same `.beads/dolt/` directory
+
+This reversibility means there is no lock-in to container mode.
+
+---
+
+## Modified Components (vs. New)
+
+| Component | Change Type | What Changes |
+|-----------|------------|--------------|
+| `internal/graph/client.go` | Modified | Add doltHost/doltPort/doltUser/doltPass fields; inject env vars in `run()` |
+| `internal/graph/client.go` | Modified | Add `NewClientWithConfig(cfg ContainerConfig)` constructor |
+| `internal/cli/root.go` | Modified | Register `NewContainerCmd()` subcommand |
+| `internal/cli/init.go` | Modified | Accept `--use-container` flag; configure Client with container params post-setup |
+| `internal/mcp/server.go` | Modified | Read container config from metadata.json and pass to `NewClient` |
+
+| Component | Change Type | What It Does |
+|-----------|------------|--------------|
+| `internal/cli/container.go` | New | `gsdw container` subcommand (setup/start/stop/status/logs) |
+| `internal/container/runtime.go` | New | Runtime detection (docker/podman/apple-container), exec wrapper |
+| `internal/container/health.go` | New | MySQL ping health check, wait-for-ready loop |
+| `internal/container/config.go` | New | Read/write container config from `.beads/metadata.json` |
+| `container/compose.override.yml.tmpl` | New | Go template for the compose fragment |
+
+---
+
+## Build Order for This Milestone
+
+```
+Layer 0 (no deps):
+    internal/container/runtime.go  — runtime detection, no gsdw deps
+    internal/container/config.go   — metadata.json read/write
+
+Layer 1 (needs Layer 0):
+    internal/container/health.go   — MySQL ping using net package
+    internal/graph/client.go mod   — add container config fields, inject env vars
+
+Layer 2 (needs Layer 1):
+    internal/cli/container.go      — container subcommand (setup/start/stop/status)
+    internal/cli/init.go mod       — --use-container flag integration
+
+Layer 3 (needs Layer 2):
+    Apple Container-specific path  — runtime detection + macOS 26 gate
+    compose fragment writer        — template + non-destructive file check
+    MCP server config pickup       — server.go reads metadata.json for container params
+```
+
+**Phase boundary recommendation:** Layer 0-1 is "it connects." Layer 2 is "it's usable from CLI." Layer 3 is "it supports all three runtimes."
+
+---
+
+## Apple Container Specifics
+
+- **Requirement:** macOS 26 (Tahoe). Do not support Sequoia — networking does not work reliably.
+- **Hardware:** Apple Silicon (M1+) required.
+- **OCI images:** Standard OCI images work. No special Apple-format images needed.
+- **Port syntax:** `-p 127.0.0.1:3307:3306` — same as Docker.
+- **Installation:** PKG installer from github.com/apple/container/releases. Must run `container system start` before first use.
+- **Firewall:** macOS Local Network firewall must allow `container` runtime. gsdw setup wizard should print this requirement.
+- **No docker-compose:** Apple Container does not have a compose equivalent. Use `container run` directly in `gsdw container start`. The compose fragment is for Docker/Podman users.
+- **Detection:** `exec.LookPath("container")` plus `sw_vers -productVersion` check ≥ 26.0.
+
+---
+
+## Pitfalls Specific to This Integration
+
+### Pitfall 1: bd bug #2073 — metadata.json config not always read
+
+The beads Dolt connector has a verified bug where `dolt.port` in `~/.config/bd/config.yaml` is ignored. The fix: gsdw must inject `BEADS_DOLT_SERVER_HOST` and `BEADS_DOLT_SERVER_PORT` as explicit env vars on every `bd` exec.Command, not rely on `.beads/metadata.json` alone.
+
+### Pitfall 2: Volume mount before bd init
+
+If the user runs `gsdw container setup` before `bd init`, the `.beads/dolt/` directory does not exist. The Dolt container will start but see an empty volume and create a fresh (uninitialized) database. Then `bd ls` will fail because the beads schema is missing. **Fix:** `gsdw container setup` must check that `.beads/dolt/` exists and is a valid Dolt repo before starting the container. If not, run `bd init --backend dolt` first.
+
+### Pitfall 3: Port 3307 already in use
+
+If the user has another Dolt server or bd running in embedded mode, port 3307 may be occupied. `gsdw container setup` must check before starting. If occupied, either: stop the embedded server (`bd dolt stop`), or use port 3308 and configure accordingly.
+
+### Pitfall 4: Apple Container macOS 26 hard requirement
+
+Users on macOS 15 Sequoia will get mysterious networking failures if they try Apple Container. Gate on `sw_vers` check and print a clear error before attempting to run anything. Direct them to Docker Desktop or Podman instead.
+
+### Pitfall 5: compose.override.yml stomping user content
+
+If the user has an existing `compose.override.yml`, writing a new one destroys their customizations. The setup wizard must: (1) detect existing file, (2) print the fragment to stdout for manual merge, (3) refuse to overwrite without `--force` flag.
+
+### Pitfall 6: Podman machine on macOS — 127.0.0.1 binding
+
+Podman machine on macOS has a known issue with port forwarding when the host side is bound to `127.0.0.1` explicitly. Use `0.0.0.0:3307:3306` (or omit the host IP) in the Podman run command. This makes the port available on all interfaces on the host, which is acceptable for localhost-only development. Document this difference from Docker.
+
+---
+
+## Integration Points Summary
+
+| Integration | gsdw Change | bd Change | Notes |
+|-------------|------------|-----------|-------|
+| Docker/Podman Dolt container | Inject `BEADS_DOLT_SERVER_HOST/PORT` env vars | None | bd speaks MySQL to any host |
+| Apple Container Dolt | Same env vars | None | Identical from bd's view |
+| compose.override.yml | New file write | None | gsdw generates it |
+| Container lifecycle | New `gsdw container` commands | None | gsdw shells out to docker/podman/container |
+| Health checking | New health.go | None | Direct MySQL ping from Go |
+| Config persistence | Writes `.beads/metadata.json` | Reads it | Shared config file |
+
+---
 
 ## Sources
 
-- [Claude Code Plugin Documentation](https://code.claude.com/docs/en/plugins) -- official plugin structure, manifest format, directory layout
-- [Claude Code Hooks Reference](https://code.claude.com/docs/en/hooks) -- all 16 hook events, input/output formats, lifecycle
-- [MCP Go SDK (official)](https://github.com/modelcontextprotocol/go-sdk) -- server creation, tool registration, stdio transport
-- [Beads README](https://github.com/steveyegge/beads/blob/main/README.md) -- bd CLI commands, data model, hash-based IDs
-- [Beads Plugin Documentation](https://github.com/steveyegge/beads/blob/main/docs/PLUGIN.md) -- existing Claude Code plugin integration pattern
-- [mcp-go community SDK](https://github.com/mark3labs/mcp-go) -- alternative Go MCP implementation (fallback if official SDK has gaps)
+- [Beads DOLT-BACKEND.md](https://github.com/steveyegge/beads/blob/main/docs/DOLT-BACKEND.md) — `BEADS_DOLT_SERVER_HOST`, `BEADS_DOLT_SERVER_PORT`, server mode env vars (HIGH confidence)
+- [Beads issue #2073](https://github.com/steveyegge/beads/issues/2073) — config.yaml port bug, env var workaround (HIGH confidence)
+- [Dolt Docker documentation](https://docs.dolthub.com/introduction/installation/docker) — `dolthub/dolt-sql-server` image, env vars, volume paths (HIGH confidence)
+- [Apple Container how-to](https://github.com/apple/container/blob/main/docs/how-to.md) — port mapping syntax, networking model, macOS 26 requirement (HIGH confidence)
+- [Docker Compose merge docs](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/) — `compose.override.yml` auto-discovery, merge semantics (HIGH confidence)
+- [Docker Compose include docs](https://docs.docker.com/compose/how-tos/multiple-compose-files/include/) — include directive, conflict behavior (HIGH confidence)
+- [Podman macOS port forwarding](https://github.com/containers/podman/issues/11528) — 127.0.0.1 binding quirk on podman machine (MEDIUM confidence, linked issue)
 
 ---
-*Architecture research for: gsd-wired (Claude Code plugin with MCP + hooks + Beads/Dolt)*
+
+*Architecture research for: gsd-wired container integration milestone*
 *Researched: 2026-03-21*
