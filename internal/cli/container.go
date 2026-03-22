@@ -125,9 +125,13 @@ func runContainerStart(out io.Writer, opts startOpts) error {
 	}
 	fmt.Fprintf(out, "Using runtime: %s\n", rt.Name())
 
-	// 2. Pre-flight: check .beads/dolt/ exists (Pitfall 2).
+	// 2. Pre-flight: ensure .beads/dolt/ exists for volume mount (Pitfall 2).
 	if err := opts.statFn(opts.beadsDoltDir); err != nil {
-		return fmt.Errorf("`%s` not found — run `bd init --backend dolt` first", opts.beadsDoltDir)
+		// Create the directory rather than erroring — container needs it for volume mount.
+		if mkErr := os.MkdirAll(opts.beadsDoltDir, 0o755); mkErr != nil {
+			return fmt.Errorf("cannot create `%s`: %w", opts.beadsDoltDir, mkErr)
+		}
+		fmt.Fprintf(out, "Created %s for Dolt data persistence\n", opts.beadsDoltDir)
 	}
 
 	// 3. Pre-flight: check port availability (Pitfall 3).
