@@ -21,7 +21,7 @@ gsd-wired installable by any developer through standard channels without manual 
 
 ### ADC signing
 - **D-05:** Apple Developer Certificate signing for macOS binaries only (not Linux)
-- **D-06:** Signing certificate at `~/.private-keys` — export .p12 for GitHub Actions secret
+- **D-06:** Signing certificate at `~/.private_keys` — export .p12 (e.g. `~/.private_keys/gsdw-release.p12`) for local release
 - **D-07:** Team ID (org account) — app-specific password needs creation at appleid.apple.com
 - **D-08:** Local GoReleaser for Apple-signed macOS releases (cert on developer's machine). GitHub Actions for Linux binaries (remote, no Apple signing).
 - **D-09:** Notarization: wait for completion before publishing release (30-90 seconds)

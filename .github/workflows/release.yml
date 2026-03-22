@@ -44,3 +44,11 @@ jobs:
           GSDWHOMEBREW: ${{ secrets.GSDWHOMEBREW }}
           GPG_FINGERPRINT: ${{ secrets.GPG_FINGERPRINT }}
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          # Apple codesigning — only active when MACOS_SIGN_P12 is set (guarded by isEnvSet in .goreleaser.yaml).
+          # On this Ubuntu runner the secrets will be empty, so notarization is skipped automatically.
+          # For signed macOS releases, run `make release-mac` locally on a Mac with the cert installed.
+          MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
+          MACOS_SIGN_PASSWORD: ${{ secrets.MACOS_SIGN_PASSWORD }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}

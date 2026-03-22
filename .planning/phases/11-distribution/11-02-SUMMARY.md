@@ -105,9 +105,9 @@ Each task was committed atomically:
 - `The-Artificer-of-Ciphers-LLC/homebrew-gsdw` must exist (public) per D-01, D-02
 
 **macOS signing (local release path per D-08):**
-- Apple Developer Certificate at `~/.private-keys`
-- App-specific password at appleid.apple.com
-- Run `goreleaser release --clean` locally on Mac for signed macOS binaries
+- Apple Developer Certificate exported as `~/.private_keys/gsdw-release.p12`
+- App Store Connect API key (Issuer ID + Key ID + .p8 file) — NOT an app-specific password
+- Run `make release-mac` locally on Mac for signed + notarized macOS binaries (see Makefile comments for full setup steps)
 
 ## Next Phase Readiness
 
