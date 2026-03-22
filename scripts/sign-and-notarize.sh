@@ -14,19 +14,19 @@
 set -euo pipefail
 
 BINARY="$1"
+SIG_FILE="${2:-${BINARY}.sig}"
 
 # Skip non-darwin binaries (GoReleaser calls this for all platforms)
 if [[ "$BINARY" != *"darwin"* ]]; then
     echo "Skipping non-darwin binary: $BINARY"
-    # Create empty signature file so GoReleaser doesn't complain
-    touch "${BINARY}.sig"
+    echo "skipped" > "$SIG_FILE"
     exit 0
 fi
 
 # Skip if signing env vars not set
 if [ -z "${MACOS_SIGN_P12:-}" ]; then
     echo "MACOS_SIGN_P12 not set, skipping signing"
-    touch "${BINARY}.sig"
+    echo "skipped" > "$SIG_FILE"
     exit 0
 fi
 
@@ -87,4 +87,4 @@ xcrun notarytool submit "$ZIP_FILE" \
 echo "Notarization complete: $BINARY"
 
 # Write a marker signature file
-echo "signed-and-notarized" > "${BINARY}.sig"
+echo "signed-and-notarized" > "$SIG_FILE"

@@ -43,7 +43,7 @@ changelog:
 binary_signs:
   - id: macos-sign
     cmd: ./scripts/sign-and-notarize.sh
-    args: ["${artifact}"]
+    args: ["${artifact}", "${signature}"]
     artifacts: binary
     ids: [gsdw]
     signature: "${artifact}_{{ .Os }}_{{ .Arch }}.sig"
