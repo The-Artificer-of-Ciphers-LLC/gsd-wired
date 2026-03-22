@@ -87,7 +87,7 @@ Plans:
   4. When the configured remote host is unreachable, gsdw offers to fall back to the local container and proceeds only after the developer confirms
 **Plans:** 2 plans
 Plans:
-- [ ] 14-01-PLAN.md — Connection config package (Config struct, Load/Save, health check, env var injection into client.go)
+- [x] 14-01-PLAN.md — Connection config package (Config struct, Load/Save, health check, env var injection into client.go)
 - [ ] 14-02-PLAN.md — Connect wizard (auto-detect, container start, remote config, fallback) and doctor Connection section
 
 ## Progress
@@ -98,7 +98,7 @@ Plans:
 | 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
 | 12. Setup UX | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 | 13. Container Support | v1.0 Install | 2/2 | Complete | 2026-03-22 |
-| 14. Connectivity | v1.0 Install | 0/2 | Planning complete | - |
+| 14. Connectivity | v1.0 Install | 1/2 | Executing | - |
 
 ---
 

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** v1.0 Installation Toolkit — Phase 13: Container Support
+**Current focus:** v1.0 Installation Toolkit — Phase 14: Connectivity
 
 ## Current Position
 
-Phase: 13 — Container Support
-Plan: 2 of 2 in current phase
+Phase: 14 — Connectivity
+Plan: 1 of 2 in current phase
 Status: Complete
-Last activity: 2026-03-22 -- Plan 13-02 complete: gsdw container start/stop CLI subcommands
+Last activity: 2026-03-22 -- Plan 14-01 complete: connection config package, env var injection into graph client
 
-Progress: [█████░░░░░] 55% (Installation Toolkit milestone)
+Progress: [██████░░░░] 65% (Installation Toolkit milestone)
 
 ## Performance Metrics
 
@@ -167,6 +167,11 @@ Prior v1.0 decisions (preserved for continuity):
 - [13-02]: startOpts/stopOpts structs inject all dependencies (detectFn, composeFn, execFn, checkPort, statFn) — same hermetic test pattern as 12-01/13-01
 - [13-02]: composeFn only called for docker/podman runtimes — apple-container skips compose fragment (native container handles env differently)
 - [13-02]: defaultCheckPort uses net.Listen on 127.0.0.1:{port}, closes listener on success — port free returns nil, error if occupied
+- [14-01]: loadConnConfig derives .gsdw from filepath.Dir(beadsDir)/.gsdw per Pitfall 4 — avoids cwd walk-up which would be wrong in test contexts
+- [14-01]: NewClientWithPath now loads connection config from disk — test injection still possible via direct c.connConfig field assignment within package
+- [14-01]: FAKE_BD_ENV_CAPTURE_FILE added to fake_bd — captures full env map as JSON for hermetic env var verification without running real bd
+- [14-01]: url.QueryEscape used in buildDSN for user/password — safe encoding for special characters in MySQL DSN format
+- [14-01]: classifyTCPError checks both 'no such host' and 'lookup' substrings — covers cross-platform DNS error message variations
 
 ### Pending Todos
 
@@ -180,6 +185,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-22 (Phase 13 Plan 02 execution — completed)
-Stopped at: Completed 13-02-PLAN.md. gsdw container start/stop CLI subcommands with runtime detection, pre-flight checks (beads dir, port), compose fragment for Docker/Podman, wired into root. Phase 13 complete.
+Last session: 2026-03-22 (Phase 14 Plan 01 execution — completed)
+Stopped at: Completed 14-01-PLAN.md. Connection config package (Config struct, Load/Save/CheckConnectivity, two-phase TCP+SQL health check) and graph client env var injection (BEADS_DOLT_SERVER_HOST/PORT). go-sql-driver/mysql v1.9.3 added.
 Resume file: None

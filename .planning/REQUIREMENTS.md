@@ -37,9 +37,9 @@ Requirements for v1.0 release — installation toolkit and distribution packagin
 ### Connectivity
 
 - [ ] **CONN-01**: `gsdw connect` configures connection to Dolt server (local container or remote host)
-- [ ] **CONN-02**: Connection config stored in `.gsdw/connection.json` (host, port, mode)
-- [ ] **CONN-03**: `internal/graph/client.go` injects `BEADS_DOLT_SERVER_HOST` and `BEADS_DOLT_SERVER_PORT` env vars on every bd exec when container mode is configured
-- [ ] **CONN-04**: Health check confirms Dolt server is reachable before proceeding
+- [x] **CONN-02**: Connection config stored in `.gsdw/connection.json` (host, port, mode)
+- [x] **CONN-03**: `internal/graph/client.go` injects `BEADS_DOLT_SERVER_HOST` and `BEADS_DOLT_SERVER_PORT` env vars on every bd exec when container mode is configured
+- [x] **CONN-04**: Health check confirms Dolt server is reachable before proceeding
 - [ ] **CONN-05**: Remote host connectivity with reachability check and common error troubleshooting
 - [ ] **CONN-06**: Automatic fallback from unreachable remote to local container with developer confirmation
 
@@ -94,9 +94,9 @@ Which phases cover which requirements.
 | CNTR-06 | Phase 13 | Complete (13-01) |
 | CNTR-07 | Phase 13 | Complete (13-01) |
 | CONN-01 | Phase 14 | Pending |
-| CONN-02 | Phase 14 | Pending |
-| CONN-03 | Phase 14 | Pending |
-| CONN-04 | Phase 14 | Pending |
+| CONN-02 | Phase 14 | Complete (14-01) |
+| CONN-03 | Phase 14 | Complete (14-01) |
+| CONN-04 | Phase 14 | Complete (14-01) |
 | CONN-05 | Phase 14 | Pending |
 | CONN-06 | Phase 14 | Pending |
 
