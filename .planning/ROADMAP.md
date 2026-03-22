@@ -88,7 +88,7 @@ Plans:
 **Plans:** 2 plans
 Plans:
 - [x] 14-01-PLAN.md — Connection config package (Config struct, Load/Save, health check, env var injection into client.go)
-- [ ] 14-02-PLAN.md — Connect wizard (auto-detect, container start, remote config, fallback) and doctor Connection section
+- [x] 14-02-PLAN.md — Connect wizard (auto-detect, container start, remote config, fallback) and doctor Connection section
 
 ## Progress
 
