@@ -178,11 +178,11 @@ Plans:
   1. Plugin detects .planning/ directory and reads it as fallback when beads are not initialized
   2. Existing STATE.md and ROADMAP.md are parseable into bead-equivalent query results
   3. New work always goes to beads graph; .planning/ files are never written to by the plugin
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: TBD
-- [ ] 10-02: TBD
+- [ ] 10-01-PLAN.md — internal/compat/ package: pure parsers for STATE.md, ROADMAP.md, PROJECT.md (TDD)
+- [ ] 10-02-PLAN.md — Wire .planning/ fallback into SessionStart hook and get_status MCP tool
 
 ## Progress
 
@@ -201,4 +201,4 @@ Note: Phase 9 and Phase 10 can execute in parallel (both depend on earlier phase
 | 7. Execution + Verification | 3/3 | Complete | 2026-03-21 |
 | 8. Ship + Status | 2/2 | Complete | 2026-03-21 |
 | 9. Token-Aware Context | 2/2 | Complete | 2026-03-21 |
-| 10. Coexistence | 0/TBD | Not started | - |
+| 10. Coexistence | 0/2 | Not started | - |
