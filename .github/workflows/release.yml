@@ -29,6 +29,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Import GPG key
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+        run: |
+          echo "$GPG_KEY" | gpg --batch --import
+
       - uses: goreleaser/goreleaser-action@v6
         with:
           version: v2.14.3
@@ -36,3 +42,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GSDWHOMEBREW: ${{ secrets.GSDWHOMEBREW }}
+          GPG_FINGERPRINT: ${{ secrets.GPG_FINGERPRINT }}
+          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
