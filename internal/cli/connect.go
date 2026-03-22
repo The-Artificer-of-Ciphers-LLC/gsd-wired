@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"os/exec"
 	"strings"
@@ -65,7 +66,14 @@ On remote unreachable, falls back to local container with a blocking Y/N prompt.
 				in:  cmd.InOrStdin(),
 				out: cmd.OutOrStdout(),
 				detectServerFn: func(host, port string) error {
-					return connection.CheckConnectivity(host, port, "", "", 2*time.Second)
+					// TCP-only probe for discovery — SQL auth not required to detect a server.
+					addr := net.JoinHostPort(host, port)
+					conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
+					if err != nil {
+						return err
+					}
+					conn.Close()
+					return nil
 				},
 				healthCheckFn: func(host, port, user, password string) error {
 					return connection.CheckConnectivity(host, port, user, password, 2*time.Second)
