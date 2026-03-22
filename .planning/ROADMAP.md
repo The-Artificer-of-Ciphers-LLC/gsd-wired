@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0** — Full GSD lifecycle on beads graph (shipped 2026-03-22)
-- 🔄 **v1.0 Installation Toolkit** — Distribution, setup UX, containers, connectivity (in progress)
+- ✅ **v1.0 Installation Toolkit** — Distribution, setup UX, containers, connectivity (shipped 2026-03-22)
 
 ## Phases
 
@@ -25,8 +25,8 @@
 
 ### v1.0 Installation Toolkit (Phases 11-14)
 
-- [ ] **Phase 11: Distribution Infrastructure** — GoReleaser pipeline, brew tap, signed macOS binary, ghcr.io image, `go install`
-- [ ] **Phase 12: Setup UX** — `gsdw check-deps`, `gsdw setup` wizard, `gsdw doctor` health check
+- [x] **Phase 11: Distribution Infrastructure** — GoReleaser pipeline, brew tap, signed macOS binary, ghcr.io image, `go install`
+- [x] **Phase 12: Setup UX** — `gsdw check-deps`, `gsdw setup` wizard, `gsdw doctor` health check
 - [x] **Phase 13: Container Support** — Docker/Podman and Apple Container runtime, `gsdw container` subcommand, compose fragment
 - [x] **Phase 14: Connectivity** — `gsdw connect` wizard, `.gsdw/connection.json`, client.go env var injection, remote fallback
 
@@ -45,7 +45,7 @@
 **Plans:** 2 plans
 Plans:
 - [x] 11-01-PLAN.md — Version ldflags injection, --json flag, GoReleaser config, Dockerfile (checkpoint pending: homebrew tap)
-- [~] 11-02-PLAN.md — GitHub Actions release workflow created (Task 1 done); checkpoint:human-verify at Task 2
+- [x] 11-02-PLAN.md — GitHub Actions release workflow (verified end-to-end with v0.0.1-rc7)
 
 ### Phase 12: Setup UX
 **Goal**: A developer who just installed gsdw can verify their environment and get guided to a working state in one command
@@ -95,7 +95,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-10 | v1.0 | 22/22 | Complete | 2026-03-22 |
-| 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
+| 11. Distribution Infrastructure | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 | 12. Setup UX | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 | 13. Container Support | v1.0 Install | 2/2 | Complete | 2026-03-22 |
 | 14. Connectivity | v1.0 Install | 2/2 | Complete | 2026-03-22 |
