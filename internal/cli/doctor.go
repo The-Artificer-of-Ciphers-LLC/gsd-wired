@@ -5,9 +5,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/spf13/cobra"
 
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/connection"
 	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/deps"
 )
 
@@ -33,7 +35,18 @@ Doctor is strictly read-only — it will not modify any files.`,
 			// Locate .gsdw/ directory by checking cwd and walking up.
 			gsdwDir := findGsdwDir()
 
-			renderDoctor(cmd.OutOrStdout(), result, beadsDir, gsdwDir)
+			// Load connection config for doctor display.
+			var connCfg *connection.Config
+			var connHealthErr error
+			if gsdwDir != "" {
+				connCfg, _ = connection.LoadConnection(gsdwDir)
+				if connCfg != nil {
+					host, port := connCfg.ActiveHostPort()
+					connHealthErr = connection.CheckConnectivity(host, port, connCfg.Remote.User, os.Getenv("GSDW_DB_PASSWORD"), 2*time.Second)
+				}
+			}
+
+			renderDoctor(cmd.OutOrStdout(), result, beadsDir, gsdwDir, connCfg, connHealthErr)
 			return nil
 		},
 	}
@@ -65,6 +78,8 @@ func findGsdwDir() string {
 // renderDoctor renders the human-readable doctor output to w.
 // beadsDir is the resolved path to .beads/ (empty string if not found).
 // gsdwDir is the resolved path to .gsdw/ (empty string if not found).
+// connCfg is the loaded connection config (nil if not configured).
+// connHealthErr is the result of CheckConnectivity (nil if healthy, error if unreachable).
 //
 // Output format:
 //
@@ -76,7 +91,12 @@ func findGsdwDir() string {
 //	Project:
 //	  [OK]   .beads/ found at /path/to/.beads
 //	  [WARN] .gsdw/ not found — run gsdw init first
-func renderDoctor(w io.Writer, result deps.CheckResult, beadsDir, gsdwDir string) {
+//
+//	Connection:
+//	  Mode:    local
+//	  Address: 127.0.0.1:3307
+//	  [OK]   Dolt server responding
+func renderDoctor(w io.Writer, result deps.CheckResult, beadsDir, gsdwDir string, connCfg *connection.Config, connHealthErr error) {
 	fmt.Fprintln(w, "Dependencies:")
 	for _, d := range result.Deps {
 		switch d.Status {
@@ -107,5 +127,21 @@ func renderDoctor(w io.Writer, result deps.CheckResult, beadsDir, gsdwDir string
 		fmt.Fprintf(w, "  [OK]   .gsdw/ found at %s\n", gsdwDir)
 	} else {
 		fmt.Fprintf(w, "  [WARN] .gsdw/ not found — run gsdw init first\n")
+	}
+
+	// Connection section (D-08).
+	fmt.Fprintln(w)
+	fmt.Fprintln(w, "Connection:")
+	if connCfg == nil {
+		fmt.Fprintln(w, "  [WARN] Not configured — run gsdw connect")
+	} else {
+		host, port := connCfg.ActiveHostPort()
+		fmt.Fprintf(w, "  Mode:    %s\n", connCfg.ActiveMode)
+		fmt.Fprintf(w, "  Address: %s:%s\n", host, port)
+		if connHealthErr != nil {
+			fmt.Fprintf(w, "  [FAIL] Dolt unreachable: %v\n", connHealthErr)
+		} else {
+			fmt.Fprintln(w, "  [OK]   Dolt server responding")
+		}
 	}
 }

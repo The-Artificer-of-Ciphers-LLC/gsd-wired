@@ -2,10 +2,13 @@ package cli
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/connection"
 )
 
 // TestDoctorCmd_Registered verifies doctor subcommand is registered on root.
@@ -23,7 +26,7 @@ func TestDoctorCmd_Registered(t *testing.T) {
 func TestRenderDoctor_DepsSection(t *testing.T) {
 	result := makeOKResult()
 	var buf bytes.Buffer
-	renderDoctor(&buf, result, "", "")
+	renderDoctor(&buf, result, "", "", nil, nil)
 	out := buf.String()
 
 	t.Logf("doctor output:\n%s", out)
@@ -40,7 +43,7 @@ func TestRenderDoctor_DepsSection(t *testing.T) {
 func TestRenderDoctor_ProjectSection(t *testing.T) {
 	result := makeOKResult()
 	var buf bytes.Buffer
-	renderDoctor(&buf, result, "", "")
+	renderDoctor(&buf, result, "", "", nil, nil)
 	out := buf.String()
 
 	t.Logf("doctor project section output:\n%s", out)
@@ -60,7 +63,7 @@ func TestRenderDoctor_BeadsDirFound(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	renderDoctor(&buf, result, beadsDir, "")
+	renderDoctor(&buf, result, beadsDir, "", nil, nil)
 	out := buf.String()
 
 	t.Logf("doctor .beads found output:\n%s", out)
@@ -78,7 +81,7 @@ func TestRenderDoctor_BeadsDirMissing(t *testing.T) {
 	result := makeOKResult()
 	var buf bytes.Buffer
 	// Pass empty beadsDir to indicate not found
-	renderDoctor(&buf, result, "", "")
+	renderDoctor(&buf, result, "", "", nil, nil)
 	out := buf.String()
 
 	t.Logf("doctor .beads missing output:\n%s", out)
@@ -101,7 +104,7 @@ func TestRenderDoctor_GsdwDirFound(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	renderDoctor(&buf, result, "", gsdwDir)
+	renderDoctor(&buf, result, "", gsdwDir, nil, nil)
 	out := buf.String()
 
 	t.Logf("doctor .gsdw found output:\n%s", out)
@@ -118,7 +121,7 @@ func TestRenderDoctor_GsdwDirFound(t *testing.T) {
 func TestRenderDoctor_GsdwDirMissing(t *testing.T) {
 	result := makeOKResult()
 	var buf bytes.Buffer
-	renderDoctor(&buf, result, "", "")
+	renderDoctor(&buf, result, "", "", nil, nil)
 	out := buf.String()
 
 	// Should have WARN for missing .gsdw/
@@ -149,7 +152,7 @@ func TestRenderDoctor_NoFileModification(t *testing.T) {
 	defer func() { _ = os.Chdir(origDir) }()
 
 	var buf bytes.Buffer
-	renderDoctor(&buf, result, "", "")
+	renderDoctor(&buf, result, "", "", nil, nil)
 
 	// Count files after
 	after := countFiles(t, tmpDir)
@@ -179,7 +182,7 @@ func countFiles(t *testing.T, dir string) int {
 func TestRenderDoctor_FailDepsShowInstallHelp(t *testing.T) {
 	result := makeFailResult()
 	var buf bytes.Buffer
-	renderDoctor(&buf, result, "", "")
+	renderDoctor(&buf, result, "", "", nil, nil)
 	out := buf.String()
 
 	t.Logf("doctor fail deps output:\n%s", out)
@@ -189,5 +192,81 @@ func TestRenderDoctor_FailDepsShowInstallHelp(t *testing.T) {
 	}
 	if !strings.Contains(out, "brew install dolthub") {
 		t.Errorf("expected install help for dolt in doctor output, got:\n%s", out)
+	}
+}
+
+// TestRenderDoctor_ConnectionConfigured_OK verifies Connection section shows [OK] when healthy.
+func TestRenderDoctor_ConnectionConfigured_OK(t *testing.T) {
+	result := makeOKResult()
+	connCfg := &connection.Config{
+		ActiveMode: "local",
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+	}
+	var buf bytes.Buffer
+	renderDoctor(&buf, result, "", "", connCfg, nil)
+	out := buf.String()
+
+	t.Logf("doctor connection OK output:\n%s", out)
+
+	if !strings.Contains(out, "Connection:") {
+		t.Errorf("expected 'Connection:' section in output, got:\n%s", out)
+	}
+	if !strings.Contains(out, "Mode:    local") {
+		t.Errorf("expected 'Mode:    local' in output, got:\n%s", out)
+	}
+	if !strings.Contains(out, "Address: 127.0.0.1:3307") {
+		t.Errorf("expected 'Address: 127.0.0.1:3307' in output, got:\n%s", out)
+	}
+	if !strings.Contains(out, "[OK]   Dolt server responding") {
+		t.Errorf("expected '[OK]   Dolt server responding' in output, got:\n%s", out)
+	}
+}
+
+// TestRenderDoctor_ConnectionConfigured_Fail verifies Connection section shows [FAIL] when unhealthy.
+func TestRenderDoctor_ConnectionConfigured_Fail(t *testing.T) {
+	result := makeOKResult()
+	connCfg := &connection.Config{
+		ActiveMode: "local",
+		Local:      connection.LocalConfig{Host: "127.0.0.1", Port: "3307"},
+	}
+	healthErr := fmt.Errorf("connection refused")
+	var buf bytes.Buffer
+	renderDoctor(&buf, result, "", "", connCfg, healthErr)
+	out := buf.String()
+
+	t.Logf("doctor connection FAIL output:\n%s", out)
+
+	if !strings.Contains(out, "[FAIL] Dolt unreachable: connection refused") {
+		t.Errorf("expected '[FAIL] Dolt unreachable: connection refused' in output, got:\n%s", out)
+	}
+}
+
+// TestRenderDoctor_ConnectionNotConfigured verifies Connection section shows [WARN] when not configured.
+func TestRenderDoctor_ConnectionNotConfigured(t *testing.T) {
+	result := makeOKResult()
+	var buf bytes.Buffer
+	renderDoctor(&buf, result, "", "", nil, nil)
+	out := buf.String()
+
+	t.Logf("doctor connection not configured output:\n%s", out)
+
+	if !strings.Contains(out, "Connection:") {
+		t.Errorf("expected 'Connection:' section in output, got:\n%s", out)
+	}
+	if !strings.Contains(out, "[WARN] Not configured — run gsdw connect") {
+		t.Errorf("expected '[WARN] Not configured — run gsdw connect' in output, got:\n%s", out)
+	}
+}
+
+// TestRenderDoctor_ConnectionNoGsdwDir verifies Connection section shows [WARN] when gsdwDir is empty.
+func TestRenderDoctor_ConnectionNoGsdwDir(t *testing.T) {
+	result := makeOKResult()
+	var buf bytes.Buffer
+	// No gsdwDir means connCfg will be nil
+	renderDoctor(&buf, result, "", "", nil, nil)
+	out := buf.String()
+
+	if !strings.Contains(out, "[WARN] Not configured — run gsdw connect") {
+		t.Errorf("expected '[WARN] Not configured — run gsdw connect' in output, got:\n%s", out)
 	}
 }
