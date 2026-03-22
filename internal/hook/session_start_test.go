@@ -426,6 +426,255 @@ func TestSessionStartBudget(t *testing.T) {
 	}
 }
 
+// TestSessionStartWithPlanningDir verifies that handleSessionStart emits project context
+// from .planning/ files when .beads/ is absent but .planning/ is present (COMPAT-01).
+func TestSessionStartWithPlanningDir(t *testing.T) {
+	tmpDir := t.TempDir()
+	// No .beads/ — only .planning/ with STATE.md, ROADMAP.md, PROJECT.md.
+	planningDir := filepath.Join(tmpDir, ".planning")
+	if err := os.MkdirAll(planningDir, 0755); err != nil {
+		t.Fatalf("failed to create .planning/: %v", err)
+	}
+
+	// Write minimal STATE.md.
+	stateContent := `# Project State
+
+## Current Position
+
+Phase: 5 of 10 (Token Optimization)
+Plan: 2 of 3 in current phase
+Status: Executing
+Last activity: 2026-03-22 -- working on tests
+
+Progress: [█████░░░░░] 50%
+`
+	if err := os.WriteFile(filepath.Join(planningDir, "STATE.md"), []byte(stateContent), 0644); err != nil {
+		t.Fatalf("failed to write STATE.md: %v", err)
+	}
+
+	// Write minimal ROADMAP.md.
+	roadmapContent := `# Roadmap
+
+- [x] **Phase 1: Binary Scaffold**
+- [x] **Phase 2: Graph Primitives**
+- [ ] **Phase 5: Token Optimization**
+
+## Phase Details
+
+### Phase 1:
+**Goal**: Build the binary
+**Plans**: 2 plans
+
+### Phase 5:
+**Goal**: Optimize tokens
+**Plans**: 3 plans
+`
+	if err := os.WriteFile(filepath.Join(planningDir, "ROADMAP.md"), []byte(roadmapContent), 0644); err != nil {
+		t.Fatalf("failed to write ROADMAP.md: %v", err)
+	}
+
+	// Write minimal PROJECT.md.
+	projectContent := `# TestProject
+
+## Core Value
+
+Optimize token usage for AI agents.
+
+## Context
+
+Details here.
+`
+	if err := os.WriteFile(filepath.Join(planningDir, "PROJECT.md"), []byte(projectContent), 0644); err != nil {
+		t.Fatalf("failed to write PROJECT.md: %v", err)
+	}
+
+	hs := &hookState{} // no bdPath needed — exits before graph init
+	raw, err := json.Marshal(SessionStartInput{
+		HookInputBase: HookInputBase{
+			SessionID:     "compat-1",
+			CWD:           tmpDir,
+			HookEventName: "SessionStart",
+		},
+		Source: "startup",
+	})
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	var buf bytes.Buffer
+	ctx := context.Background()
+	if err := handleSessionStart(ctx, raw, hs, &buf); err != nil {
+		t.Fatalf("handleSessionStart returned error: %v", err)
+	}
+
+	output := strings.TrimSpace(buf.String())
+	var out HookOutput
+	if err := json.Unmarshal([]byte(output), &out); err != nil {
+		t.Fatalf("output is not valid JSON: %v, output was: %q", err, output)
+	}
+
+	// Must contain project name from PROJECT.md.
+	if !strings.Contains(out.AdditionalContext, "TestProject") {
+		t.Errorf("expected additionalContext to contain project name 'TestProject', got: %q", out.AdditionalContext)
+	}
+
+	// Must contain current phase info from STATE.md.
+	if !strings.Contains(out.AdditionalContext, "5") {
+		t.Errorf("expected additionalContext to contain phase number '5', got: %q", out.AdditionalContext)
+	}
+
+	// Must contain phase list from ROADMAP.md.
+	if !strings.Contains(out.AdditionalContext, "Phase") {
+		t.Errorf("expected additionalContext to contain 'Phase' entries, got: %q", out.AdditionalContext)
+	}
+}
+
+// TestSessionStartNoPlanningDir verifies that handleSessionStart emits the "Run /gsd-wired:init"
+// hint when neither .beads/ nor .planning/ exists.
+func TestSessionStartNoPlanningDir(t *testing.T) {
+	tmpDir := t.TempDir()
+	// Neither .beads/ nor .planning/ — completely uninitialized.
+
+	hs := &hookState{}
+	raw, err := json.Marshal(SessionStartInput{
+		HookInputBase: HookInputBase{
+			SessionID:     "compat-2",
+			CWD:           tmpDir,
+			HookEventName: "SessionStart",
+		},
+		Source: "startup",
+	})
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	var buf bytes.Buffer
+	ctx := context.Background()
+	if err := handleSessionStart(ctx, raw, hs, &buf); err != nil {
+		t.Fatalf("handleSessionStart returned error: %v", err)
+	}
+
+	output := strings.TrimSpace(buf.String())
+	var out HookOutput
+	if err := json.Unmarshal([]byte(output), &out); err != nil {
+		t.Fatalf("output is not valid JSON: %v, output was: %q", err, output)
+	}
+
+	// Must still emit the init hint.
+	if !strings.Contains(out.AdditionalContext, "init") && !strings.Contains(out.AdditionalContext, "No .beads") {
+		t.Errorf("expected hint to mention 'init' or 'No .beads' when no .planning/ either, got: %q", out.AdditionalContext)
+	}
+
+	// Must NOT contain "compatibility mode" — that's for .planning/ fallback only.
+	if strings.Contains(out.AdditionalContext, "compatibility mode") {
+		t.Errorf("expected no 'compatibility mode' in hint when no .planning/, got: %q", out.AdditionalContext)
+	}
+}
+
+// TestSessionStartPlanningCompatibilityModeIndicator verifies the compatibility mode
+// indicator string is present when .planning/ fallback is active.
+func TestSessionStartPlanningCompatibilityModeIndicator(t *testing.T) {
+	tmpDir := t.TempDir()
+	planningDir := filepath.Join(tmpDir, ".planning")
+	if err := os.MkdirAll(planningDir, 0755); err != nil {
+		t.Fatalf("failed to create .planning/: %v", err)
+	}
+
+	// Write minimal files so BuildFallbackStatus succeeds.
+	if err := os.WriteFile(filepath.Join(planningDir, "STATE.md"), []byte("Phase: 1 of 1\nPlan: 1 of 1\n"), 0644); err != nil {
+		t.Fatalf("failed to write STATE.md: %v", err)
+	}
+
+	hs := &hookState{}
+	raw, err := json.Marshal(SessionStartInput{
+		HookInputBase: HookInputBase{
+			SessionID:     "compat-3",
+			CWD:           tmpDir,
+			HookEventName: "SessionStart",
+		},
+		Source: "startup",
+	})
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	var buf bytes.Buffer
+	ctx := context.Background()
+	if err := handleSessionStart(ctx, raw, hs, &buf); err != nil {
+		t.Fatalf("handleSessionStart returned error: %v", err)
+	}
+
+	output := strings.TrimSpace(buf.String())
+	var out HookOutput
+	if err := json.Unmarshal([]byte(output), &out); err != nil {
+		t.Fatalf("output is not valid JSON: %v, output was: %q", err, output)
+	}
+
+	// Must contain compatibility mode indicator per D-01.
+	if !strings.Contains(out.AdditionalContext, "compatibility mode") {
+		t.Errorf("expected 'compatibility mode' in additionalContext, got: %q", out.AdditionalContext)
+	}
+}
+
+// TestSessionStartBeadsPriorityOverPlanning verifies that .beads/ takes priority over
+// .planning/ when both exist (D-10: beads-first rule).
+func TestSessionStartBeadsPriorityOverPlanning(t *testing.T) {
+	fakeBd := buildFakeBd(t)
+	tmpDir := t.TempDir()
+
+	// Create both .beads/ and .planning/.
+	if err := os.MkdirAll(filepath.Join(tmpDir, ".beads"), 0755); err != nil {
+		t.Fatalf("failed to create .beads/: %v", err)
+	}
+	planningDir := filepath.Join(tmpDir, ".planning")
+	if err := os.MkdirAll(planningDir, 0755); err != nil {
+		t.Fatalf("failed to create .planning/: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(planningDir, "PROJECT.md"), []byte("# ShouldNotAppear\n"), 0644); err != nil {
+		t.Fatalf("failed to write PROJECT.md: %v", err)
+	}
+
+	hs := &hookState{bdPath: fakeBd, beadsDir: tmpDir}
+	raw, err := json.Marshal(SessionStartInput{
+		HookInputBase: HookInputBase{
+			SessionID:     "compat-4",
+			CWD:           tmpDir,
+			HookEventName: "SessionStart",
+		},
+		Source: "startup",
+	})
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	var buf bytes.Buffer
+	ctx := context.Background()
+	if err := handleSessionStart(ctx, raw, hs, &buf); err != nil {
+		t.Fatalf("handleSessionStart returned error: %v", err)
+	}
+
+	output := strings.TrimSpace(buf.String())
+	var out HookOutput
+	if err := json.Unmarshal([]byte(output), &out); err != nil {
+		t.Fatalf("output is not valid JSON: %v, output was: %q", err, output)
+	}
+
+	// Must NOT contain compatibility mode — .beads/ is present and takes priority.
+	if strings.Contains(out.AdditionalContext, "compatibility mode") {
+		t.Errorf("expected beads path, not .planning/ fallback, when .beads/ exists; got: %q", out.AdditionalContext)
+	}
+
+	// The content should come from beads (graph header present).
+	if !strings.Contains(out.AdditionalContext, "GSD Project State") {
+		t.Errorf("expected beads-sourced 'GSD Project State' header, got: %q", out.AdditionalContext)
+	}
+
+	// Must NOT contain "ShouldNotAppear" from the .planning/ PROJECT.md.
+	if strings.Contains(out.AdditionalContext, "ShouldNotAppear") {
+		t.Errorf(".planning/ content leaked into beads-mode output: %q", out.AdditionalContext)
+	}
+}
+
 // TestSessionStartStdoutPurity verifies output starts with '{' and is valid JSON.
 func TestSessionStartStdoutPurity(t *testing.T) {
 	fakeBd := buildFakeBd(t)
