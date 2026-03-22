@@ -18,7 +18,7 @@ Run `gsdw check-deps` to see what's installed and what's missing. Run `gsdw setu
 ### Homebrew (macOS)
 
 ```bash
-brew tap The-Artificer-of-Ciphers-LLC/tap
+brew tap The-Artificer-of-Ciphers-LLC/gsdw
 brew install --cask gsdw-cc
 ```
 

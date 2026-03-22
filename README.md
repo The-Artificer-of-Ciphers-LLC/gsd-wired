@@ -158,11 +158,20 @@ gsdw version --json        # Verify build
 
 ## Release
 
-Pushing a `v*` tag triggers the GitHub Actions release pipeline:
+Local release with Apple codesigning + notarization:
+
+```bash
+# One-time: create .env.release with signing credentials (see Makefile for details)
+make release-mac-snapshot    # Dry run (no publish)
+make release-mac             # Full release (push to GitHub + brew tap)
+```
+
+Release pipeline:
 - Cross-platform binaries (darwin/linux x amd64/arm64)
-- GPG-signed checksums
-- Multi-arch Docker images on ghcr.io
+- macOS binaries signed with Developer ID Application certificate
+- macOS binaries notarized by Apple (via `codesign` + `xcrun notarytool`)
 - Homebrew cask auto-published to tap repo
+- Docker images built in CI (skipped locally)
 
 ## License
 
