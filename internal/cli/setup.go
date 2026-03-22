@@ -177,7 +177,7 @@ func offerInstall(reader *bufio.Reader, out io.Writer, d deps.Dep, brewAvailable
 // printNextSteps prints the standard next steps guidance section (per D-08).
 func printNextSteps(out io.Writer) {
 	fmt.Fprintln(out, "Next steps:")
-	fmt.Fprintln(out, "  - Container runtime: gsdw container setup (Phase 13)")
-	fmt.Fprintln(out, "  - Connection config:  gsdw connect (Phase 14)")
-	fmt.Fprintln(out, "  - Health check:       gsdw doctor")
+	fmt.Fprintln(out, "  - Container:   gsdw container start")
+	fmt.Fprintln(out, "  - Connection:  gsdw connect")
+	fmt.Fprintln(out, "  - Health:      gsdw doctor")
 }
