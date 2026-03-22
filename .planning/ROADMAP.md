@@ -71,7 +71,10 @@ Plans:
   3. Running `gsdw container start` produces a `gsdw.compose.yaml` fragment that can be passed to docker compose via `-f` without modifying any existing docker-compose file
   4. On macOS 26 + Apple Silicon with the `container` CLI installed, gsdw uses Apple Container automatically; on other machines it falls back to Docker then Podman
   5. On macOS 15 or older, attempting Apple Container produces a clear error directing the developer to Docker or Podman
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 13-01-PLAN.md — Runtime abstraction (Runtime interface, Docker/Podman/Apple Container implementations, DetectRuntime, compose fragment writer)
+- [ ] 13-02-PLAN.md — CLI subcommands (gsdw container start/stop with pre-flight checks, wired into root)
 
 ### Phase 14: Connectivity
 **Goal**: gsdw knows how to reach the Dolt server and automatically passes that configuration to every bd command, with graceful handling when the server is unreachable
@@ -91,7 +94,7 @@ Plans:
 | 1-10 | v1.0 | 22/22 | Complete | 2026-03-22 |
 | 11. Distribution Infrastructure | v1.0 Install | 1/2 | Executing (checkpoint pending) | - |
 | 12. Setup UX | v1.0 Install | 2/2 | Complete | 2026-03-22 |
-| 13. Container Support | v1.0 Install | 0/TBD | Not started | - |
+| 13. Container Support | v1.0 Install | 0/2 | Planned | - |
 | 14. Connectivity | v1.0 Install | 0/TBD | Not started | - |
 
 ---
