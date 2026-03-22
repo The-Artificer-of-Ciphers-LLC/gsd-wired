@@ -14,7 +14,7 @@ gsd-wired is a Claude Code plugin (MCP server + hooks + skills) that replaces ma
 
 ```bash
 # Homebrew (macOS)
-brew tap The-Artificer-of-Ciphers-LLC/tap
+brew tap The-Artificer-of-Ciphers-LLC/gsdw
 brew install --cask gsdw-cc
 
 # Go
