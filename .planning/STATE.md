@@ -5,16 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-03-22)
 
 **Core value:** GSD's full development lifecycle running on a beads graph engine so that orchestrator context stays lean and subagents pull only the context they need.
-**Current focus:** v1.0 Installation Toolkit — Phase 14: Connectivity
+**Current focus:** v1.1 Installation Toolkit — SHIPPED
 
 ## Current Position
 
-Phase: 14 — Connectivity
-Plan: 2 of 2 in current phase
-Status: Complete
-Last activity: 2026-03-22 -- Plan 14-02 complete: gsdw connect wizard, gsdw doctor Connection section, NewConnectCmd wired into root
+Phase: All complete
+Status: v1.1 milestone shipped
+Last activity: 2026-03-22 -- v1.1 Installation Toolkit milestone complete (4 phases, 8 plans, 24 requirements)
 
-Progress: [███████░░░] 75% (Installation Toolkit milestone)
+Progress: [██████████] 100% (v1.1 Installation Toolkit)
 
 ## Performance Metrics
 

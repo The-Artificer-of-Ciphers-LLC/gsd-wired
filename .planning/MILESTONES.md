@@ -1,8 +1,29 @@
 # Milestones
 
-## v1.0 — gsd-wired (in progress)
+## v1.1 — Installation Toolkit
 
-**Core complete:** 2026-03-22 | **Installation toolkit:** in progress
+**Shipped:** 2026-03-22
+**Phases:** 4 (11-14) | **Plans:** 8 | **Tests:** 340 total (across 11 packages)
+**LOC added:** ~3,069 | **Total project:** 16,922 Go LOC
+
+### Key Accomplishments
+
+1. **GoReleaser release pipeline** — cross-platform binaries, GPG-signed checksums, multi-arch Docker images on ghcr.io, Homebrew cask
+2. **Dependency detection and setup wizard** — `gsdw check-deps`, `gsdw setup`, `gsdw doctor` with install guidance
+3. **Container runtime abstraction** — Docker, Podman, Apple Container with `gsdw container start/stop` and compose fragment
+4. **Connection wizard and health check** — `gsdw connect` with auto-detection, remote fallback, two-phase TCP+SQL health check
+5. **Env var injection** — BEADS_DOLT_SERVER_HOST/PORT into every bd subprocess from connection.json
+
+### Archive
+
+- `milestones/v1.1-ROADMAP.md` — Full roadmap with 4 phase details
+- `milestones/v1.1-REQUIREMENTS.md` — 24 requirements with traceability
+
+---
+
+## v1.0 — gsd-wired
+
+**Shipped:** 2026-03-22
 **Phases:** 10 | **Plans:** 22 | **Tests:** 220
 **Go files:** 77 | **LOC:** 12,373 | **Commits:** 129
 
