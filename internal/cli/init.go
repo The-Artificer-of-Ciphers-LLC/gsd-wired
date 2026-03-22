@@ -72,17 +72,17 @@ init_project MCP tool to create project context in the beads graph.`,
 			if _, statErr := os.Stat(beadsPath); os.IsNotExist(statErr) {
 				bdPath, lookErr := exec.LookPath("bd")
 				if lookErr != nil {
-					return fmt.Errorf("bd not found on PATH — install beads first: %w", lookErr)
+					fmt.Fprintln(cmd.OutOrStdout(), "bd not found on PATH — skipping .beads/ init (install beads to enable graph storage)")
+				} else {
+					bdCmd := exec.Command(bdPath, "init", "--quiet", "--skip-hooks", "--skip-agents")
+					bdCmd.Env = append(os.Environ(), "BEADS_DIR="+cwd)
+					bdCmd.Stdout = cmd.OutOrStdout()
+					bdCmd.Stderr = cmd.ErrOrStderr()
+					if runErr := bdCmd.Run(); runErr != nil {
+						return fmt.Errorf("bd init failed: %w", runErr)
+					}
+					fmt.Fprintln(cmd.OutOrStdout(), "Initialized .beads/ directory")
 				}
-
-				bdCmd := exec.Command(bdPath, "init", "--quiet", "--skip-hooks", "--skip-agents")
-				bdCmd.Env = append(os.Environ(), "BEADS_DIR="+cwd)
-				bdCmd.Stdout = cmd.OutOrStdout()
-				bdCmd.Stderr = cmd.ErrOrStderr()
-				if runErr := bdCmd.Run(); runErr != nil {
-					return fmt.Errorf("bd init failed: %w", runErr)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), "Initialized .beads/ directory")
 			}
 
 			// Step 2: Write PROJECT.md template if it doesn't exist.
