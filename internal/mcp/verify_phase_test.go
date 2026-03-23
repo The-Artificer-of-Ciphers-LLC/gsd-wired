@@ -247,6 +247,68 @@ func TestVerifyPhaseFailures(t *testing.T) {
 	}
 }
 
+// --- hasUppercaseIdentifier unit tests ---
+
+func TestHasUppercaseIdentifier_WithGoType(t *testing.T) {
+	if !hasUppercaseIdentifier("The HandleExecuteWave function exists") {
+		t.Error("expected true for Go type name 'HandleExecuteWave'")
+	}
+}
+
+func TestHasUppercaseIdentifier_WithoutIdentifier(t *testing.T) {
+	if hasUppercaseIdentifier("all tests pass with no failures") {
+		t.Error("expected false for lowercase-only text")
+	}
+}
+
+func TestHasUppercaseIdentifier_SingleCharWord(t *testing.T) {
+	if hasUppercaseIdentifier("A b c") {
+		t.Error("expected false for single-char uppercase word 'A'")
+	}
+}
+
+func TestHasUppercaseIdentifier_WithPunctuation(t *testing.T) {
+	if !hasUppercaseIdentifier("(ServerState) is initialized") {
+		t.Error("expected true for 'ServerState' wrapped in parens")
+	}
+}
+
+func TestHasUppercaseIdentifier_EmptyString(t *testing.T) {
+	if hasUppercaseIdentifier("") {
+		t.Error("expected false for empty string")
+	}
+}
+
+// --- extractFilePath unit tests ---
+
+func TestExtractFilePath_GoFile(t *testing.T) {
+	got := extractFilePath("internal/mcp/server.go exists and compiles")
+	if got != "internal/mcp/server.go" {
+		t.Errorf("extractFilePath() = %q, want \"internal/mcp/server.go\"", got)
+	}
+}
+
+func TestExtractFilePath_NoFile(t *testing.T) {
+	got := extractFilePath("all tests pass")
+	if got != "" {
+		t.Errorf("extractFilePath() = %q, want empty string", got)
+	}
+}
+
+func TestExtractFilePath_MarkdownFile(t *testing.T) {
+	got := extractFilePath("skills/init/SKILL.md is present")
+	if got != "skills/init/SKILL.md" {
+		t.Errorf("extractFilePath() = %q, want \"skills/init/SKILL.md\"", got)
+	}
+}
+
+func TestExtractFilePath_WithTrailingPunctuation(t *testing.T) {
+	got := extractFilePath("Check internal/cli/root.go, it should exist.")
+	if got != "internal/cli/root.go" {
+		t.Errorf("extractFilePath() = %q, want \"internal/cli/root.go\"", got)
+	}
+}
+
 // TestVerifyPhaseNoPhase verifies that a non-existent phase_num returns toolError.
 func TestVerifyPhaseNoPhase(t *testing.T) {
 	tmpDir := t.TempDir()

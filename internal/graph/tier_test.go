@@ -237,6 +237,67 @@ func TestFormatCold(t *testing.T) {
 	}
 }
 
+// --- Exported Format wrapper tests (FormatHot/FormatWarm/FormatCold) ---
+
+func TestFormatHot_Exported(t *testing.T) {
+	b := Bead{ID: "bd-exp", Title: "Export Test", Status: "open", Description: "Build it", AcceptanceCriteria: "Tests pass"}
+	tb := TieredBead{Bead: b, Tier: TierHot}
+	got := FormatHot(tb)
+	if !strings.Contains(got, "[HOT]") {
+		t.Errorf("FormatHot() missing [HOT]: %q", got)
+	}
+	if !strings.Contains(got, "Export Test") {
+		t.Errorf("FormatHot() missing title: %q", got)
+	}
+	if !strings.Contains(got, "Build it") {
+		t.Errorf("FormatHot() missing description: %q", got)
+	}
+}
+
+func TestFormatWarm_Exported(t *testing.T) {
+	now := time.Now()
+	b := Bead{ID: "bd-warm-exp", Title: "Warm Export", Status: "closed", ClosedAt: &now, CloseReason: "completed"}
+	tb := TieredBead{Bead: b, Tier: TierWarm}
+	got := FormatWarm(tb)
+	if !strings.Contains(got, "[WARM]") {
+		t.Errorf("FormatWarm() missing [WARM]: %q", got)
+	}
+	if !strings.Contains(got, "completed") {
+		t.Errorf("FormatWarm() missing close reason: %q", got)
+	}
+}
+
+func TestFormatCold_Exported(t *testing.T) {
+	b := Bead{ID: "bd-cold-exp", Title: "Cold Export", Status: "closed"}
+	tb := TieredBead{Bead: b, Tier: TierCold}
+	got := FormatCold(tb)
+	if !strings.Contains(got, "bd-cold-exp") {
+		t.Errorf("FormatCold() missing id: %q", got)
+	}
+	if !strings.Contains(got, "Cold Export") {
+		t.Errorf("FormatCold() missing title: %q", got)
+	}
+}
+
+// --- EstimateTokens exported wrapper test ---
+
+func TestEstimateTokens_Exported(t *testing.T) {
+	got := EstimateTokens("hello world!")
+	if got < 1 {
+		t.Errorf("EstimateTokens(\"hello world!\") = %d, want >= 1", got)
+	}
+}
+
+// --- classifyTier edge cases ---
+
+func TestClassifyTier_UnknownStatus(t *testing.T) {
+	b := Bead{ID: "b1", Status: "unknown_status"}
+	got := classifyTier(b, nil)
+	if got != TierCold {
+		t.Errorf("classifyTier(unknown status) = %q, want %q", got, TierCold)
+	}
+}
+
 // --- compactSummary tests ---
 
 func TestCompactSummary_WithCloseReason(t *testing.T) {

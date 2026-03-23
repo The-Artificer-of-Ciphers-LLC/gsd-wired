@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/graph"
 )
 
 // TestSessionStartEmitsContext verifies that handleSessionStart emits additionalContext
@@ -672,6 +674,118 @@ func TestSessionStartBeadsPriorityOverPlanning(t *testing.T) {
 	// Must NOT contain "ShouldNotAppear" from the .planning/ PROJECT.md.
 	if strings.Contains(out.AdditionalContext, "ShouldNotAppear") {
 		t.Errorf(".planning/ content leaked into beads-mode output: %q", out.AdditionalContext)
+	}
+}
+
+// --- formatSessionContext unit tests ---
+
+func TestFormatSessionContext_WithPhaseAndReady(t *testing.T) {
+	phase := &graph.Bead{
+		ID:          "bd-phase",
+		Title:       "Token Optimization",
+		Status:      "open",
+		Description: "Optimize token usage",
+		Metadata:    map[string]any{"gsd_phase": float64(9)},
+	}
+	ready := []graph.Bead{
+		{ID: "bd-t1", Title: "Task 1"},
+		{ID: "bd-t2", Title: "Task 2"},
+	}
+	got := formatSessionContext(phase, ready)
+
+	if !strings.Contains(got, "GSD Project State") {
+		t.Error("missing header 'GSD Project State'")
+	}
+	if !strings.Contains(got, "Token Optimization") {
+		t.Error("missing phase title")
+	}
+	if !strings.Contains(got, "Phase 9") {
+		t.Error("missing phase number")
+	}
+	if !strings.Contains(got, "Task 1") {
+		t.Error("missing ready task 1")
+	}
+	if !strings.Contains(got, "Task 2") {
+		t.Error("missing ready task 2")
+	}
+	if !strings.Contains(got, "Optimize token usage") {
+		t.Error("missing phase goal")
+	}
+}
+
+func TestFormatSessionContext_NoPhase(t *testing.T) {
+	got := formatSessionContext(nil, nil)
+
+	if !strings.Contains(got, "(none found)") {
+		t.Error("missing '(none found)' when no phase")
+	}
+	if !strings.Contains(got, "(none)") {
+		t.Error("missing '(none)' when no ready tasks")
+	}
+}
+
+func TestFormatSessionContext_EmptyReady(t *testing.T) {
+	phase := &graph.Bead{
+		ID:       "bd-p",
+		Title:    "My Phase",
+		Status:   "open",
+		Metadata: map[string]any{"gsd_phase": float64(1)},
+	}
+	got := formatSessionContext(phase, []graph.Bead{})
+
+	if !strings.Contains(got, "(none)") {
+		t.Error("should show (none) for empty ready tasks")
+	}
+}
+
+func TestFormatSessionContext_PhaseNoDescription(t *testing.T) {
+	phase := &graph.Bead{
+		ID:       "bd-p",
+		Title:    "Phase X",
+		Status:   "open",
+		Metadata: map[string]any{"gsd_phase": float64(5)},
+	}
+	got := formatSessionContext(phase, nil)
+
+	if strings.Contains(got, "Phase Goal") {
+		t.Error("should not contain 'Phase Goal' section when description is empty")
+	}
+}
+
+// --- phaseNumAsFloat unit tests ---
+
+func TestPhaseNumAsFloat_Float64(t *testing.T) {
+	n, ok := phaseNumAsFloat(float64(7))
+	if !ok || n != 7 {
+		t.Errorf("phaseNumAsFloat(float64(7)) = (%v, %v), want (7, true)", n, ok)
+	}
+}
+
+func TestPhaseNumAsFloat_Int(t *testing.T) {
+	n, ok := phaseNumAsFloat(3)
+	if !ok || n != 3 {
+		t.Errorf("phaseNumAsFloat(3) = (%v, %v), want (3, true)", n, ok)
+	}
+}
+
+func TestPhaseNumAsFloat_Int64(t *testing.T) {
+	n, ok := phaseNumAsFloat(int64(12))
+	if !ok || n != 12 {
+		t.Errorf("phaseNumAsFloat(int64(12)) = (%v, %v), want (12, true)", n, ok)
+	}
+}
+
+func TestPhaseNumAsFloat_Nil(t *testing.T) {
+	_, ok := phaseNumAsFloat(nil)
+	if ok {
+		t.Error("phaseNumAsFloat(nil) should return false")
+	}
+}
+
+func TestPhaseNumAsFloat_String(t *testing.T) {
+	_, ok := phaseNumAsFloat("seven")
+	if ok {
+		t.Error("phaseNumAsFloat(string) should return false")
 	}
 }
 
