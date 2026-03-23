@@ -63,6 +63,7 @@ homebrew_casks:
     homepage: "https://github.com/The-Artificer-of-Ciphers-LLC/gsd-wired"
     description: "GSD + Beads/Dolt workflow orchestration for Claude Code"
     license: "MIT"
+    postinstall: 'system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}"]'
     skip_upload: auto
 
 dockers:

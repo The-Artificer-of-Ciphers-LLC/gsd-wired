@@ -33,7 +33,7 @@ func connectInProcess(t *testing.T, state *serverState) *mcpsdk.ClientSession {
 	return cs
 }
 
-// TestToolsRegistered verifies that registerTools adds exactly 18 tools to the server.
+// TestToolsRegistered verifies that registerTools adds exactly 19 tools to the server.
 func TestToolsRegistered(t *testing.T) {
 	state := &serverState{}
 	cs := connectInProcess(t, state)

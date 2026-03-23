@@ -34,7 +34,7 @@ type closeResult struct {
 	Unblocked []graph.Bead `json:"unblocked"`
 }
 
-// registerTools registers all 18 GSD MCP tools on the server.
+// registerTools registers all 19 GSD MCP tools on the server.
 // Each handler calls state.init(ctx) before any graph operation (D-06, D-07).
 // Tool errors use IsError=true — Go errors are only for protocol failures (D-09).
 func registerTools(server *mcpsdk.Server, state *serverState) {

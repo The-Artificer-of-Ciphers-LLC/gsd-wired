@@ -102,8 +102,8 @@ func TestGetTieredContextDefaultBudget(t *testing.T) {
 	}
 }
 
-// TestToolCountIs18 verifies that exactly 18 tools are registered.
-func TestToolCountIs18(t *testing.T) {
+// TestToolCountIs19 verifies that exactly 19 tools are registered.
+func TestToolCountIs19(t *testing.T) {
 	state := &serverState{}
 	cs := connectInProcess(t, state)
 
@@ -111,11 +111,11 @@ func TestToolCountIs18(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools() returned error: %v", err)
 	}
-	if len(result.Tools) != 18 {
+	if len(result.Tools) != 19 {
 		names := make([]string, len(result.Tools))
 		for i, tool := range result.Tools {
 			names[i] = tool.Name
 		}
-		t.Errorf("expected 18 tools, got %d: %v", len(result.Tools), names)
+		t.Errorf("expected 19 tools, got %d: %v", len(result.Tools), names)
 	}
 }
