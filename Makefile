@@ -31,12 +31,12 @@ release-mac:
 		test -n "$$GSDWHOMEBREW"           || (echo "ERROR: GSDWHOMEBREW is not set."; exit 1) && \
 		test -n "$$GITHUB_TOKEN"           || (echo "ERROR: GITHUB_TOKEN is not set."; exit 1) && \
 		echo "==> All env vars present. Starting goreleaser release..." && \
-		goreleaser release --clean --skip=docker
+		goreleaser release --clean
 
 ## release-mac-snapshot: dry run of the macOS release (no publish, no tag required)
 release-mac-snapshot:
 	@test -f .env.release || (echo "ERROR: .env.release not found. See Makefile header for setup."; exit 1)
-	@. ./.env.release && goreleaser release --snapshot --clean --skip=docker
+	@. ./.env.release && goreleaser release --snapshot --clean
 
 ## help: show this help
 help:

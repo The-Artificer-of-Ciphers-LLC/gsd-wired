@@ -70,17 +70,6 @@ homebrew_casks:
           system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}"]
     skip_upload: auto
 
-dockers_v2:
-  - dockerfile: Dockerfile.container
-    ids: [gsdw]
-    sbom: "false"
-    images:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw"
-    tags:
-      - "{{ .Version }}"
-      - "latest"
-    labels:
-      "org.opencontainers.image.created": "{{.Date}}"
-      "org.opencontainers.image.title": "gsdw"
-      "org.opencontainers.image.revision": "{{.FullCommit}}"
-      "org.opencontainers.image.version": "{{.Version}}"
+# Docker images are built separately in CI (.github/workflows/release.yml)
+# using docker/build-push-action. GoReleaser handles binaries, archives,
+# signing, homebrew cask, and GitHub release only.
