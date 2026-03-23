@@ -73,6 +73,7 @@ homebrew_casks:
 dockers_v2:
   - dockerfile: Dockerfile.container
     ids: [gsdw]
+    sbom: "false"
     images:
       - "ghcr.io/the-artificer-of-ciphers-llc/gsdw"
     tags:
