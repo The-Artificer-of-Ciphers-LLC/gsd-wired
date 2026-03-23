@@ -1,8 +1,8 @@
 # gsd-wired Final Audit Report
 
 **Date:** 2026-03-23
-**Auditor:** Claude Opus 4.6 (automated sweep)
-**Scope:** Complete codebase audit — v1.0 + v1.1 requirements
+**Auditor:** Claude Opus 4.6 (1M context, automated comprehensive sweep)
+**Scope:** Complete codebase audit — v1.0 + v1.1 requirements, code, tests, documentation
 
 ---
 
@@ -13,20 +13,22 @@
 |------|---------|
 | `.planning/PROJECT.md` | Project definition, requirements, context |
 | `.planning/STATE.md` | Current workflow state |
-| `.planning/ROADMAP.md` | Phase roadmap (v1.0 Phases 1-10) |
+| `.planning/ROADMAP.md` | Phase roadmap (v1.0 + v1.1) |
 | `.planning/MILESTONES.md` | Milestone tracker |
 | `.planning/config.json` | GSD configuration |
+| `.planning/AUDIT-REPORT.md` | This file |
+| `.planning/COMPLETION-CERTIFICATE.md` | Project completion certificate |
 
 ### Milestones
 | File | Purpose |
 |------|---------|
 | `milestones/v1.0-REQUIREMENTS.md` | 56 v1.0 requirements (INFRA through COMPAT) |
-| `milestones/v1.0-ROADMAP.md` | v1.0 phase roadmap |
+| `milestones/v1.0-ROADMAP.md` | v1.0 phase roadmap (Phases 1-10) |
 | `milestones/v1.0-MILESTONE-AUDIT.md` | v1.0 milestone audit (PASSED) |
 | `milestones/v1.1-REQUIREMENTS.md` | 24 v1.1 requirements (DIST through CONN) |
 | `milestones/v1.1-ROADMAP.md` | v1.1 phase roadmap (Phases 11-14) |
 
-### Phases (14 phases, 113 planning files)
+### Phases (15 phase directories, 113+ planning files)
 | Phase | Name | Plans | Status |
 |-------|------|-------|--------|
 | 00 | Init | — | Complete |
@@ -100,8 +102,8 @@
 | **TOKEN-01** | Graph queries replace file reads | `internal/graph/query.go` | TestQueryByLabel | DONE |
 | **TOKEN-02** | Subagent claimed context only | `internal/mcp/get_tiered_context.go` | TestToolsListed | DONE |
 | **TOKEN-03** | Closed bead compaction | `internal/graph/tier.go` | TestCompactBead | DONE |
-| **TOKEN-04** | Hot/warm/cold tiering | `internal/graph/tier.go` | TestClassifyTier_* (7 tests) | DONE |
-| **TOKEN-05** | Token budget estimation | `internal/graph/tier.go` | TestEstimateTokens_* (5 tests) | DONE |
+| **TOKEN-04** | Hot/warm/cold tiering | `internal/graph/tier.go` | TestClassifyTier_* (8 tests) | DONE |
+| **TOKEN-05** | Token budget estimation | `internal/graph/tier.go` | TestEstimateTokens_* (6 tests) | DONE |
 | **TOKEN-06** | Tiered SessionStart injection | `internal/mcp/get_tiered_context.go` | TestToolsListed | DONE |
 | **CMD-01** | /gsd-wired:init | `skills/init/SKILL.md` | TestInitCmdWritesFiles | DONE |
 | **CMD-02** | /gsd-wired:status | `skills/status/SKILL.md`, `internal/cli/status.go` | TestStatusCmdOutput | DONE |
@@ -121,9 +123,9 @@
 | ID | Description | Code Location | Tests | Status |
 |----|-------------|---------------|-------|--------|
 | **DIST-01** | Cross-platform GoReleaser | `.goreleaser.yaml` | TestBinaryBuilds | DONE |
-| **DIST-02** | Homebrew cask | `.goreleaser.yaml` (brews section) | — (release infra) | DONE |
+| **DIST-02** | Homebrew cask | `.goreleaser.yaml` (homebrew_casks) | — (release infra) | DONE |
 | **DIST-03** | macOS signing + notarization | `Makefile`, `.goreleaser.yaml` | — (release infra) | DONE |
-| **DIST-04** | Container image to ghcr.io | `.goreleaser.yaml` (dockers section) | — (release infra) | DONE |
+| **DIST-04** | Container image to ghcr.io | `.goreleaser.yaml` (dockers) | — (release infra) | DONE |
 | **DIST-05** | `go install` works | `go.mod`, CGO_ENABLED=0 | TestBinaryBuilds | DONE |
 | **DIST-06** | CI/CD pipeline | `.github/workflows/release.yml` | — (CI infra) | DONE |
 | **SETUP-01** | Interactive setup wizard | `internal/cli/setup.go` | TestSetup* (13 tests) | DONE |
@@ -151,9 +153,7 @@
 
 ## 4. Gap Analysis
 
-### Gaps Resolved This Session (9 total)
-
-Resolved across 3 commits (`deeae0a`, `6796cdf`, `64dba0a`):
+### Gaps Resolved — Prior Session (9 gaps)
 
 | # | Gap | Severity | Fix |
 |---|-----|----------|-----|
@@ -162,10 +162,25 @@ Resolved across 3 commits (`deeae0a`, `6796cdf`, `64dba0a`):
 | 3 | Connect wizard `BeadsDoltDir` resolved to empty string | Critical | Resolve from cwd when `.gsdw/` dir exists |
 | 4 | Flaky `TestPostToolUseBeadUpdate` (400ms timeout) | Critical | Configurable timeout via `hookStateTimeout` |
 | 5 | Missing `update_bead_metadata` MCP tool | High | Added tool to `tools.go` and `update.go` |
-| 6 | MCP tool count mismatch (17 registered, 18 documented) | Medium | Tool count now matches (18 tools) |
+| 6 | MCP tool count mismatch (17 registered, 18 documented) | Medium | Tool count now matches (19 tools) |
 | 7 | Post-install step text incorrect | Medium | Fixed next-steps output |
 | 8 | Missing godoc on exported functions | Low | Added comments to all exported functions |
 | 9 | `plugin_scaffold.go` missing `mcp.json` scaffold | Medium | Added mcp.json to scaffolded files |
+
+### Gaps Resolved — This Session (10 gaps)
+
+| # | Gap | Severity | Fix |
+|---|-----|----------|-----|
+| 1 | Dead code `get_tiered_context.go:126` | Medium | Removed `_ = fmt.Sprintf(...)` no-op and unused `fmt` import |
+| 2 | `docs/mcp-tools.md` listed 18 tools, missing `update_bead_metadata` | Medium | Added tool #19 documentation |
+| 3 | README.md Architecture said "18 MCP tools" | Medium | Updated to 19 |
+| 4 | v1.0-REQUIREMENTS.md: 15 traceability items showed "Pending" | Medium | All updated to "Complete" |
+| 5 | v1.1-REQUIREMENTS.md: 5 traceability items showed "Pending"/"Partial" | Medium | All updated to "Complete" |
+| 6 | PROJECT.md Key Decisions: 6 rows showed "— Pending" | Medium | Updated to "Decided" with phase references |
+| 7 | Test count stale (321/340 vs actual 342) in 4 docs | Low | Updated across AUDIT, CERT, MILESTONES, PROJECT |
+| 8 | FormatHot/FormatWarm/FormatCold at 0% test coverage | Medium | Added 6 tests for exported format functions |
+| 9 | hasUppercaseIdentifier/extractFilePath at 0% coverage | Medium | Added 9 tests for pure verification functions |
+| 10 | formatSessionContext/phaseNumAsFloat at 0% coverage | Medium | Added 9 tests for session start helpers |
 
 ### Open Gaps: NONE
 
@@ -178,33 +193,42 @@ go mod tidy: clean (no changes)
 go mod verify: all modules verified
 ```
 
-External dependencies: `github.com/mark3labs/mcp-go` (MCP SDK v1.4.1) plus standard library transitive deps. No unused or missing dependencies.
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| `github.com/modelcontextprotocol/go-sdk` | v1.4.1 | Official MCP server SDK |
+| `github.com/spf13/cobra` | v1.10.2 | CLI framework |
+| `github.com/go-sql-driver/mysql` | v1.9.3 | Dolt SQL health check |
+
+All transitive dependencies verified. No unused or missing packages.
 
 ---
 
 ## 6. Test Results Summary
 
 ```
-Total tests:     342
-Passing:         342
+Total tests:     365
+Passing:         365
 Failing:           0
 Skipped:           0
 Packages tested:  11
+Coverage:        71.1%
 ```
 
-| Package | Tests | Time |
-|---------|-------|------|
-| `cmd/gsdw` | 6 | 6.4s |
-| `internal/cli` | 107 | 14.6s |
-| `internal/compat` | 15 | 0.4s |
-| `internal/connection` | 14 | varies |
-| `internal/container` | 20 | 0.6s |
-| `internal/deps` | 11 | 8.3s |
-| `internal/graph` | 56 | 2.3s |
-| `internal/hook` | 74 | 9.1s |
-| `internal/logging` | 4 | 1.4s |
-| `internal/mcp` | 7 | 5.7s |
-| `internal/version` | 7 | 1.4s |
+| Package | Tests | Coverage | Time |
+|---------|-------|----------|------|
+| `cmd/gsdw` | 6 | 0.0%* | 6.3s |
+| `internal/cli` | 107 | 66.4% | 17.2s |
+| `internal/compat` | 15 | 96.5% | 0.3s |
+| `internal/connection` | 14 | 66.2% | 1.6s |
+| `internal/container` | 20 | 60.0% | 1.0s |
+| `internal/deps` | 11 | 78.7% | 8.8s |
+| `internal/graph` | 62 | 77.5% | 3.7s |
+| `internal/hook` | 87 | 66.3% | 9.5s |
+| `internal/logging` | 4 | 83.3% | 0.5s |
+| `internal/mcp` | 32 | 70.8% | 6.7s |
+| `internal/version` | 7 | 71.0% | 1.9s |
+
+*cmd/gsdw coverage is 0% because tests are in a separate test package and exercise the binary via subprocess.
 
 ---
 
@@ -212,15 +236,17 @@ Packages tested:  11
 
 | Metric | Result |
 |--------|--------|
+| `go build ./cmd/gsdw` | SUCCESS (zero errors, zero warnings) |
 | `go vet ./...` | 0 issues |
-| `go build ./cmd/gsdw` | SUCCESS |
+| `go mod tidy` | Clean (no changes) |
+| `go mod verify` | All modules verified |
 | TODO/FIXME/HACK markers | 0 in production code |
 | Commented-out code | 0 (all comments are documentation) |
-| Dead code | 0 (resolved 2026-03-23) |
+| Dead code | 0 |
 | Total Go files | 98 |
 | Production files | 54 |
 | Test files | 44 |
-| Total LOC | 17,905 |
+| Total LOC | ~18,000 |
 
 ---
 
@@ -237,15 +263,17 @@ internal/
   graph/             - bd CLI wrapper, bead CRUD, tiering, index
   hook/              - 4 Claude Code hook handlers + dispatcher
   logging/           - Stderr-only logging (stdout discipline)
-  mcp/               - 18 MCP tools + server registration
+  mcp/               - 19 MCP tools + server registration
   version/           - Build version info
 .claude-plugin/      - Plugin manifest (plugin.json)
 hooks/               - hooks.json (4 hooks)
 skills/              - 8 slash command skill definitions
 .goreleaser.yaml     - Cross-platform build + distribution
 .github/workflows/   - CI/CD pipeline
+docs/                - User-facing documentation (4 files)
 ```
 
 ---
 
-*Generated: 2026-03-23 by automated audit sweep*
+*Generated: 2026-03-23 by automated comprehensive audit sweep*
+*Auditor: Claude Opus 4.6 (1M context)*
