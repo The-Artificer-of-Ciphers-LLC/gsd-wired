@@ -151,12 +151,18 @@ func runConnect(opts connectOpts) error {
 }
 
 // handleStartContainer starts the Dolt container and saves a local connection config.
+// Saves config immediately after container start — the server may still be initializing,
+// but `gsdw doctor` can verify health afterward.
 func handleStartContainer(opts connectOpts, gsdwDir string) error {
 	if err := opts.startContainerFn(); err != nil {
 		return fmt.Errorf("container start failed: %w", err)
 	}
 	fmt.Fprintln(opts.out, "Container started")
-	return doSaveLocalConfig(opts, gsdwDir, "127.0.0.1", "3307")
+	if err := doSaveLocalConfig(opts, gsdwDir, "127.0.0.1", "3307"); err != nil {
+		return err
+	}
+	fmt.Fprintln(opts.out, "Run 'gsdw doctor' to verify the server is healthy.")
+	return nil
 }
 
 // handleConfigureRemote collects remote host/port/user and verifies connectivity (D-04).

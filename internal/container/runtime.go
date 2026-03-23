@@ -21,6 +21,7 @@ type Runtime interface {
 	Binary() string                        // resolved path to binary
 	StartArgs(cfg ContainerConfig) []string // args for exec.Command
 	StopArgs() []string
+	RemoveArgs() []string // args to remove a stopped container
 	IsRunningArgs() []string
 }
 
@@ -124,6 +125,10 @@ func (d *DockerRuntime) StopArgs() []string {
 	return []string{"stop", containerName}
 }
 
+func (d *DockerRuntime) RemoveArgs() []string {
+	return []string{"rm", containerName}
+}
+
 func (d *DockerRuntime) IsRunningArgs() []string {
 	return []string{"inspect", "--format", "{{.State.Running}}", containerName}
 }
@@ -156,6 +161,10 @@ func (p *PodmanRuntime) StopArgs() []string {
 	return []string{"stop", containerName}
 }
 
+func (p *PodmanRuntime) RemoveArgs() []string {
+	return []string{"rm", containerName}
+}
+
 func (p *PodmanRuntime) IsRunningArgs() []string {
 	return []string{"inspect", "--format", "{{.State.Running}}", containerName}
 }
@@ -185,6 +194,10 @@ func (a *AppleContainerRuntime) StartArgs(cfg ContainerConfig) []string {
 
 func (a *AppleContainerRuntime) StopArgs() []string {
 	return []string{"stop", containerName}
+}
+
+func (a *AppleContainerRuntime) RemoveArgs() []string {
+	return []string{"rm", containerName}
 }
 
 func (a *AppleContainerRuntime) IsRunningArgs() []string {

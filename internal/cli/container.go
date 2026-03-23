@@ -177,6 +177,9 @@ func runContainerStart(out io.Writer, opts startOpts) error {
 }
 
 // runContainerStop implements the container stop logic with injected dependencies.
+// After stopping, the container is also removed so that `container start` can
+// recreate it cleanly. Apple Container requires this (stopped containers cannot
+// be restarted), and Docker/Podman also benefit from clean recreation.
 func runContainerStop(out io.Writer, opts stopOpts) error {
 	// 1. Detect runtime.
 	rt, err := opts.detectFn(container.DetectOpts{})
@@ -193,6 +196,10 @@ func runContainerStop(out io.Writer, opts stopOpts) error {
 	if err := opts.execFn(rt.Binary(), stopArgs...); err != nil {
 		return fmt.Errorf("container stop failed: %w", err)
 	}
+
+	// 4. Remove the stopped container so start can recreate it.
+	rmArgs := rt.RemoveArgs()
+	_ = opts.execFn(rt.Binary(), rmArgs...) // best-effort — container may already be gone
 
 	fmt.Fprintln(out, "Dolt container stopped")
 	return nil

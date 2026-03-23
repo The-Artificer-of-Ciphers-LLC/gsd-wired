@@ -25,6 +25,7 @@ func (f *fakeRuntime) Name() string                              { return f.name
 func (f *fakeRuntime) Binary() string                           { return f.binary }
 func (f *fakeRuntime) StartArgs(_ container.ContainerConfig) []string { return f.startArgs }
 func (f *fakeRuntime) StopArgs() []string                       { return f.stopArgs }
+func (f *fakeRuntime) RemoveArgs() []string                     { return []string{"rm", "gsdw-dolt"} }
 func (f *fakeRuntime) IsRunningArgs() []string                  { return nil }
 
 // --- Helper: build startOpts with all functions injected ---
@@ -326,9 +327,9 @@ func TestRunContainerStop_CallsStopArgs(t *testing.T) {
 	}
 	opts := makeStopOpts(rt, nil)
 
-	execArgs := []string{}
+	var calls [][]string
 	opts.execFn = func(name string, args ...string) error {
-		execArgs = args
+		calls = append(calls, args)
 		return nil
 	}
 
@@ -337,11 +338,18 @@ func TestRunContainerStop_CallsStopArgs(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if len(execArgs) == 0 {
-		t.Error("expected execFn to be called with stop args")
+	if len(calls) < 1 {
+		t.Fatal("expected execFn to be called at least once")
 	}
-	if execArgs[0] != "stop" {
-		t.Errorf("expected first arg to be 'stop', got %q", execArgs[0])
+	if calls[0][0] != "stop" {
+		t.Errorf("first call should be 'stop', got %q", calls[0][0])
+	}
+	// Second call should be 'rm' (container removal after stop).
+	if len(calls) < 2 {
+		t.Fatal("expected execFn to be called twice (stop + rm)")
+	}
+	if calls[1][0] != "rm" {
+		t.Errorf("second call should be 'rm', got %q", calls[1][0])
 	}
 }
 
