@@ -10,11 +10,7 @@ gsd-wired is a Claude Code plugin (MCP server + hooks + skills) that replaces ma
 
 ## Current Status
 
-> **v1.1.2 shipped.** The CLI, MCP server, hooks, and skills are fully implemented and tested (340 tests, 16,922 LOC). However, the plugin registration step (`gsdw init` scaffolding `.claude-plugin/`, `.mcp.json`, and `skills/` into your project) is **not yet implemented**. Currently, slash commands (`/gsd-wired:*`) only work when running Claude Code inside this repo's directory.
->
-> **What works today:** The `gsdw` CLI (check-deps, setup, doctor, container, connect) works anywhere after install. The MCP server and hooks work if you manually copy the plugin files into your project (see [Manual Plugin Setup](#manual-plugin-setup) below).
->
-> **What's next:** A future phase will add `gsdw init --plugin` to scaffold the plugin files into any project directory automatically.
+> **v1.1.2 shipped.** CLI, MCP server, hooks, and skills fully implemented and tested (340+ tests, 16,922+ LOC). `gsdw init` scaffolds all plugin files automatically — slash commands appear in Claude Code immediately after initialization.
 
 ## Installation
 
@@ -61,18 +57,9 @@ gsdw connect                   # Configure connection to Dolt
 gsdw doctor                    # Verify everything is healthy
 ```
 
-### Step 4: Set up Claude Code plugin (manual — see Current Status)
+### Step 4: Start Claude Code
 
-The slash commands (`/gsd-wired:*`) require plugin files in your project directory. Until `gsdw init --plugin` is implemented, copy them manually from this repo:
-
-```bash
-# From the gsd-wired repo root, copy to your project:
-cp -r .claude-plugin/ /path/to/your-project/.claude-plugin/
-cp .mcp.json /path/to/your-project/.mcp.json
-cp -r skills/ /path/to/your-project/skills/
-```
-
-Then start a Claude Code session in your project. The `/gsd-wired:*` commands should appear.
+`gsdw init` (Step 3) automatically scaffolds the plugin files (`.claude-plugin/`, `.mcp.json`, `skills/`). Start a Claude Code session in your project — the `/gsd-wired:*` slash commands will be available immediately.
 
 ## Slash Commands
 
