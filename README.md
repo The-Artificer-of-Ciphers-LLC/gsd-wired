@@ -102,7 +102,7 @@ These work immediately after install (no plugin setup needed):
 cmd/gsdw/main.go          Entry point
 internal/
   cli/                     17 Cobra commands
-  mcp/                     18 MCP tools + server
+  mcp/                     19 MCP tools + server
   hook/                    4 hook dispatchers
   graph/                   Beads graph client (bd wrapper)
   container/               Docker/Podman/Apple Container runtime

@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-gsd-wired exposes 18 MCP tools via `gsdw serve`. These are available to Claude Code when the plugin is installed.
+gsd-wired exposes 19 MCP tools via `gsdw serve`. These are available to Claude Code when the plugin is installed.
 
 ## Graph Operations
 
@@ -184,3 +184,14 @@ Returns hot/warm/cold classified beads with budget-fitted context string.
 | budget_tokens | int | no | Token budget (default 2000) |
 
 Returns: hot/warm/cold bead arrays + context_string + estimated_tokens.
+
+### update_bead_metadata
+
+Merges metadata key-value pairs into an existing bead. Used by research agents to store findings.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| id | string | yes | Bead ID to update |
+| metadata | object | yes | Key-value pairs to merge into bead metadata |
+
+Returns: updated bead.
