@@ -8,43 +8,75 @@ gsd-wired is a Claude Code plugin (MCP server + hooks + skills) that replaces ma
 
 **Single Go binary** serves as MCP server, hook dispatcher, and CLI tool.
 
-## Quick Start
+## Current Status
 
-### Install
+> **v1.1.2 shipped.** The CLI, MCP server, hooks, and skills are fully implemented and tested (340 tests, 16,922 LOC). However, the plugin registration step (`gsdw init` scaffolding `.claude-plugin/`, `.mcp.json`, and `skills/` into your project) is **not yet implemented**. Currently, slash commands (`/gsd-wired:*`) only work when running Claude Code inside this repo's directory.
+>
+> **What works today:** The `gsdw` CLI (check-deps, setup, doctor, container, connect) works anywhere after install. The MCP server and hooks work if you manually copy the plugin files into your project (see [Manual Plugin Setup](#manual-plugin-setup) below).
+>
+> **What's next:** A future phase will add `gsdw init --plugin` to scaffold the plugin files into any project directory automatically.
+
+## Installation
+
+### Step 1: Install the gsdw binary
+
+Choose one method:
 
 ```bash
-# Homebrew (macOS)
+# Homebrew (macOS) — signed and notarized
 brew tap The-Artificer-of-Ciphers-LLC/gsdw
 brew install --cask gsdw-cc
 
-# Go
+# Go install
 go install github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/cmd/gsdw@latest
 
-# Docker
-docker pull ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest
+# From source
+git clone https://github.com/The-Artificer-of-Ciphers-LLC/gsd-wired.git
+cd gsd-wired && go build -o gsdw ./cmd/gsdw && mv gsdw /usr/local/bin/
 ```
 
-### Prerequisites
+Verify: `gsdw version`
 
-gsd-wired requires [bd](https://github.com/beads-project/beads) and [dolt](https://github.com/dolthub/dolt) on your PATH:
+### Step 2: Install dependencies
 
 ```bash
-gsdw check-deps    # Verify what's installed
-gsdw setup         # Interactive wizard to install missing deps
+gsdw check-deps    # See what's installed and what's missing
+gsdw setup         # Interactive wizard — installs bd, dolt, container runtime
 ```
 
-### Initialize a Project
+Required:
+- [bd](https://github.com/beads-project/beads) — Beads graph CLI
+- [dolt](https://github.com/dolthub/dolt) — SQL database backend
+
+Optional:
+- Container runtime (Docker, Podman, or Apple Container) — for local Dolt server
+
+### Step 3: Initialize your project
 
 ```bash
+cd your-project
 gsdw init                      # Create .beads/ + .gsdw/ + PROJECT.md
-gsdw container start           # Start local Dolt server
+gsdw container start           # Start local Dolt server (optional)
 gsdw connect                   # Configure connection to Dolt
 gsdw doctor                    # Verify everything is healthy
 ```
 
-### Use via Claude Code
+### Step 4: Set up Claude Code plugin (manual — see Current Status)
 
-The plugin registers slash commands for the full GSD lifecycle:
+The slash commands (`/gsd-wired:*`) require plugin files in your project directory. Until `gsdw init --plugin` is implemented, copy them manually from this repo:
+
+```bash
+# From the gsd-wired repo root, copy to your project:
+cp -r .claude-plugin/ /path/to/your-project/.claude-plugin/
+cp .mcp.json /path/to/your-project/.mcp.json
+cp -r skills/ /path/to/your-project/skills/
+```
+
+Then start a Claude Code session in your project. The `/gsd-wired:*` commands should appear.
+
+## Slash Commands
+
+Available after plugin setup (Step 4):
 
 ```
 /gsd-wired:init [full|quick|pr]   # Deep questioning flow
@@ -56,6 +88,26 @@ The plugin registers slash commands for the full GSD lifecycle:
 /gsd-wired:status                  # Project dashboard
 /gsd-wired:ready                   # Unblocked tasks
 ```
+
+## CLI Reference
+
+These work immediately after install (no plugin setup needed):
+
+| Command | Description |
+|---------|-------------|
+| `gsdw version [--json]` | Print version information |
+| `gsdw check-deps [--json]` | Check required dependencies |
+| `gsdw setup` | Interactive dependency installation wizard |
+| `gsdw doctor` | Full environment and project health check |
+| `gsdw init` | Initialize beads directory and project files |
+| `gsdw container start [--port N] [--force]` | Start Dolt server container |
+| `gsdw container stop` | Stop Dolt container |
+| `gsdw connect` | Configure Dolt server connection |
+| `gsdw status` | Show project status from graph |
+| `gsdw ready [--phase N] [--json]` | Show unblocked tasks |
+| `gsdw serve` | Start MCP stdio server |
+| `gsdw hook <event>` | Dispatch a hook event |
+| `gsdw bd [args...]` | Passthrough to bd CLI |
 
 ## Architecture
 
@@ -95,24 +147,6 @@ hooks/                     Hook entry points
    - Research spawns 4 parallel agents (stack, features, architecture, pitfalls)
    - Execute runs task waves in parallel, validates acceptance criteria
    - Verify checks criteria against codebase, creates remediation tasks
-
-## CLI Reference
-
-| Command | Description |
-|---------|-------------|
-| `gsdw version [--json]` | Print version information |
-| `gsdw check-deps [--json]` | Check required dependencies |
-| `gsdw setup` | Interactive dependency installation wizard |
-| `gsdw doctor` | Full environment and project health check |
-| `gsdw init` | Initialize beads directory and project files |
-| `gsdw container start [--port N] [--force]` | Start Dolt server container |
-| `gsdw container stop` | Stop Dolt container |
-| `gsdw connect` | Configure Dolt server connection |
-| `gsdw status` | Show project status from graph |
-| `gsdw ready [--phase N] [--json]` | Show unblocked tasks |
-| `gsdw serve` | Start MCP stdio server |
-| `gsdw hook <event>` | Dispatch a hook event |
-| `gsdw bd [args...]` | Passthrough to bd CLI |
 
 ## Configuration
 
