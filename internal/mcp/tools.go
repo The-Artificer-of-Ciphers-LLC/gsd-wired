@@ -338,4 +338,33 @@ func registerTools(server *mcpsdk.Server, state *serverState) {
 		}
 		return handleGetTieredContext(ctx, state, args)
 	})
+
+	// update_bead_metadata — Merges metadata into an existing bead.
+	server.AddTool(&mcpsdk.Tool{
+		Name:        "update_bead_metadata",
+		Description: "Merges metadata key-value pairs into an existing bead. Used by research agents to store findings.",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string","description":"Bead ID to update"},"metadata":{"type":"object","description":"Key-value pairs to merge into bead metadata","additionalProperties":true}},"required":["id","metadata"],"additionalProperties":false}`),
+	}, func(ctx context.Context, req *mcpsdk.CallToolRequest) (*mcpsdk.CallToolResult, error) {
+		if err := state.init(ctx); err != nil {
+			return toolError(err.Error()), nil
+		}
+		var args struct {
+			ID       string         `json:"id"`
+			Metadata map[string]any `json:"metadata"`
+		}
+		if err := json.Unmarshal(req.Params.Arguments, &args); err != nil {
+			return toolError("invalid arguments: " + err.Error()), nil
+		}
+		if args.ID == "" {
+			return toolError("id is required"), nil
+		}
+		if len(args.Metadata) == 0 {
+			return toolError("metadata must contain at least one key-value pair"), nil
+		}
+		bead, err := state.client.UpdateBeadMetadata(ctx, args.ID, args.Metadata)
+		if err != nil {
+			return toolError(err.Error()), nil
+		}
+		return toolResult(bead)
+	})
 }

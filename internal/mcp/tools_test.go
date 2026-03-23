@@ -42,12 +42,12 @@ func TestToolsRegistered(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTools() returned error: %v", err)
 	}
-	if len(result.Tools) != 18 {
+	if len(result.Tools) != 19 {
 		names := make([]string, len(result.Tools))
 		for i, tool := range result.Tools {
 			names[i] = tool.Name
 		}
-		t.Errorf("expected 18 tools, got %d: %v", len(result.Tools), names)
+		t.Errorf("expected 19 tools, got %d: %v", len(result.Tools), names)
 	}
 
 	wantNames := []string{

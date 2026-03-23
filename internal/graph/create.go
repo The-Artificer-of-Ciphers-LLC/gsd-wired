@@ -93,7 +93,7 @@ func (c *Client) CreatePlanWithMeta(ctx context.Context, planID string, phaseNum
 }
 
 // CreatePlan creates a plan as a task bead with a parent phase epic bead.
-// The bead gets the "gsd:phase" label plus any requirement IDs, and metadata
+// The bead gets the "gsd:plan" label plus any requirement IDs, and metadata
 // containing the phase number and plan ID. If depBeadIDs is non-empty,
 // --deps is passed to establish inter-plan dependencies (per D-07).
 func (c *Client) CreatePlan(ctx context.Context, planID string, phaseNum int, parentBeadID, title, acceptance, planContext string, reqIDs []string, depBeadIDs []string) (*Bead, error) {
