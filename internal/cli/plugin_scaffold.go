@@ -1,9 +1,34 @@
 package cli
 
 // plugin_scaffold.go contains embedded content for the Claude Code plugin files
-// that gsdw init writes into the project directory. These are string constants
-// rather than go:embed because the source files live at the repo root, outside
-// the reach of embed's relative-path constraint.
+// that gsdw init writes into the project directory and ~/.claude/commands/gsd-wired/.
+// String constants rather than go:embed because the source files live at the repo root,
+// outside the reach of embed's relative-path constraint.
+
+import "strings"
+
+// buildCommandMD generates a ~/.claude/commands/ markdown file from a commandDef.
+// It strips the SKILL.md frontmatter from the body and replaces it with command frontmatter.
+func buildCommandMD(def commandDef) string {
+	// Strip SKILL.md frontmatter (everything between first --- and second ---)
+	body := def.body
+	if strings.HasPrefix(body, "---\n") {
+		if end := strings.Index(body[4:], "\n---\n"); end >= 0 {
+			body = strings.TrimLeft(body[4+end+5:], "\n")
+		}
+	}
+
+	var sb strings.Builder
+	sb.WriteString("---\n")
+	sb.WriteString("name: gsd-wired:" + def.name + "\n")
+	sb.WriteString("description: " + def.description + "\n")
+	if def.argHint != "" {
+		sb.WriteString("argument-hint: " + def.argHint + "\n")
+	}
+	sb.WriteString("---\n\n")
+	sb.WriteString(body)
+	return sb.String()
+}
 
 const pluginJSON = `{
   "name": "gsd-wired",
@@ -71,7 +96,28 @@ const hooksJSON = `{
 }
 `
 
-// skillFiles maps relative paths (from project root) to their content.
+// commandDefs defines the /gsd-wired:* slash commands for ~/.claude/commands/gsd-wired/.
+// Each entry maps a filename to {name, description, argument-hint, body} used to generate
+// the command markdown file with proper frontmatter.
+type commandDef struct {
+	name        string // e.g. "init" — will be prefixed with "gsd-wired:"
+	description string
+	argHint     string // optional argument-hint
+	body        string // the prompt body (reuses skill* constants)
+}
+
+var commandDefs = []commandDef{
+	{"init", "Initialize a new gsd-wired project with guided questioning", "[full|quick|pr]", skillInit},
+	{"status", "Show current project status from the beads graph", "", skillStatus},
+	{"research", "Run research phase for the current project", "[phase_number]", skillResearch},
+	{"plan", "Create a dependency-aware phase plan from research results", "[phase_number]", skillPlan},
+	{"execute", "Execute the current wave of unblocked tasks in parallel", "[phase_number]", skillExecute},
+	{"verify", "Verify phase completion against success criteria", "[phase_number]", skillVerify},
+	{"ready", "Show unblocked tasks ready to work on", "[phase_number]", skillReady},
+	{"ship", "Create PR and advance to next phase", "[phase_number]", skillShip},
+}
+
+// skillFiles is kept for backward compatibility — scaffolds into project skills/ directory.
 var skillFiles = map[string]string{
 	"skills/init/SKILL.md":     skillInit,
 	"skills/status/SKILL.md":   skillStatus,

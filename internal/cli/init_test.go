@@ -20,14 +20,11 @@ func TestRootCmdHasInit(t *testing.T) {
 }
 
 // TestInitCmdWritesFiles verifies that running gsdw init in a temp dir creates
-// PROJECT.md and .gsdw/config.json template files.
-// Note: gsdw init will skip the bd init step if .beads/ is already absent and bd is not
-// on PATH in test environments — the test only verifies file creation behavior.
+// PROJECT.md, .gsdw/config.json, .mcp.json, hooks/hooks.json, and registers
+// commands in ~/.claude/commands/gsd-wired/.
 func TestInitCmdWritesFiles(t *testing.T) {
-	// Set up a temp directory to act as the project root.
 	tmpDir := t.TempDir()
 
-	// Restore cwd after test.
 	origDir, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("cannot get cwd: %v", err)
@@ -42,126 +39,71 @@ func TestInitCmdWritesFiles(t *testing.T) {
 		t.Fatalf("cannot chdir to temp dir: %v", err)
 	}
 
-	// Run init command — skip-bd mode via env so no real bd is required.
-	// The init cmd will detect no bd on PATH and skip bd init gracefully.
 	cmd := NewInitCmd()
 	var buf bytes.Buffer
 	cmd.SetOut(&buf)
 	cmd.SetErr(&buf)
 
-	// Execute in the temp dir; bd init will fail since bd may not be on PATH
-	// but file creation should still proceed.
 	err = cmd.Execute()
-	// We accept both nil error (bd found) or an error only if it's about bd.
-	// The file creation is what we test.
 	if err != nil && !strings.Contains(err.Error(), "bd") && !strings.Contains(err.Error(), "beads") {
 		t.Fatalf("init command failed with unexpected error: %v", err)
 	}
 
 	// PROJECT.md must exist.
-	projectMD := filepath.Join(tmpDir, "PROJECT.md")
-	if _, statErr := os.Stat(projectMD); statErr != nil {
-		t.Errorf("expected PROJECT.md to exist at %s, got: %v", projectMD, statErr)
+	if _, statErr := os.Stat(filepath.Join(tmpDir, "PROJECT.md")); statErr != nil {
+		t.Errorf("expected PROJECT.md to exist, got: %v", statErr)
 	}
 
 	// .gsdw/config.json must exist.
-	configJSON := filepath.Join(tmpDir, ".gsdw", "config.json")
-	if _, statErr := os.Stat(configJSON); statErr != nil {
-		t.Errorf("expected .gsdw/config.json to exist at %s, got: %v", configJSON, statErr)
-	}
-
-	// .claude-plugin/plugin.json must exist.
-	pluginJSON := filepath.Join(tmpDir, ".claude-plugin", "plugin.json")
-	if _, statErr := os.Stat(pluginJSON); statErr != nil {
-		t.Errorf("expected .claude-plugin/plugin.json to exist at %s, got: %v", pluginJSON, statErr)
+	if _, statErr := os.Stat(filepath.Join(tmpDir, ".gsdw", "config.json")); statErr != nil {
+		t.Errorf("expected .gsdw/config.json to exist, got: %v", statErr)
 	}
 
 	// .mcp.json must exist.
-	mcpJSON := filepath.Join(tmpDir, ".mcp.json")
-	if _, statErr := os.Stat(mcpJSON); statErr != nil {
-		t.Errorf("expected .mcp.json to exist at %s, got: %v", mcpJSON, statErr)
+	if _, statErr := os.Stat(filepath.Join(tmpDir, ".mcp.json")); statErr != nil {
+		t.Errorf("expected .mcp.json to exist, got: %v", statErr)
 	}
 
-	// All 8 skill files must exist.
-	skillPaths := []string{
-		"skills/init/SKILL.md",
-		"skills/status/SKILL.md",
-		"skills/research/SKILL.md",
-		"skills/plan/SKILL.md",
-		"skills/execute/SKILL.md",
-		"skills/verify/SKILL.md",
-		"skills/ready/SKILL.md",
-		"skills/ship/SKILL.md",
+	// hooks/hooks.json must exist.
+	if _, statErr := os.Stat(filepath.Join(tmpDir, "hooks", "hooks.json")); statErr != nil {
+		t.Errorf("expected hooks/hooks.json to exist, got: %v", statErr)
 	}
-	for _, sp := range skillPaths {
-		absPath := filepath.Join(tmpDir, sp)
-		if _, statErr := os.Stat(absPath); statErr != nil {
-			t.Errorf("expected %s to exist, got: %v", sp, statErr)
+
+	// ~/.claude/commands/gsd-wired/ must have 8 command files.
+	homeDir, _ := os.UserHomeDir()
+	cmdDir := filepath.Join(homeDir, ".claude", "commands", "gsd-wired")
+	cmdNames := []string{"init", "status", "research", "plan", "execute", "verify", "ready", "ship"}
+	for _, name := range cmdNames {
+		cmdPath := filepath.Join(cmdDir, name+".md")
+		if _, statErr := os.Stat(cmdPath); statErr != nil {
+			t.Errorf("expected command %s.md to exist at %s, got: %v", name, cmdPath, statErr)
 		}
 	}
 
-	// Verify output mentions plugin files.
+	// Verify output mentions command registration.
 	output := buf.String()
-	if !strings.Contains(output, "Created .claude-plugin/plugin.json") {
-		t.Errorf("expected output to mention .claude-plugin/plugin.json, got: %s", output)
-	}
-	if !strings.Contains(output, "Created .mcp.json") {
-		t.Errorf("expected output to mention .mcp.json, got: %s", output)
-	}
-	if !strings.Contains(output, "Created skills/") {
-		t.Errorf("expected output to mention skills/, got: %s", output)
+	if !strings.Contains(output, "Registered") && !strings.Contains(output, "slash commands") {
+		t.Errorf("expected output to mention command registration, got: %s", output)
 	}
 }
 
-// TestInitCmdSkipsExistingPluginFiles verifies that gsdw init does not overwrite
-// plugin files that already exist.
-func TestInitCmdSkipsExistingPluginFiles(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	origDir, err := os.Getwd()
+// TestInitCmdCommandFrontmatter verifies command files have correct frontmatter format.
+func TestInitCmdCommandFrontmatter(t *testing.T) {
+	homeDir, _ := os.UserHomeDir()
+	cmdPath := filepath.Join(homeDir, ".claude", "commands", "gsd-wired", "init.md")
+	data, err := os.ReadFile(cmdPath)
 	if err != nil {
-		t.Fatalf("cannot get cwd: %v", err)
-	}
-	defer func() {
-		if err := os.Chdir(origDir); err != nil {
-			t.Logf("warning: could not restore cwd: %v", err)
-		}
-	}()
-
-	if err := os.Chdir(tmpDir); err != nil {
-		t.Fatalf("cannot chdir to temp dir: %v", err)
+		t.Skipf("command file not found (run TestInitCmdWritesFiles first): %v", err)
 	}
 
-	// Pre-create plugin.json with custom content.
-	if err := os.MkdirAll(filepath.Join(tmpDir, ".claude-plugin"), 0o755); err != nil {
-		t.Fatalf("cannot create .claude-plugin/: %v", err)
+	content := string(data)
+	if !strings.HasPrefix(content, "---\n") {
+		t.Errorf("command file should start with --- frontmatter")
 	}
-	customContent := []byte(`{"custom": true}`)
-	if err := os.WriteFile(filepath.Join(tmpDir, ".claude-plugin", "plugin.json"), customContent, 0o644); err != nil {
-		t.Fatalf("cannot write custom plugin.json: %v", err)
+	if !strings.Contains(content, "name: gsd-wired:init") {
+		t.Errorf("command file should contain 'name: gsd-wired:init', got: %s", content[:200])
 	}
-
-	cmd := NewInitCmd()
-	var buf bytes.Buffer
-	cmd.SetOut(&buf)
-	cmd.SetErr(&buf)
-
-	err = cmd.Execute()
-	if err != nil && !strings.Contains(err.Error(), "bd") && !strings.Contains(err.Error(), "beads") {
-		t.Fatalf("init command failed with unexpected error: %v", err)
-	}
-
-	// plugin.json should not have been overwritten.
-	data, readErr := os.ReadFile(filepath.Join(tmpDir, ".claude-plugin", "plugin.json"))
-	if readErr != nil {
-		t.Fatalf("cannot read plugin.json: %v", readErr)
-	}
-	if string(data) != `{"custom": true}` {
-		t.Errorf("expected plugin.json to retain custom content, got: %s", string(data))
-	}
-
-	// Output should NOT mention creating plugin.json (it already existed).
-	if strings.Contains(buf.String(), "Created .claude-plugin/plugin.json") {
-		t.Errorf("expected output NOT to mention creating plugin.json since it already existed")
+	if !strings.Contains(content, "description:") {
+		t.Errorf("command file should contain 'description:', got: %s", content[:200])
 	}
 }

@@ -132,26 +132,21 @@ init_project MCP tool to create project context in the beads graph.`,
 	return cmd
 }
 
-// scaffoldPluginFiles writes .claude-plugin/plugin.json, .mcp.json, and skills/*/SKILL.md
-// into the project directory so that Claude Code discovers the gsd-wired plugin and
-// registers the /gsd-wired:* slash commands. Files are only written if they don't already exist.
+// scaffoldPluginFiles writes project-local files (.mcp.json, hooks/) and registers
+// /gsd-wired:* slash commands in ~/.claude/commands/gsd-wired/ so Claude Code discovers them.
 func scaffoldPluginFiles(cwd string, cmd *cobra.Command) error {
 	out := cmd.OutOrStdout()
 
-	// .claude-plugin/plugin.json
-	pluginDir := filepath.Join(cwd, ".claude-plugin")
-	pluginPath := filepath.Join(pluginDir, "plugin.json")
-	if _, statErr := os.Stat(pluginPath); os.IsNotExist(statErr) {
-		if mkErr := os.MkdirAll(pluginDir, 0o755); mkErr != nil {
-			return fmt.Errorf("cannot create .claude-plugin/ directory: %w", mkErr)
+	// .mcp.json — project-local, tells Claude Code to start the MCP server.
+	mcpPath := filepath.Join(cwd, ".mcp.json")
+	if _, statErr := os.Stat(mcpPath); os.IsNotExist(statErr) {
+		if writeErr := os.WriteFile(mcpPath, []byte(mcpJSON), 0o644); writeErr != nil {
+			return fmt.Errorf("cannot write .mcp.json: %w", writeErr)
 		}
-		if writeErr := os.WriteFile(pluginPath, []byte(pluginJSON), 0o644); writeErr != nil {
-			return fmt.Errorf("cannot write .claude-plugin/plugin.json: %w", writeErr)
-		}
-		fmt.Fprintln(out, "Created .claude-plugin/plugin.json")
+		fmt.Fprintln(out, "Created .mcp.json")
 	}
 
-	// hooks/hooks.json
+	// hooks/hooks.json — project-local hook dispatchers.
 	hooksDir := filepath.Join(cwd, "hooks")
 	hooksPath := filepath.Join(hooksDir, "hooks.json")
 	if _, statErr := os.Stat(hooksPath); os.IsNotExist(statErr) {
@@ -164,32 +159,29 @@ func scaffoldPluginFiles(cwd string, cmd *cobra.Command) error {
 		fmt.Fprintln(out, "Created hooks/hooks.json (4 hook dispatchers)")
 	}
 
-	// .mcp.json
-	mcpPath := filepath.Join(cwd, ".mcp.json")
-	if _, statErr := os.Stat(mcpPath); os.IsNotExist(statErr) {
-		if writeErr := os.WriteFile(mcpPath, []byte(mcpJSON), 0o644); writeErr != nil {
-			return fmt.Errorf("cannot write .mcp.json: %w", writeErr)
-		}
-		fmt.Fprintln(out, "Created .mcp.json")
+	// ~/.claude/commands/gsd-wired/ — global command registration for /gsd-wired:* slash commands.
+	// This is how Claude Code discovers slash commands (same mechanism as GSD vanilla).
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("cannot determine home directory: %w", err)
+	}
+	cmdDir := filepath.Join(homeDir, ".claude", "commands", "gsd-wired")
+	if mkErr := os.MkdirAll(cmdDir, 0o755); mkErr != nil {
+		return fmt.Errorf("cannot create ~/.claude/commands/gsd-wired/: %w", mkErr)
 	}
 
-	// skills/*/SKILL.md
-	skillsCreated := 0
-	for relPath, content := range skillFiles {
-		absPath := filepath.Join(cwd, relPath)
-		if _, statErr := os.Stat(absPath); os.IsNotExist(statErr) {
-			dir := filepath.Dir(absPath)
-			if mkErr := os.MkdirAll(dir, 0o755); mkErr != nil {
-				return fmt.Errorf("cannot create directory %s: %w", dir, mkErr)
-			}
-			if writeErr := os.WriteFile(absPath, []byte(content), 0o644); writeErr != nil {
-				return fmt.Errorf("cannot write %s: %w", relPath, writeErr)
-			}
-			skillsCreated++
+	cmdsCreated := 0
+	for _, def := range commandDefs {
+		cmdPath := filepath.Join(cmdDir, def.name+".md")
+		content := buildCommandMD(def)
+		// Always overwrite — ensures commands stay in sync with installed gsdw version.
+		if writeErr := os.WriteFile(cmdPath, []byte(content), 0o644); writeErr != nil {
+			return fmt.Errorf("cannot write command %s: %w", def.name, writeErr)
 		}
+		cmdsCreated++
 	}
-	if skillsCreated > 0 {
-		fmt.Fprintf(out, "Created skills/ (%d slash commands)\n", skillsCreated)
+	if cmdsCreated > 0 {
+		fmt.Fprintf(out, "Registered %d /gsd-wired:* slash commands\n", cmdsCreated)
 	}
 
 	return nil
