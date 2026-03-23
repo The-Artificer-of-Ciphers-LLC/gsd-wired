@@ -1,3 +1,4 @@
 FROM gcr.io/distroless/static-debian12:nonroot
-COPY gsdw /usr/local/bin/gsdw
+ARG TARGETARCH
+COPY linux/${TARGETARCH}/gsdw /usr/local/bin/gsdw
 ENTRYPOINT ["/usr/local/bin/gsdw"]
