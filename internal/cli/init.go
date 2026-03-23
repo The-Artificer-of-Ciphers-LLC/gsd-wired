@@ -78,7 +78,7 @@ init_project MCP tool to create project context in the beads graph.`,
 				if lookErr != nil {
 					fmt.Fprintln(cmd.OutOrStdout(), "bd not found on PATH — skipping .beads/ init (install beads to enable graph storage)")
 				} else {
-					bdCmd := exec.Command(bdPath, "init", "--backend", "dolt", "--quiet", "--skip-hooks", "--skip-agents")
+					bdCmd := exec.Command(bdPath, "init", "--force", "--backend", "dolt", "--quiet", "--skip-hooks", "--skip-agents")
 					bdCmd.Env = append(os.Environ(), "BEADS_DIR="+cwd)
 					bdCmd.Stdout = cmd.OutOrStdout()
 					bdCmd.Stderr = cmd.ErrOrStderr()
