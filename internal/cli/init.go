@@ -68,6 +68,7 @@ init_project MCP tool to create project context in the beads graph.`,
 			}
 
 			// Step 1: Initialize .beads/ directory via bd init, if not already present.
+			// Failure is non-fatal — plugin scaffolding must proceed regardless.
 			beadsPath := filepath.Join(cwd, ".beads")
 			if _, statErr := os.Stat(beadsPath); os.IsNotExist(statErr) {
 				bdPath, lookErr := exec.LookPath("bd")
@@ -79,9 +80,10 @@ init_project MCP tool to create project context in the beads graph.`,
 					bdCmd.Stdout = cmd.OutOrStdout()
 					bdCmd.Stderr = cmd.ErrOrStderr()
 					if runErr := bdCmd.Run(); runErr != nil {
-						return fmt.Errorf("bd init failed: %w", runErr)
+						fmt.Fprintf(cmd.ErrOrStderr(), "Warning: bd init failed: %v (continuing with plugin setup)\n", runErr)
+					} else {
+						fmt.Fprintln(cmd.OutOrStdout(), "Initialized .beads/ directory")
 					}
-					fmt.Fprintln(cmd.OutOrStdout(), "Initialized .beads/ directory")
 				}
 			}
 
