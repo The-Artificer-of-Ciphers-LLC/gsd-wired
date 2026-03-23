@@ -3,12 +3,15 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
 
 	"github.com/spf13/cobra"
+
+	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/connection"
 )
 
 // projectMDTemplate is the minimal PROJECT.md template written by gsdw init.
@@ -80,7 +83,12 @@ init_project MCP tool to create project context in the beads graph.`,
 					bdCmd.Stdout = cmd.OutOrStdout()
 					bdCmd.Stderr = cmd.ErrOrStderr()
 					if runErr := bdCmd.Run(); runErr != nil {
-						fmt.Fprintf(cmd.ErrOrStderr(), "Warning: bd init failed: %v (continuing with plugin setup)\n", runErr)
+						// bd may create .beads/ before reporting "already initialized" — check if it exists now.
+						if _, postStat := os.Stat(beadsPath); postStat == nil {
+							fmt.Fprintln(cmd.OutOrStdout(), "Using existing .beads/ directory")
+						} else {
+							fmt.Fprintf(cmd.ErrOrStderr(), "Warning: bd init failed: %v (continuing with plugin setup)\n", runErr)
+						}
 					} else {
 						fmt.Fprintln(cmd.OutOrStdout(), "Initialized .beads/ directory")
 					}
@@ -121,7 +129,24 @@ init_project MCP tool to create project context in the beads graph.`,
 				fmt.Fprintln(cmd.OutOrStdout(), "Created .gsdw/config.json")
 			}
 
-			// Step 4: Scaffold Claude Code plugin files so /gsd-wired:* slash commands appear.
+			// Step 4: Auto-configure connection if a Dolt server is running on the default port.
+			connPath := filepath.Join(gsdwDir, "connection.json")
+			if _, statErr := os.Stat(connPath); os.IsNotExist(statErr) {
+				conn, dialErr := net.DialTimeout("tcp", "127.0.0.1:3307", 2*time.Second)
+				if dialErr == nil {
+					conn.Close()
+					cfg := &connection.Config{
+						ActiveMode: "local",
+						Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
+						Configured: time.Now().UTC().Format(time.RFC3339),
+					}
+					if saveErr := connection.SaveConnection(gsdwDir, cfg); saveErr == nil {
+						fmt.Fprintln(cmd.OutOrStdout(), "Connected to local Dolt server on 127.0.0.1:3307")
+					}
+				}
+			}
+
+			// Step 5: Scaffold Claude Code plugin files so /gsd-wired:* slash commands appear.
 			if err := scaffoldPluginFiles(cwd, cmd); err != nil {
 				return err
 			}
