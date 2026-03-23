@@ -84,7 +84,7 @@ func (s *serverState) runBdInit(ctx context.Context, dir string) error {
 		}
 	}
 
-	cmd := exec.CommandContext(initCtx, bdPath, "init", "--quiet", "--skip-hooks", "--skip-agents")
+	cmd := exec.CommandContext(initCtx, bdPath, "init", "--backend", "dolt", "--quiet", "--skip-hooks", "--skip-agents")
 	cmd.Dir = dir
 	cmd.Env = append(os.Environ(), "BEADS_DIR="+dir)
 

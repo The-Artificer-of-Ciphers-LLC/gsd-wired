@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -268,8 +269,25 @@ func defaultStartContainer() error {
 		return fmt.Errorf("no container runtime found — install Docker or Podman")
 	}
 
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("cannot determine working directory: %w", err)
+	}
+
+	beadsDoltDir := filepath.Join(cwd, ".beads", "dolt")
+	// Ensure the directory exists for the volume mount.
+	if mkErr := os.MkdirAll(beadsDoltDir, 0o755); mkErr != nil {
+		return fmt.Errorf("cannot create %s: %w", beadsDoltDir, mkErr)
+	}
+
+	absDir, err := filepath.Abs(beadsDoltDir)
+	if err != nil {
+		return fmt.Errorf("resolve beads-dir path: %w", err)
+	}
+
 	cfg := container.ContainerConfig{
-		HostPort: "3307",
+		BeadsDoltDir: absDir,
+		HostPort:     "3307",
 	}
 	args := rt.StartArgs(cfg)
 	cmd := exec.Command(rt.Binary(), args...)

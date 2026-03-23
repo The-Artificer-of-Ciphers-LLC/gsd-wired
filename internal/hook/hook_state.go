@@ -16,11 +16,12 @@ import (
 // Unlike serverState (MCP), hooks use non-batch client and do NOT run bd init.
 // Hooks read the graph; they don't create .beads/.
 type hookState struct {
-	once     sync.Once
-	client   *graph.Client
-	err      error
-	beadsDir string // project root (parent of .beads/)
-	bdPath   string // optional override for testing; empty = LookPath
+	once               sync.Once
+	client             *graph.Client
+	err                error
+	beadsDir           string // project root (parent of .beads/)
+	bdPath             string // optional override for testing; empty = LookPath
+	beadUpdateTimeout  int    // optional override for bead update timeout in ms; 0 = use default 400ms
 }
 
 // init lazily initializes the graph client. First call blocks until done.

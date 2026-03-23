@@ -213,7 +213,7 @@ func TestPostToolUseBeadUpdate(t *testing.T) {
 	captureFile := filepath.Join(captureDir, "capture.json")
 	t.Setenv("FAKE_BD_CAPTURE_FILE", captureFile)
 
-	hs := &hookState{bdPath: fakeBd}
+	hs := &hookState{bdPath: fakeBd, beadUpdateTimeout: 5000} // 5s timeout for test (fake bd needs time)
 	var buf bytes.Buffer
 	raw := makePostToolUseInput(t, tmpDir, "Write", "tu-bead-update")
 	if err := handlePostToolUse(context.Background(), raw, hs, &buf); err != nil {

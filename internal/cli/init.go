@@ -149,6 +149,19 @@ func scaffoldPluginFiles(cwd string, cmd *cobra.Command) error {
 		fmt.Fprintln(out, "Created .claude-plugin/plugin.json")
 	}
 
+	// hooks/hooks.json
+	hooksDir := filepath.Join(cwd, "hooks")
+	hooksPath := filepath.Join(hooksDir, "hooks.json")
+	if _, statErr := os.Stat(hooksPath); os.IsNotExist(statErr) {
+		if mkErr := os.MkdirAll(hooksDir, 0o755); mkErr != nil {
+			return fmt.Errorf("cannot create hooks/ directory: %w", mkErr)
+		}
+		if writeErr := os.WriteFile(hooksPath, []byte(hooksJSON), 0o644); writeErr != nil {
+			return fmt.Errorf("cannot write hooks/hooks.json: %w", writeErr)
+		}
+		fmt.Fprintln(out, "Created hooks/hooks.json (4 hook dispatchers)")
+	}
+
 	// .mcp.json
 	mcpPath := filepath.Join(cwd, ".mcp.json")
 	if _, statErr := os.Stat(mcpPath); os.IsNotExist(statErr) {

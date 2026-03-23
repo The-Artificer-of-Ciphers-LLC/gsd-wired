@@ -90,6 +90,13 @@ func handlePostToolUse(ctx context.Context, raw json.RawMessage, hs *hookState, 
 
 // updateBeadOnToolUse adds the gsd:tool-use label to the active bead in the local index.
 // Best-effort: any error is logged and silently swallowed — JSONL is the reliable path.
+func (hs *hookState) beadUpdateTimeoutDuration() time.Duration {
+	if hs.beadUpdateTimeout > 0 {
+		return time.Duration(hs.beadUpdateTimeout) * time.Millisecond
+	}
+	return 400 * time.Millisecond
+}
+
 func updateBeadOnToolUse(ctx context.Context, cwd string, hs *hookState) {
 	// Fast path: skip if .beads/ doesn't exist (uninitialized project).
 	beadsPath := filepath.Join(cwd, ".beads")
@@ -104,8 +111,8 @@ func updateBeadOnToolUse(ctx context.Context, cwd string, hs *hookState) {
 		return
 	}
 
-	// Use a 400ms timeout for the graph call.
-	updateCtx, cancel := context.WithTimeout(ctx, 400*time.Millisecond)
+	// Use a configurable timeout for the graph call (default 400ms).
+	updateCtx, cancel := context.WithTimeout(ctx, hs.beadUpdateTimeoutDuration())
 	defer cancel()
 
 	// Load local index to find active bead (cheapest path, <1ms).

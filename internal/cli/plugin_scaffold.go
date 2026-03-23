@@ -25,6 +25,52 @@ const mcpJSON = `{
 }
 `
 
+const hooksJSON = `{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gsdw hook SessionStart"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gsdw hook PreCompact"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gsdw hook PreToolUse"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gsdw hook PostToolUse"
+          }
+        ]
+      }
+    ]
+  }
+}
+`
+
 // skillFiles maps relative paths (from project root) to their content.
 var skillFiles = map[string]string{
 	"skills/init/SKILL.md":     skillInit,
