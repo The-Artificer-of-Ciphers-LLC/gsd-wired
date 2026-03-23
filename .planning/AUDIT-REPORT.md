@@ -185,8 +185,8 @@ External dependencies: `github.com/mark3labs/mcp-go` (MCP SDK v1.4.1) plus stand
 ## 6. Test Results Summary
 
 ```
-Total tests:     321
-Passing:         321
+Total tests:     342
+Passing:         342
 Failing:           0
 Skipped:           0
 Packages tested:  11
@@ -216,7 +216,7 @@ Packages tested:  11
 | `go build ./cmd/gsdw` | SUCCESS |
 | TODO/FIXME/HACK markers | 0 in production code |
 | Commented-out code | 0 (all comments are documentation) |
-| Dead code | 1 harmless expression (`get_tiered_context.go:126`) |
+| Dead code | 0 (resolved 2026-03-23) |
 | Total Go files | 98 |
 | Production files | 54 |
 | Test files | 44 |

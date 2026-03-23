@@ -22,8 +22,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Total tests | 321 |
-| Passing | 321 |
+| Total tests | 342 |
+| Passing | 342 |
 | Failing | 0 |
 | Skipped | 0 |
 | Packages | 11 |
@@ -74,7 +74,7 @@ All 321 tests pass with `-count=1` (no cache). Zero flaky tests.
 
 | Issue | Severity | Notes |
 |-------|----------|-------|
-| Dead expression `get_tiered_context.go:126` | Informational | `_ = fmt.Sprintf(...)` no-op; harmless |
+| Dead expression `get_tiered_context.go:126` | Resolved | Removed in audit 2026-03-23 |
 | Phase 7 human verification items | Non-blocking | 3 items require live Claude Code environment: Task() execution, git commit format, remediation with real MCP |
 | EXEC-05 uses plan ID not bead ID | By design | Intentional per decision D-06; human-readable commit messages preferred |
 | v1.0 traceability table has stale "Pending" statuses | Cosmetic | Checkboxes correct; table rows not updated after phase completion |
@@ -102,7 +102,7 @@ All 321 tests pass with `-count=1` (no cache). Zero flaky tests.
 
 ## Certification
 
-All 80 requirements across v1.0 and v1.1 milestones are implemented, tested, and verified. The codebase builds cleanly, passes all 321 tests, has zero linting issues, zero TODO markers in production code, and zero unresolved critical gaps.
+All 80 requirements across v1.0 and v1.1 milestones are implemented, tested, and verified. The codebase builds cleanly, passes all 342 tests, has zero linting issues, zero TODO markers in production code, and zero unresolved critical gaps.
 
 The 9 audit gaps identified during this session have all been resolved and verified.
 

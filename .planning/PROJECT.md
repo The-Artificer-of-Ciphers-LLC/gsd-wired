@@ -105,12 +105,12 @@ GSD's full development lifecycle (init → research → plan → execute → ver
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Hard dependency on bd/Dolt | Leverage existing graph persistence + versioning instead of building our own | — Pending |
-| Go as implementation language | Same as bd — enables tight integration, potential upstream PRs, single binary distribution | — Pending |
-| Hybrid state: files + beads | PROJECT.md and config.json stay human-readable; dynamic state (roadmap, tasks, progress) moves to beads graph | — Pending |
-| Natural mapping: Phase=epic, Plan=task, Wave=dep layer | Preserves GSD mental model while leveraging beads' graph structure | — Pending |
-| All four hooks | Deep integration required for token-aware routing and automatic state management | — Pending |
-| Coexistence with .planning/ | Lowers adoption barrier for existing GSD users — read .planning/ as fallback | — Pending |
+| Hard dependency on bd/Dolt | Leverage existing graph persistence + versioning instead of building our own | Decided — implemented in Phase 2 |
+| Go as implementation language | Same as bd — enables tight integration, potential upstream PRs, single binary distribution | Decided — 18K LOC Go codebase |
+| Hybrid state: files + beads | PROJECT.md and config.json stay human-readable; dynamic state (roadmap, tasks, progress) moves to beads graph | Decided — implemented in Phase 5 |
+| Natural mapping: Phase=epic, Plan=task, Wave=dep layer | Preserves GSD mental model while leveraging beads' graph structure | Decided — implemented in Phase 2 |
+| All four hooks | Deep integration required for token-aware routing and automatic state management | Decided — implemented in Phase 4 |
+| Coexistence with .planning/ | Lowers adoption barrier for existing GSD users — read .planning/ as fallback | Decided — implemented in Phase 10 |
 
 ## Evolution
 
@@ -132,7 +132,7 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Current State
 
-**v1.1 shipped 2026-03-22.** 16,922 Go LOC, 340 tests across 11 packages. 18 MCP tools, 8 slash commands, 4 hooks, 17 CLI commands. Full GSD lifecycle on beads graph with complete installation toolkit: GoReleaser pipeline, dependency detection, container management (Docker/Podman/Apple Container), connection wizard with health checks, and multi-platform distribution (brew, go install, ghcr.io).
+**v1.1 shipped 2026-03-22.** 16,922 Go LOC, 342 tests across 11 packages. 18 MCP tools, 8 slash commands, 4 hooks, 17 CLI commands. Full GSD lifecycle on beads graph with complete installation toolkit: GoReleaser pipeline, dependency detection, container management (Docker/Podman/Apple Container), connection wizard with health checks, and multi-platform distribution (brew, go install, ghcr.io).
 
 ---
 *Last updated: 2026-03-22 after v1.1 Installation Toolkit milestone*

@@ -3,7 +3,7 @@
 ## v1.1 — Installation Toolkit
 
 **Shipped:** 2026-03-22
-**Phases:** 4 (11-14) | **Plans:** 8 | **Tests:** 340 total (across 11 packages)
+**Phases:** 4 (11-14) | **Plans:** 8 | **Tests:** 342 total (across 11 packages)
 **LOC added:** ~3,069 | **Total project:** 16,922 Go LOC
 
 ### Key Accomplishments
