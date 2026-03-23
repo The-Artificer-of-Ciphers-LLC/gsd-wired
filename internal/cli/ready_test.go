@@ -3,6 +3,8 @@ package cli
 import (
 	"bytes"
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -194,6 +196,164 @@ func TestReadyCmd_GSDNames(t *testing.T) {
 	// bd IDs must NOT appear (they start with bd-)
 	if strings.Contains(out, "bd-test-") {
 		t.Errorf("output must not contain bd IDs, got:\n%s", out)
+	}
+}
+
+// TestPhaseNumFromBead_NilMetadata verifies phaseNumFromBead returns 0 for nil metadata.
+func TestPhaseNumFromBead_NilMetadata(t *testing.T) {
+	b := graph.Bead{ID: "test-1"}
+	if got := phaseNumFromBead(b); got != 0 {
+		t.Errorf("phaseNumFromBead(nil meta) = %d, want 0", got)
+	}
+}
+
+// TestPhaseNumFromBead_Float64 verifies JSON-unmarshaled float64 is correctly converted.
+func TestPhaseNumFromBead_Float64(t *testing.T) {
+	b := graph.Bead{Metadata: map[string]any{"gsd_phase": float64(5)}}
+	if got := phaseNumFromBead(b); got != 5 {
+		t.Errorf("phaseNumFromBead(float64(5)) = %d, want 5", got)
+	}
+}
+
+// TestPhaseNumFromBead_Int verifies direct int construction works.
+func TestPhaseNumFromBead_Int(t *testing.T) {
+	b := graph.Bead{Metadata: map[string]any{"gsd_phase": 9}}
+	if got := phaseNumFromBead(b); got != 9 {
+		t.Errorf("phaseNumFromBead(int 9) = %d, want 9", got)
+	}
+}
+
+// TestPhaseNumFromBead_Int64 verifies int64 type is handled.
+func TestPhaseNumFromBead_Int64(t *testing.T) {
+	b := graph.Bead{Metadata: map[string]any{"gsd_phase": int64(12)}}
+	if got := phaseNumFromBead(b); got != 12 {
+		t.Errorf("phaseNumFromBead(int64(12)) = %d, want 12", got)
+	}
+}
+
+// TestPhaseNumFromBead_WrongType verifies non-numeric type returns 0.
+func TestPhaseNumFromBead_WrongType(t *testing.T) {
+	b := graph.Bead{Metadata: map[string]any{"gsd_phase": "not-a-number"}}
+	if got := phaseNumFromBead(b); got != 0 {
+		t.Errorf("phaseNumFromBead(string) = %d, want 0", got)
+	}
+}
+
+// TestPlanIDFromBead_NilMetadata verifies planIDFromBead returns empty for nil metadata.
+func TestPlanIDFromBead_NilMetadata(t *testing.T) {
+	b := graph.Bead{ID: "test-1"}
+	if got := planIDFromBead(b); got != "" {
+		t.Errorf("planIDFromBead(nil meta) = %q, want empty", got)
+	}
+}
+
+// TestPlanIDFromBead_Valid verifies planIDFromBead extracts gsd_plan string.
+func TestPlanIDFromBead_Valid(t *testing.T) {
+	b := graph.Bead{Metadata: map[string]any{"gsd_plan": "07-02"}}
+	if got := planIDFromBead(b); got != "07-02" {
+		t.Errorf("planIDFromBead = %q, want %q", got, "07-02")
+	}
+}
+
+// TestPlanIDFromBead_WrongType verifies non-string type returns empty.
+func TestPlanIDFromBead_WrongType(t *testing.T) {
+	b := graph.Bead{Metadata: map[string]any{"gsd_plan": 42}}
+	if got := planIDFromBead(b); got != "" {
+		t.Errorf("planIDFromBead(int) = %q, want empty", got)
+	}
+}
+
+// TestPlanIDFromBead_MissingKey verifies missing key returns empty.
+func TestPlanIDFromBead_MissingKey(t *testing.T) {
+	b := graph.Bead{Metadata: map[string]any{"other": "val"}}
+	if got := planIDFromBead(b); got != "" {
+		t.Errorf("planIDFromBead(missing key) = %q, want empty", got)
+	}
+}
+
+// TestFindBeadsDir_EnvVar verifies BEADS_DIR environment variable is returned when set.
+func TestFindBeadsDir_EnvVar(t *testing.T) {
+	t.Setenv("BEADS_DIR", "/custom/beads")
+	got, err := findBeadsDir()
+	if err != nil {
+		t.Fatalf("findBeadsDir() error: %v", err)
+	}
+	if got != "/custom/beads" {
+		t.Errorf("findBeadsDir() = %q, want %q", got, "/custom/beads")
+	}
+}
+
+// TestFindBeadsDir_WalkUp verifies findBeadsDir locates .beads/ in a parent directory.
+func TestFindBeadsDir_WalkUp(t *testing.T) {
+	t.Setenv("BEADS_DIR", "") // ensure env var is not used
+	tmpDir := resolveSymlinks(t, t.TempDir())
+
+	beadsDir := filepath.Join(tmpDir, ".beads")
+	if err := os.MkdirAll(beadsDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	childDir := filepath.Join(tmpDir, "sub", "deep")
+	if err := os.MkdirAll(childDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	origDir, _ := os.Getwd()
+	if err := os.Chdir(childDir); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(origDir) }()
+
+	got, err := findBeadsDir()
+	if err != nil {
+		t.Fatalf("findBeadsDir() error: %v", err)
+	}
+	if got != beadsDir {
+		t.Errorf("findBeadsDir() = %q, want %q", got, beadsDir)
+	}
+}
+
+// TestFindBeadsDir_NotFound verifies error when .beads/ doesn't exist anywhere.
+func TestFindBeadsDir_NotFound(t *testing.T) {
+	t.Setenv("BEADS_DIR", "") // ensure env var is not used
+	tmpDir := t.TempDir()
+
+	origDir, _ := os.Getwd()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(origDir) }()
+
+	_, err := findBeadsDir()
+	if err == nil {
+		t.Fatal("findBeadsDir() expected error when .beads/ not found, got nil")
+	}
+	if !strings.Contains(err.Error(), "no beads database") {
+		t.Errorf("error %q should mention 'no beads database'", err.Error())
+	}
+}
+
+// TestFindBeadsDir_InCwd verifies findBeadsDir locates .beads/ directly in cwd.
+func TestFindBeadsDir_InCwd(t *testing.T) {
+	t.Setenv("BEADS_DIR", "") // ensure env var is not used
+	tmpDir := resolveSymlinks(t, t.TempDir())
+
+	beadsDir := filepath.Join(tmpDir, ".beads")
+	if err := os.MkdirAll(beadsDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	origDir, _ := os.Getwd()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(origDir) }()
+
+	got, err := findBeadsDir()
+	if err != nil {
+		t.Fatalf("findBeadsDir() error: %v", err)
+	}
+	if got != beadsDir {
+		t.Errorf("findBeadsDir() = %q, want %q", got, beadsDir)
 	}
 }
 

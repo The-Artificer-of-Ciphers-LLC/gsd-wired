@@ -280,6 +280,51 @@ func TestStopArgs_AllRuntimes(t *testing.T) {
 	}
 }
 
+// TestBinary_AllRuntimes verifies Binary() returns the resolved path for each runtime.
+func TestBinary_AllRuntimes(t *testing.T) {
+	cases := []struct {
+		binary string
+		name   string
+		major  int
+		arch   string
+	}{
+		{"docker", "docker", 15, "amd64"},
+		{"podman", "podman", 15, "amd64"},
+		{"container", "apple-container", 26, "arm64"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			expectedPath := makeFakeBinary(t, dir, tc.binary)
+			opts := defaultOpts(makeLookPath(dir), tc.major, 0, tc.arch)
+			rt, err := container.DetectRuntime(opts)
+			if err != nil {
+				t.Fatalf("DetectRuntime: %v", err)
+			}
+			if got := rt.Binary(); got != expectedPath {
+				t.Errorf("%s.Binary() = %q, want %q", tc.name, got, expectedPath)
+			}
+		})
+	}
+}
+
+// TestStartArgs_DefaultPort verifies that empty HostPort defaults to "3307".
+func TestStartArgs_DefaultPort(t *testing.T) {
+	dir := t.TempDir()
+	makeFakeBinary(t, dir, "docker")
+	opts := defaultOpts(makeLookPath(dir), 15, 0, "amd64")
+	rt, err := container.DetectRuntime(opts)
+	if err != nil {
+		t.Fatalf("DetectRuntime: %v", err)
+	}
+	args := rt.StartArgs(container.ContainerConfig{BeadsDoltDir: "/tmp/dolt"})
+	joined := strings.Join(args, " ")
+	if !strings.Contains(joined, "3307:3306") {
+		t.Errorf("default port should be 3307, got: %v", args)
+	}
+}
+
 // TestIsRunningArgs verifies all runtimes produce inspect/is-running args.
 func TestIsRunningArgs_AllRuntimes(t *testing.T) {
 	cases := []struct {

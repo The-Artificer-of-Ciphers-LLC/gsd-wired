@@ -132,7 +132,7 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Current State
 
-**v1.1 shipped 2026-03-22.** 16,922 Go LOC, 342 tests across 11 packages. 18 MCP tools, 8 slash commands, 4 hooks, 17 CLI commands. Full GSD lifecycle on beads graph with complete installation toolkit: GoReleaser pipeline, dependency detection, container management (Docker/Podman/Apple Container), connection wizard with health checks, and multi-platform distribution (brew, go install, ghcr.io).
+**v1.1 shipped 2026-03-22.** 18K+ Go LOC, 394 tests (73% coverage) across 11 packages. 19 MCP tools, 8 slash commands, 4 hooks, 17 CLI commands. Full GSD lifecycle on beads graph with complete installation toolkit: GoReleaser pipeline, dependency detection, container management (Docker/Podman/Apple Container), connection wizard with health checks, and multi-platform distribution (brew, go install, ghcr.io).
 
 ---
 *Last updated: 2026-03-22 after v1.1 Installation Toolkit milestone*

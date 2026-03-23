@@ -182,6 +182,18 @@
 | 9 | hasUppercaseIdentifier/extractFilePath at 0% coverage | Medium | Added 9 tests for pure verification functions |
 | 10 | formatSessionContext/phaseNumAsFloat at 0% coverage | Medium | Added 9 tests for session start helpers |
 
+### Gaps Resolved — Session 3 (coverage sweep, 29 tests)
+
+| # | Gap | Severity | Fix |
+|---|-----|----------|-----|
+| 1 | `phaseNumFromMeta` at 50% coverage | Medium | Added 7 tests covering nil, missing key, float64, int, int64, string, empty map |
+| 2 | `phaseNumFromBead` at 42.9% coverage | Medium | Added 5 tests covering nil meta, float64, int, int64, wrong type |
+| 3 | `planIDFromBead` at 60% coverage | Medium | Added 4 tests covering nil meta, valid, wrong type, missing key |
+| 4 | `findBeadsDir` at 0% coverage | High | Added 4 tests: env var, walk-up, cwd, not-found |
+| 5 | `findGsdwDir` at 0% coverage | High | Added 4 tests: cwd, walk-up, not-found, file-not-dir |
+| 6 | `Binary()` methods at 0% coverage (3 runtimes) | Medium | Added test covering all 3 runtime Binary() accessors |
+| 7 | Default port not tested in StartArgs | Low | Added test for empty HostPort defaulting to 3307 |
+
 ### Open Gaps: NONE
 
 ---
@@ -206,27 +218,27 @@ All transitive dependencies verified. No unused or missing packages.
 ## 6. Test Results Summary
 
 ```
-Total tests:     365
-Passing:         365
+Total tests:     394
+Passing:         394
 Failing:           0
 Skipped:           0
 Packages tested:  11
-Coverage:        71.1%
+Coverage:        73.0%
 ```
 
 | Package | Tests | Coverage | Time |
 |---------|-------|----------|------|
-| `cmd/gsdw` | 6 | 0.0%* | 6.3s |
-| `internal/cli` | 107 | 66.4% | 17.2s |
+| `cmd/gsdw` | 6 | 0.0%* | 5.4s |
+| `internal/cli` | 125 | 71.4% | 14.8s |
 | `internal/compat` | 15 | 96.5% | 0.3s |
-| `internal/connection` | 14 | 66.2% | 1.6s |
-| `internal/container` | 20 | 60.0% | 1.0s |
-| `internal/deps` | 11 | 78.7% | 8.8s |
-| `internal/graph` | 62 | 77.5% | 3.7s |
-| `internal/hook` | 87 | 66.3% | 9.5s |
-| `internal/logging` | 4 | 83.3% | 0.5s |
-| `internal/mcp` | 32 | 70.8% | 6.7s |
-| `internal/version` | 7 | 71.0% | 1.9s |
+| `internal/connection` | 14 | 66.2% | 1.4s |
+| `internal/container` | 22 | 65.3% | 1.0s |
+| `internal/deps` | 11 | 78.7% | 8.4s |
+| `internal/graph` | 62 | 77.3% | 2.7s |
+| `internal/hook` | 87 | 71.6% | 8.1s |
+| `internal/logging` | 4 | 83.3% | 0.7s |
+| `internal/mcp` | 39 | 71.0% | 4.6s |
+| `internal/version` | 7 | 71.0% | 1.4s |
 
 *cmd/gsdw coverage is 0% because tests are in a separate test package and exercise the binary via subprocess.
 
@@ -275,5 +287,5 @@ docs/                - User-facing documentation (4 files)
 
 ---
 
-*Generated: 2026-03-23 by automated comprehensive audit sweep*
+*Generated: 2026-03-23 by automated comprehensive audit sweep (3 sessions)*
 *Auditor: Claude Opus 4.6 (1M context)*

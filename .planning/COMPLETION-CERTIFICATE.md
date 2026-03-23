@@ -9,11 +9,11 @@
 - Features verified working: 80
 
 ## Test Results
-- Total tests: 365
-- Passing: 365
+- Total tests: 394
+- Passing: 394
 - Failing: 0
 - Skipped: 0
-- Coverage: 71.1%
+- Coverage: 73.0%
 
 ## Code Quality
 - Lint errors: 0 (`go vet ./...` clean)
@@ -35,13 +35,13 @@
 | internal/compat | 96.5% |
 | internal/logging | 83.3% |
 | internal/deps | 78.7% |
-| internal/graph | 77.5% |
-| internal/mcp | 70.8% |
+| internal/graph | 77.3% |
+| internal/hook | 71.6% |
+| internal/cli | 71.4% |
+| internal/mcp | 71.0% |
 | internal/version | 71.0% |
-| internal/cli | 66.4% |
-| internal/hook | 66.3% |
 | internal/connection | 66.2% |
-| internal/container | 60.0% |
+| internal/container | 65.3% |
 
 ## Gaps Resolved
 
@@ -56,7 +56,7 @@
 8. **Missing godoc on exported functions** — added comments
 9. **homebrew_casks postinstall xattr** — Gatekeeper quarantine fallback
 
-### This Session (10 gaps)
+### Session 2 (10 gaps)
 1. **Dead code `get_tiered_context.go:126`** — removed `_ = fmt.Sprintf(...)` no-op
 2. **docs/mcp-tools.md missing update_bead_metadata** — added tool #19 docs
 3. **README.md "18 MCP tools"** — updated to 19
@@ -67,6 +67,15 @@
 8. **FormatHot/FormatWarm/FormatCold at 0% coverage** — 6 tests added
 9. **hasUppercaseIdentifier/extractFilePath at 0% coverage** — 9 tests added
 10. **formatSessionContext/phaseNumAsFloat at 0% coverage** — 9 tests added
+
+### Session 3 — Coverage Sweep (7 gaps, 29 new tests)
+1. **`phaseNumFromMeta` at 50% coverage** — 7 tests (nil, missing key, float64, int, int64, string, empty)
+2. **`phaseNumFromBead` at 42.9% coverage** — 5 tests (nil meta, float64, int, int64, wrong type)
+3. **`planIDFromBead` at 60% coverage** — 4 tests (nil meta, valid, wrong type, missing key)
+4. **`findBeadsDir` at 0% coverage** — 4 tests (env var, walk-up, cwd, not-found)
+5. **`findGsdwDir` at 0% coverage** — 4 tests (cwd, walk-up, not-found, file-not-dir)
+6. **`Binary()` methods at 0% (3 runtimes)** — 1 table test covering all 3
+7. **Default port not tested in StartArgs** — 1 test for empty HostPort → 3307
 
 ## Remaining Known Issues
 
@@ -96,7 +105,7 @@
 
 All 80 requirements across v1.0 and v1.1 milestones are implemented, tested, and verified. The codebase builds cleanly, passes all 365 tests, has zero linting issues, zero TODO markers in production code, and zero unresolved critical gaps.
 
-19 audit gaps identified across two sessions have all been resolved and verified.
+26 audit gaps identified across three sessions have all been resolved and verified.
 
 The project is ready for release.
 

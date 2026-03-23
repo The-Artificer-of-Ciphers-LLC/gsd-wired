@@ -302,6 +302,61 @@ func TestExecuteWaveCompaction(t *testing.T) {
 	}
 }
 
+// TestPhaseNumFromMeta_NilMeta verifies phaseNumFromMeta returns 0 for nil metadata.
+func TestPhaseNumFromMeta_NilMeta(t *testing.T) {
+	if got := phaseNumFromMeta(nil); got != 0 {
+		t.Errorf("phaseNumFromMeta(nil) = %d, want 0", got)
+	}
+}
+
+// TestPhaseNumFromMeta_MissingKey verifies phaseNumFromMeta returns 0 when key is absent.
+func TestPhaseNumFromMeta_MissingKey(t *testing.T) {
+	meta := map[string]any{"other_key": 42}
+	if got := phaseNumFromMeta(meta); got != 0 {
+		t.Errorf("phaseNumFromMeta(missing key) = %d, want 0", got)
+	}
+}
+
+// TestPhaseNumFromMeta_Float64 verifies JSON-unmarshaled float64 is correctly converted.
+func TestPhaseNumFromMeta_Float64(t *testing.T) {
+	meta := map[string]any{"gsd_phase": float64(7)}
+	if got := phaseNumFromMeta(meta); got != 7 {
+		t.Errorf("phaseNumFromMeta(float64(7)) = %d, want 7", got)
+	}
+}
+
+// TestPhaseNumFromMeta_Int verifies direct int construction works.
+func TestPhaseNumFromMeta_Int(t *testing.T) {
+	meta := map[string]any{"gsd_phase": 3}
+	if got := phaseNumFromMeta(meta); got != 3 {
+		t.Errorf("phaseNumFromMeta(int 3) = %d, want 3", got)
+	}
+}
+
+// TestPhaseNumFromMeta_Int64 verifies int64 type is handled.
+func TestPhaseNumFromMeta_Int64(t *testing.T) {
+	meta := map[string]any{"gsd_phase": int64(14)}
+	if got := phaseNumFromMeta(meta); got != 14 {
+		t.Errorf("phaseNumFromMeta(int64(14)) = %d, want 14", got)
+	}
+}
+
+// TestPhaseNumFromMeta_StringType verifies wrong type returns 0.
+func TestPhaseNumFromMeta_StringType(t *testing.T) {
+	meta := map[string]any{"gsd_phase": "five"}
+	if got := phaseNumFromMeta(meta); got != 0 {
+		t.Errorf("phaseNumFromMeta(string) = %d, want 0", got)
+	}
+}
+
+// TestPhaseNumFromMeta_EmptyMap verifies empty map returns 0.
+func TestPhaseNumFromMeta_EmptyMap(t *testing.T) {
+	meta := map[string]any{}
+	if got := phaseNumFromMeta(meta); got != 0 {
+		t.Errorf("phaseNumFromMeta(empty) = %d, want 0", got)
+	}
+}
+
 // TestExecuteWaveNoPhase verifies that execute_wave with a non-existent phase_num
 // returns toolError "no phase epic found".
 func TestExecuteWaveNoPhase(t *testing.T) {

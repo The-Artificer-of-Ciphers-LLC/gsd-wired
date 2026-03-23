@@ -10,7 +10,7 @@ gsd-wired is a Claude Code plugin (MCP server + hooks + skills) that replaces ma
 
 ## Current Status
 
-> **v1.1.2 shipped.** CLI, MCP server, hooks, and skills fully implemented and tested (340+ tests, 16,922+ LOC). `gsdw init` scaffolds all plugin files automatically — slash commands appear in Claude Code immediately after initialization.
+> **v1.1.2 shipped.** CLI, MCP server, hooks, and skills fully implemented and tested (394 tests, 73% coverage, 18K+ LOC). `gsdw init` scaffolds all plugin files automatically — slash commands appear in Claude Code immediately after initialization.
 
 ## Installation
 
@@ -172,7 +172,7 @@ gsd-wired coexists with `.planning/` directories used by vanilla GSD. The `compa
 ## Development
 
 ```bash
-go test ./...              # Run all tests (~340 across 11 packages)
+go test ./...              # Run all tests (394 across 11 packages)
 go build ./cmd/gsdw        # Build binary
 gsdw version --json        # Verify build
 ```

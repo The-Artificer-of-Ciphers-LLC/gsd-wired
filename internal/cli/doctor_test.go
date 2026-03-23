@@ -258,6 +258,100 @@ func TestRenderDoctor_ConnectionNotConfigured(t *testing.T) {
 	}
 }
 
+// resolveSymlinks resolves macOS /var -> /private/var symlinks for test comparisons.
+func resolveSymlinks(t *testing.T, p string) string {
+	t.Helper()
+	resolved, err := filepath.EvalSymlinks(p)
+	if err != nil {
+		t.Fatalf("EvalSymlinks(%q): %v", p, err)
+	}
+	return resolved
+}
+
+// TestFindGsdwDir_InCwd verifies findGsdwDir locates .gsdw/ directly in cwd.
+func TestFindGsdwDir_InCwd(t *testing.T) {
+	tmpDir := resolveSymlinks(t, t.TempDir())
+
+	gsdwDir := filepath.Join(tmpDir, ".gsdw")
+	if err := os.MkdirAll(gsdwDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	origDir, _ := os.Getwd()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(origDir) }()
+
+	got := findGsdwDir()
+	if got != gsdwDir {
+		t.Errorf("findGsdwDir() = %q, want %q", got, gsdwDir)
+	}
+}
+
+// TestFindGsdwDir_WalkUp verifies findGsdwDir locates .gsdw/ in a parent directory.
+func TestFindGsdwDir_WalkUp(t *testing.T) {
+	tmpDir := resolveSymlinks(t, t.TempDir())
+
+	gsdwDir := filepath.Join(tmpDir, ".gsdw")
+	if err := os.MkdirAll(gsdwDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	childDir := filepath.Join(tmpDir, "level1", "level2")
+	if err := os.MkdirAll(childDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	origDir, _ := os.Getwd()
+	if err := os.Chdir(childDir); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(origDir) }()
+
+	got := findGsdwDir()
+	if got != gsdwDir {
+		t.Errorf("findGsdwDir() = %q, want %q", got, gsdwDir)
+	}
+}
+
+// TestFindGsdwDir_NotFound verifies empty string when .gsdw/ doesn't exist.
+func TestFindGsdwDir_NotFound(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	origDir, _ := os.Getwd()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(origDir) }()
+
+	got := findGsdwDir()
+	if got != "" {
+		t.Errorf("findGsdwDir() = %q, want empty string", got)
+	}
+}
+
+// TestFindGsdwDir_FileNotDir verifies .gsdw file (not directory) is not matched.
+func TestFindGsdwDir_FileNotDir(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Create .gsdw as a file, not a directory
+	gsdwPath := filepath.Join(tmpDir, ".gsdw")
+	if err := os.WriteFile(gsdwPath, []byte("not a dir"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	origDir, _ := os.Getwd()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(origDir) }()
+
+	got := findGsdwDir()
+	if got != "" {
+		t.Errorf("findGsdwDir() matched file (not dir) = %q, want empty", got)
+	}
+}
+
 // TestRenderDoctor_ConnectionNoGsdwDir verifies Connection section shows [WARN] when gsdwDir is empty.
 func TestRenderDoctor_ConnectionNoGsdwDir(t *testing.T) {
 	result := makeOKResult()
