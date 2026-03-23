@@ -63,23 +63,3 @@ bd.db
 # They would override fork protection in .git/info/exclude.
 # Config files (metadata.json, config.yaml) are tracked by git by default
 # since no pattern above ignores them.
-
-# Build output
-/dist/
-/gsdw
-
-# GoReleaser build artifacts
-/dist/
-
-# Local runtime / credentials (never commit)
-.env.release
-.beads-credential-key
-.gsdw/
-config.yaml
-metadata.json
-
-# Root-level project doc (generated, not source)
-/PROJECT.md
-
-# Dolt database files (added by bd init)
-.dolt/
