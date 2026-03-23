@@ -2,7 +2,6 @@ package mcp
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -118,12 +117,6 @@ func filterByPhaseNum(beads []graph.TieredBead, phaseNum int) []graph.TieredBead
 				result = append(result, b)
 			}
 		}
-	}
-	// If no beads match the phase filter, return all beads (don't filter out everything).
-	// This handles the case where phase metadata isn't set (common in tests and new projects).
-	if len(result) == 0 && len(beads) > 0 {
-		// Return empty to be precise — caller should handle empty gracefully.
-		_ = fmt.Sprintf("phase %d: no beads found", phaseNum)
 	}
 	return result
 }
