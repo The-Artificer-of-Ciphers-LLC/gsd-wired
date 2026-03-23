@@ -71,7 +71,9 @@ homebrew_casks:
     skip_upload: auto
 
 dockers_v2:
-  - images:
+  - dockerfile: Dockerfile.container
+    ids: [gsdw]
+    images:
       - "ghcr.io/the-artificer-of-ciphers-llc/gsdw"
     tags:
       - "{{ .Version }}"
