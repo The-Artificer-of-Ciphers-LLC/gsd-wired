@@ -25,8 +25,8 @@ builds:
 
 archives:
   - id: gsdw
-    builds: [gsdw]
-    format: tar.gz
+    ids: [gsdw]
+    formats: [tar.gz]
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
@@ -51,7 +51,8 @@ binary_signs:
 
 homebrew_casks:
   - name: gsdw-cc
-    binary: gsdw
+    binaries:
+      - gsdw
     repository:
       owner: The-Artificer-of-Ciphers-LLC
       name: homebrew-gsdw
@@ -63,43 +64,20 @@ homebrew_casks:
     homepage: "https://github.com/The-Artificer-of-Ciphers-LLC/gsd-wired"
     description: "GSD + Beads/Dolt workflow orchestration for Claude Code"
     license: "MIT"
-    postinstall: 'system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}"]'
+    hooks:
+      post:
+        install: |
+          system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}"]
     skip_upload: auto
 
-dockers:
-  - id: gsdw-amd64
-    ids: [gsdw]
-    use: docker
-    dockerfile: Dockerfile.container
-    image_templates:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-amd64"
-    build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title=gsdw"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--platform=linux/amd64"
-    extra_files:
-      - Dockerfile.container
-  - id: gsdw-arm64
-    ids: [gsdw]
-    use: docker
-    dockerfile: Dockerfile.container
-    image_templates:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/arm64"
-    extra_files:
-      - Dockerfile.container
-
-docker_manifests:
-  - name_template: "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}"
-    image_templates:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-amd64"
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
-  - name_template: "ghcr.io/the-artificer-of-ciphers-llc/gsdw:latest"
-    image_templates:
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-amd64"
-      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw:{{ .Version }}-arm64"
+dockers_v2:
+  - images:
+      - "ghcr.io/the-artificer-of-ciphers-llc/gsdw"
+    tags:
+      - "{{ .Version }}"
+      - "latest"
+    labels:
+      "org.opencontainers.image.created": "{{.Date}}"
+      "org.opencontainers.image.title": "gsdw"
+      "org.opencontainers.image.revision": "{{.FullCommit}}"
+      "org.opencontainers.image.version": "{{.Version}}"
