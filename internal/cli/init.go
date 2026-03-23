@@ -119,8 +119,63 @@ init_project MCP tool to create project context in the beads graph.`,
 				fmt.Fprintln(cmd.OutOrStdout(), "Created .gsdw/config.json")
 			}
 
+			// Step 4: Scaffold Claude Code plugin files so /gsd-wired:* slash commands appear.
+			if err := scaffoldPluginFiles(cwd, cmd); err != nil {
+				return err
+			}
+
 			return nil
 		},
 	}
 	return cmd
+}
+
+// scaffoldPluginFiles writes .claude-plugin/plugin.json, .mcp.json, and skills/*/SKILL.md
+// into the project directory so that Claude Code discovers the gsd-wired plugin and
+// registers the /gsd-wired:* slash commands. Files are only written if they don't already exist.
+func scaffoldPluginFiles(cwd string, cmd *cobra.Command) error {
+	out := cmd.OutOrStdout()
+
+	// .claude-plugin/plugin.json
+	pluginDir := filepath.Join(cwd, ".claude-plugin")
+	pluginPath := filepath.Join(pluginDir, "plugin.json")
+	if _, statErr := os.Stat(pluginPath); os.IsNotExist(statErr) {
+		if mkErr := os.MkdirAll(pluginDir, 0o755); mkErr != nil {
+			return fmt.Errorf("cannot create .claude-plugin/ directory: %w", mkErr)
+		}
+		if writeErr := os.WriteFile(pluginPath, []byte(pluginJSON), 0o644); writeErr != nil {
+			return fmt.Errorf("cannot write .claude-plugin/plugin.json: %w", writeErr)
+		}
+		fmt.Fprintln(out, "Created .claude-plugin/plugin.json")
+	}
+
+	// .mcp.json
+	mcpPath := filepath.Join(cwd, ".mcp.json")
+	if _, statErr := os.Stat(mcpPath); os.IsNotExist(statErr) {
+		if writeErr := os.WriteFile(mcpPath, []byte(mcpJSON), 0o644); writeErr != nil {
+			return fmt.Errorf("cannot write .mcp.json: %w", writeErr)
+		}
+		fmt.Fprintln(out, "Created .mcp.json")
+	}
+
+	// skills/*/SKILL.md
+	skillsCreated := 0
+	for relPath, content := range skillFiles {
+		absPath := filepath.Join(cwd, relPath)
+		if _, statErr := os.Stat(absPath); os.IsNotExist(statErr) {
+			dir := filepath.Dir(absPath)
+			if mkErr := os.MkdirAll(dir, 0o755); mkErr != nil {
+				return fmt.Errorf("cannot create directory %s: %w", dir, mkErr)
+			}
+			if writeErr := os.WriteFile(absPath, []byte(content), 0o644); writeErr != nil {
+				return fmt.Errorf("cannot write %s: %w", relPath, writeErr)
+			}
+			skillsCreated++
+		}
+	}
+	if skillsCreated > 0 {
+		fmt.Fprintf(out, "Created skills/ (%d slash commands)\n", skillsCreated)
+	}
+
+	return nil
 }
