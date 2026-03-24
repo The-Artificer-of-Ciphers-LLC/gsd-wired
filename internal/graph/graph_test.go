@@ -88,13 +88,13 @@ func TestRun_Success(t *testing.T) {
 		t.Fatal("run() returned empty output")
 	}
 
-	// Should be valid JSON Bead.
-	var b Bead
-	if err := json.Unmarshal(out, &b); err != nil {
-		t.Errorf("run() output is not valid Bead JSON: %v", err)
+	// Should be valid JSON array of Beads (bd show returns array).
+	var beads []Bead
+	if err := json.Unmarshal(out, &beads); err != nil {
+		t.Errorf("run() output is not valid Bead array JSON: %v", err)
 	}
-	if b.ID == "" {
-		t.Error("run() Bead has empty ID")
+	if len(beads) == 0 || beads[0].ID == "" {
+		t.Error("run() Bead array is empty or has empty ID")
 	}
 }
 

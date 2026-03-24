@@ -99,7 +99,7 @@ func TestExecuteWaveContextChain(t *testing.T) {
 		"status":       "closed",
 		"close_reason": "Dependency completed: graph primitives done",
 	}
-	depData, err := json.Marshal(depBead)
+	depData, err := json.Marshal([]any{depBead})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -229,7 +229,7 @@ func TestExecuteWaveCompaction(t *testing.T) {
 			"gsd:compact": "compact summary",
 		},
 	}
-	depData, err := json.Marshal(depBead)
+	depData, err := json.Marshal([]any{depBead})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -13,8 +13,9 @@ import (
 // Canned single bead JSON for create/show/update responses.
 const cannedBead = `{"id":"bd-test-abc","title":"Test Bead","status":"open","priority":3,"issue_type":"task","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z"}`
 
-// Canned bead array for close response.
+// Canned bead arrays — bd show/update/close all return JSON arrays.
 const cannedBeadArray = `[{"id":"bd-test-abc","title":"Test Bead","status":"closed","priority":3,"issue_type":"task","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z"}]`
+const cannedBeadOpenArray = `[` + cannedBead + `]`
 
 // Canned phase bead for list --label gsd:phase responses.
 const cannedPhaseBead = `[{"id":"bd-phase-1","title":"Phase 1","status":"open","priority":3,"issue_type":"epic","metadata":{"gsd_phase":1},"labels":["gsd:phase"],"created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z"}]`
@@ -117,7 +118,7 @@ func main() {
 				os.Exit(0)
 			}
 		}
-		fmt.Print(cannedBead)
+		fmt.Print(cannedBeadOpenArray)
 		os.Exit(0)
 
 	case "close":
@@ -129,7 +130,7 @@ func main() {
 		os.Exit(0)
 
 	case "update":
-		fmt.Print(cannedBead)
+		fmt.Print(cannedBeadOpenArray)
 		os.Exit(0)
 
 	case "query":

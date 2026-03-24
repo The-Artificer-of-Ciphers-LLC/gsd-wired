@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 )
 
 // ListReady returns all unblocked (ready) beads with no limit.
@@ -52,11 +53,14 @@ func (c *Client) GetBead(ctx context.Context, beadID string) (*Bead, error) {
 	if err != nil {
 		return nil, err
 	}
-	var bead Bead
-	if err := json.Unmarshal(out, &bead); err != nil {
+	var beads []Bead
+	if err := json.Unmarshal(out, &beads); err != nil {
 		return nil, err
 	}
-	return &bead, nil
+	if len(beads) == 0 {
+		return nil, fmt.Errorf("bd show returned empty response for %s", beadID)
+	}
+	return &beads[0], nil
 }
 
 // QueryByLabel returns all beads matching the given label.

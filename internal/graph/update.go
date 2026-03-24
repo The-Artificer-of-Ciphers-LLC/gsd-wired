@@ -14,11 +14,14 @@ func (c *Client) ClaimBead(ctx context.Context, beadID string) (*Bead, error) {
 	if err != nil {
 		return nil, err
 	}
-	var bead Bead
-	if err := json.Unmarshal(out, &bead); err != nil {
+	var beads []Bead
+	if err := json.Unmarshal(out, &beads); err != nil {
 		return nil, err
 	}
-	return &bead, nil
+	if len(beads) == 0 {
+		return nil, fmt.Errorf("bd update --claim returned empty response")
+	}
+	return &beads[0], nil
 }
 
 // ClosePlan closes a plan bead and computes newly unblocked tasks via before/after ready diff.
@@ -85,11 +88,14 @@ func (c *Client) AddLabel(ctx context.Context, beadID, label string) (*Bead, err
 	if err != nil {
 		return nil, err
 	}
-	var bead Bead
-	if err := json.Unmarshal(out, &bead); err != nil {
+	var beads []Bead
+	if err := json.Unmarshal(out, &beads); err != nil {
 		return nil, err
 	}
-	return &bead, nil
+	if len(beads) == 0 {
+		return nil, fmt.Errorf("bd update --add-label returned empty response")
+	}
+	return &beads[0], nil
 }
 
 // UpdateBeadMetadata merges the provided metadata into an existing bead.
@@ -103,9 +109,12 @@ func (c *Client) UpdateBeadMetadata(ctx context.Context, beadID string, meta map
 	if err != nil {
 		return nil, err
 	}
-	var bead Bead
-	if err := json.Unmarshal(out, &bead); err != nil {
+	var beads []Bead
+	if err := json.Unmarshal(out, &beads); err != nil {
 		return nil, err
 	}
-	return &bead, nil
+	if len(beads) == 0 {
+		return nil, fmt.Errorf("bd update --metadata returned empty response")
+	}
+	return &beads[0], nil
 }
