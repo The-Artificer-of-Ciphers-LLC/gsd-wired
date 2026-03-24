@@ -25,30 +25,9 @@ type Client struct {
 // loadConnConfig attempts to load connection.json from the .gsdw/ directory
 // that is a sibling of beadsDir. Per Pitfall 4: derive from beadsDir, not cwd walk-up.
 // Returns nil (no error) if the file does not exist.
-//
-// If a connection config exists but the port doesn't match the actual running
-// server (read from .beads/dolt-server.port), the config is auto-healed and
-// persisted so subsequent calls use the correct port.
 func loadConnConfig(beadsDir string) *connection.Config {
 	gsdwDir := filepath.Join(filepath.Dir(beadsDir), ".gsdw")
 	cfg, _ := connection.LoadConnection(gsdwDir)
-	if cfg == nil {
-		return nil
-	}
-
-	// Auto-heal: if the saved port doesn't match the actual server port, update it.
-	if cfg.ActiveMode == "" || cfg.ActiveMode == "local" {
-		actual := connection.ReadServerPort(beadsDir)
-		if actual != "" {
-			_, saved := cfg.ActiveHostPort()
-			if saved != actual {
-				cfg.Local.Port = connection.FlexPort(actual)
-				// Best-effort persist — don't fail the client over this.
-				_ = connection.SaveConnection(gsdwDir, cfg)
-			}
-		}
-	}
-
 	return cfg
 }
 
@@ -118,11 +97,9 @@ func (c *Client) run(ctx context.Context, args ...string) ([]byte, error) {
 
 	cmd := exec.CommandContext(ctx, c.bdPath, args...)
 	envVars := []string{"BEADS_DIR=" + c.beadsDir}
-	// Only override bd's server discovery for remote mode.
-	// In local mode, bd manages its own Dolt server lifecycle (auto-start,
-	// port discovery via .beads/dolt-server.port). Forcing a port via env vars
-	// breaks this — the saved port may be stale, pointing to a dead or wrong server.
-	if c.connConfig != nil && c.connConfig.ActiveMode == "remote" {
+	// Inject server connection when configured (local container or remote).
+	// connection.json is the user's explicit server config — always honor it.
+	if c.connConfig != nil {
 		host, port := c.connConfig.ActiveHostPort()
 		envVars = append(envVars,
 			"BEADS_DOLT_SERVER_HOST="+host,

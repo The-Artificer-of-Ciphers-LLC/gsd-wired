@@ -59,9 +59,10 @@ func TestClientRunInjectsConnEnvVarsRemoteMode(t *testing.T) {
 	}
 }
 
-// TestClientRunLocalModeSkipsEnvVars: Client with local connConfig does NOT pass
-// BEADS_DOLT_SERVER_HOST/PORT to bd — bd manages its own server in local mode.
-func TestClientRunLocalModeSkipsEnvVars(t *testing.T) {
+// TestClientRunLocalModeInjectsEnvVars: Client with local connConfig passes
+// BEADS_DOLT_SERVER_HOST/PORT to bd — local mode uses a container-managed server
+// that bd doesn't auto-discover, so env vars are needed.
+func TestClientRunLocalModeInjectsEnvVars(t *testing.T) {
 	root := t.TempDir()
 	gsdwDir := filepath.Join(root, ".gsdw")
 	beadsDir := filepath.Join(root, ".beads")
@@ -99,11 +100,11 @@ func TestClientRunLocalModeSkipsEnvVars(t *testing.T) {
 		t.Fatalf("env capture file not valid JSON: %v", err)
 	}
 
-	if _, ok := envMap["BEADS_DOLT_SERVER_HOST"]; ok {
-		t.Errorf("BEADS_DOLT_SERVER_HOST should not be injected in local mode, but got %q", envMap["BEADS_DOLT_SERVER_HOST"])
+	if envMap["BEADS_DOLT_SERVER_HOST"] != "127.0.0.1" {
+		t.Errorf("BEADS_DOLT_SERVER_HOST: got %q, want %q", envMap["BEADS_DOLT_SERVER_HOST"], "127.0.0.1")
 	}
-	if _, ok := envMap["BEADS_DOLT_SERVER_PORT"]; ok {
-		t.Errorf("BEADS_DOLT_SERVER_PORT should not be injected in local mode, but got %q", envMap["BEADS_DOLT_SERVER_PORT"])
+	if envMap["BEADS_DOLT_SERVER_PORT"] != "3307" {
+		t.Errorf("BEADS_DOLT_SERVER_PORT: got %q, want %q", envMap["BEADS_DOLT_SERVER_PORT"], "3307")
 	}
 }
 
