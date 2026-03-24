@@ -50,10 +50,13 @@ func (s *serverState) init(ctx context.Context) error {
 		}
 
 		// Create graph client with batch mode enabled (INFRA-10).
+		// Pass .beads/ path (not project root) as BEADS_DIR — bd expects this
+		// and will create metadata/dolt files relative to it.
+		beadsDirPath := filepath.Join(dir, ".beads")
 		if s.bdPath != "" {
-			s.client = graph.NewClientWithPathBatch(s.bdPath, dir)
+			s.client = graph.NewClientWithPathBatch(s.bdPath, beadsDirPath)
 		} else {
-			c, err := graph.NewClientBatch(dir)
+			c, err := graph.NewClientBatch(beadsDirPath)
 			if err != nil {
 				s.err = err
 				return
