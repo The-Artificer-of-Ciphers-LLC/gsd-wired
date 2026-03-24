@@ -25,10 +25,30 @@ type Client struct {
 // loadConnConfig attempts to load connection.json from the .gsdw/ directory
 // that is a sibling of beadsDir. Per Pitfall 4: derive from beadsDir, not cwd walk-up.
 // Returns nil (no error) if the file does not exist.
+//
+// If a connection config exists but the port doesn't match the actual running
+// server (read from .beads/dolt-server.port), the config is auto-healed and
+// persisted so subsequent calls use the correct port.
 func loadConnConfig(beadsDir string) *connection.Config {
 	gsdwDir := filepath.Join(filepath.Dir(beadsDir), ".gsdw")
 	cfg, _ := connection.LoadConnection(gsdwDir)
-	// cfg is nil if file doesn't exist — that's fine, no env vars injected.
+	if cfg == nil {
+		return nil
+	}
+
+	// Auto-heal: if the saved port doesn't match the actual server port, update it.
+	if cfg.ActiveMode == "" || cfg.ActiveMode == "local" {
+		actual := connection.ReadServerPort(beadsDir)
+		if actual != "" {
+			_, saved := cfg.ActiveHostPort()
+			if saved != actual {
+				cfg.Local.Port = connection.FlexPort(actual)
+				// Best-effort persist — don't fail the client over this.
+				_ = connection.SaveConnection(gsdwDir, cfg)
+			}
+		}
+	}
+
 	return cfg
 }
 

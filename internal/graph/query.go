@@ -35,7 +35,7 @@ func (c *Client) ReadyForPhase(ctx context.Context, phaseBeadID string) ([]Bead,
 
 // ListBlocked returns all beads that are blocked by unresolved dependencies.
 func (c *Client) ListBlocked(ctx context.Context) ([]Bead, error) {
-	out, err := c.run(ctx, "blocked", "--limit", "0")
+	out, err := c.run(ctx, "blocked")
 	if err != nil {
 		return nil, err
 	}

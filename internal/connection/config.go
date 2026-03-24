@@ -170,6 +170,16 @@ func classifyTCPError(err error, host, port string) error {
 	}
 }
 
+// ReadServerPort reads the actual Dolt server port from .beads/dolt-server.port.
+// Returns empty string if the file does not exist or cannot be read.
+func ReadServerPort(beadsDir string) string {
+	data, err := os.ReadFile(filepath.Join(beadsDir, "dolt-server.port"))
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(data))
+}
+
 // buildDSN constructs a MySQL DSN string in the format:
 // [user[:password]@]tcp(host:port)/
 // Uses url.QueryEscape for user and password values.

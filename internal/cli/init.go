@@ -129,19 +129,39 @@ init_project MCP tool to create project context in the beads graph.`,
 				fmt.Fprintln(cmd.OutOrStdout(), "Created .gsdw/config.json")
 			}
 
-			// Step 4: Auto-configure connection if a Dolt server is running on the default port.
+			// Step 4: Auto-configure connection from the actual Dolt server port.
+			// Read the real port from .beads/dolt-server.port (written by bd init),
+			// then verify the server is reachable before saving.
 			connPath := filepath.Join(gsdwDir, "connection.json")
-			if _, statErr := os.Stat(connPath); os.IsNotExist(statErr) {
-				conn, dialErr := net.DialTimeout("tcp", "127.0.0.1:3307", 2*time.Second)
-				if dialErr == nil {
-					conn.Close()
-					cfg := &connection.Config{
-						ActiveMode: "local",
-						Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort("3307")},
-						Configured: time.Now().UTC().Format(time.RFC3339),
+			{
+				port := connection.ReadServerPort(beadsPath)
+				if port == "" {
+					port = "3307"
+				}
+				// Always update connection.json to match the running server port.
+				// This handles both fresh init and re-init where the port changed.
+				needsUpdate := true
+				if _, statErr := os.Stat(connPath); statErr == nil {
+					// connection.json exists — check if port matches
+					if existing, loadErr := connection.LoadConnection(gsdwDir); loadErr == nil && existing != nil {
+						_, existingPort := existing.ActiveHostPort()
+						if existingPort == port {
+							needsUpdate = false
+						}
 					}
-					if saveErr := connection.SaveConnection(gsdwDir, cfg); saveErr == nil {
-						fmt.Fprintln(cmd.OutOrStdout(), "Connected to local Dolt server on 127.0.0.1:3307")
+				}
+				if needsUpdate {
+					conn, dialErr := net.DialTimeout("tcp", "127.0.0.1:"+port, 2*time.Second)
+					if dialErr == nil {
+						conn.Close()
+						cfg := &connection.Config{
+							ActiveMode: "local",
+							Local:      connection.LocalConfig{Host: "127.0.0.1", Port: connection.FlexPort(port)},
+							Configured: time.Now().UTC().Format(time.RFC3339),
+						}
+						if saveErr := connection.SaveConnection(gsdwDir, cfg); saveErr == nil {
+							fmt.Fprintf(cmd.OutOrStdout(), "Connected to local Dolt server on 127.0.0.1:%s\n", port)
+						}
 					}
 				}
 			}
