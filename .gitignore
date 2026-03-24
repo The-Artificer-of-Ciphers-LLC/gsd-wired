@@ -83,3 +83,6 @@ metadata.json
 
 # Dolt database files (added by bd init)
 .dolt/
+
+# Caliber local state
+.caliber/

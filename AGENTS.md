@@ -1,150 +1,101 @@
-# Agent Instructions
+# gsd-wired
 
-This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+Go CLI + MCP server + hook dispatcher for token-efficient dev lifecycle on a Dolt-backed beads graph.
 
-## Quick Reference
+## Build & Test
 
 ```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work atomically
-bd close <id>         # Complete work
-bd dolt push          # Push beads data to remote
+go build ./cmd/gsdw              # build binary
+go test ./...                     # run all 394 tests
+gsdw version --json               # verify build info
+gsdw check-deps --json            # check bd, dolt, go, container runtime
+gsdw doctor                       # full health check
+make release-mac-snapshot          # dry-run signed release
 ```
+
+## Architecture
+
+**Entry**: `cmd/gsdw/main.go` → `internal/cli/root.go` (`Execute()`)
+
+| Package | Purpose | Key files |
+|---|---|---|
+| `internal/cli/` | 17 Cobra commands | `root.go` · `init.go` · `connect.go` · `doctor.go` · `container.go` · `serve.go` · `hook.go` · `ready.go` · `status.go` |
+| `internal/mcp/` | 19 MCP tools + stdio server | `server.go` · `tools.go` · `init.go` · `execute_wave.go` · `verify_phase.go` · `get_tiered_context.go` |
+| `internal/hook/` | 4 hook dispatchers | `dispatcher.go` · `events.go` · `session_start.go` · `pre_tool_use.go` · `post_tool_use.go` · `pre_compact.go` |
+| `internal/graph/` | bd CLI wrapper (beads CRUD) | `client.go` · `bead.go` · `query.go` · `create.go` · `update.go` · `tier.go` · `index.go` |
+| `internal/container/` | Docker/Podman/Apple Container | `runtime.go` · `compose.go` |
+| `internal/connection/` | Dolt server config + health | `config.go` |
+| `internal/deps/` | Dependency detection | `check.go` |
+| `internal/compat/` | `.planning/` fallback (read-only) | `compat.go` |
+| `internal/version/` | Version via ldflags + `ReadBuildInfo` | `version.go` |
+| `internal/logging/` | Structured slog to stderr | `logging.go` |
+
+**Plugin files**: `.mcp.json` (MCP config) · `hooks/hooks.json` (4 hooks) · `skills/` (8 slash commands)
+
+## Conventions
+
+- **Stdout discipline**: MCP server and hooks write JSON to stdout only. All logs go to stderr via `slog`.
+- **Test pattern**: Tests use `internal/graph/testdata/fake_bd/` — a fake `bd` binary built at test time. Set `FAKE_BD_*` env vars to control responses.
+- **Connection config**: `internal/connection/config.go` — `FlexPort` accepts both string and numeric JSON port values.
+- **Container runtime detection**: Priority order in `internal/container/runtime.go`: Apple Container (macOS 26+ARM64) > Docker > Podman.
+- **Cobra commands**: Each command is `New*Cmd() *cobra.Command` in `internal/cli/`, registered in `root.go`.
+- **MCP tools**: Registered in `registerTools()` in `internal/mcp/tools.go`. Each handler is `handle*()` returning `(*mcpsdk.CallToolResult, error)`.
+- **Hook handlers**: Dispatched by event name in `internal/hook/dispatcher.go`. Each is `handle*()` with `(ctx, raw, hookState, writer)` signature.
+- **Graph client**: `internal/graph/client.go` wraps `bd` CLI. `NewClient()` for immediate writes, `NewClientBatch()` for deferred writes flushed via `FlushWrites()`.
+- **Atomic file writes**: Use temp file + `os.Rename` pattern (see `internal/connection/config.go` `SaveConnection`).
+- **Version**: Set via goreleaser ldflags in `.goreleaser.yaml`. Fallback reads `debug.ReadBuildInfo()` in `internal/version/version.go`.
 
 ## Non-Interactive Shell Commands
 
-**ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
-
-Shell commands like `cp`, `mv`, and `rm` may be aliased to include `-i` (interactive) mode on some systems, causing the agent to hang indefinitely waiting for y/n input.
-
-**Use these forms instead:**
 ```bash
-# Force overwrite without prompting
-cp -f source dest           # NOT: cp source dest
-mv -f source dest           # NOT: mv source dest
-rm -f file                  # NOT: rm file
-
-# For recursive operations
-rm -rf directory            # NOT: rm -r directory
-cp -rf source dest          # NOT: cp -r source dest
+cp -f source dest                 # force overwrite, never cp without -f
+mv -f source dest                 # force overwrite
+rm -f file                        # force remove
+rm -rf directory                  # recursive force
 ```
 
-**Other commands that may prompt:**
-- `scp` - use `-o BatchMode=yes` for non-interactive
-- `ssh` - use `-o BatchMode=yes` to fail instead of prompting
-- `apt-get` - use `-y` flag
-- `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
+## Issue Tracking with bd
 
-<!-- BEGIN BEADS INTEGRATION profile:full hash:d4f96305 -->
-## Issue Tracking with bd (beads)
-
-**IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
-
-### Why bd?
-
-- Dependency-aware: Track blockers and relationships between issues
-- Git-friendly: Dolt-powered version control with native sync
-- Agent-optimized: JSON output, ready work detection, discovered-from links
-- Prevents duplicate tracking systems and confusion
-
-### Quick Start
-
-**Check for ready work:**
+This project uses `bd` (beads) for ALL issue tracking. Do NOT use markdown TODOs.
 
 ```bash
-bd ready --json
+bd ready --json                   # find unblocked work
+bd create "Title" --description="Details" -t task -p 2 --json
+bd update <id> --claim --json     # claim atomically
+bd close <id> --reason "Done" --json
+bd dolt push                      # sync to remote
 ```
 
-**Create new issues:**
+Workflow: `bd ready` → `bd update --claim` → implement → `bd close` → `bd dolt push`
+
+Link discovered work: `bd create "Found bug" -p 1 --deps discovered-from:<parent-id> --json`
+
+## Session Completion
+
+Work is NOT complete until `git push` succeeds.
 
 ```bash
-bd create "Issue title" --description="Detailed context" -t bug|feature|task -p 0-4 --json
-bd create "Issue title" --description="What this issue is about" -p 1 --deps discovered-from:bd-123 --json
+go test ./...                     # quality gate
+git pull --rebase && bd dolt push && git push
+git status                        # must show up-to-date
 ```
 
-**Claim and update:**
+File issues for remaining work before ending. Never stop before pushing.
+
+<!-- caliber:managed:pre-commit -->
+## Before Committing
+
+Run `caliber refresh` before creating git commits to keep docs in sync with code changes.
+After it completes, stage any modified doc files before committing:
 
 ```bash
-bd update <id> --claim --json
-bd update bd-42 --priority 1 --json
+caliber refresh && git add CLAUDE.md .claude/ .cursor/ .github/copilot-instructions.md AGENTS.md CALIBER_LEARNINGS.md 2>/dev/null
 ```
+<!-- /caliber:managed:pre-commit -->
 
-**Complete work:**
+<!-- caliber:managed:learnings -->
+## Session Learnings
 
-```bash
-bd close bd-42 --reason "Completed" --json
-```
-
-### Issue Types
-
-- `bug` - Something broken
-- `feature` - New functionality
-- `task` - Work item (tests, docs, refactoring)
-- `epic` - Large feature with subtasks
-- `chore` - Maintenance (dependencies, tooling)
-
-### Priorities
-
-- `0` - Critical (security, data loss, broken builds)
-- `1` - High (major features, important bugs)
-- `2` - Medium (default, nice-to-have)
-- `3` - Low (polish, optimization)
-- `4` - Backlog (future ideas)
-
-### Workflow for AI Agents
-
-1. **Check ready work**: `bd ready` shows unblocked issues
-2. **Claim your task atomically**: `bd update <id> --claim`
-3. **Work on it**: Implement, test, document
-4. **Discover new work?** Create linked issue:
-   - `bd create "Found bug" --description="Details about what was found" -p 1 --deps discovered-from:<parent-id>`
-5. **Complete**: `bd close <id> --reason "Done"`
-
-### Auto-Sync
-
-bd automatically syncs via Dolt:
-
-- Each write auto-commits to Dolt history
-- Use `bd dolt push`/`bd dolt pull` for remote sync
-- No manual export/import needed!
-
-### Important Rules
-
-- ✅ Use bd for ALL task tracking
-- ✅ Always use `--json` flag for programmatic use
-- ✅ Link discovered work with `discovered-from` dependencies
-- ✅ Check `bd ready` before asking "what should I work on?"
-- ❌ Do NOT create markdown TODO lists
-- ❌ Do NOT use external issue trackers
-- ❌ Do NOT duplicate tracking systems
-
-For more details, see README.md and docs/QUICKSTART.md.
-
-## Landing the Plane (Session Completion)
-
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
-
-**MANDATORY WORKFLOW:**
-
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   bd dolt push
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
-
-<!-- END BEADS INTEGRATION -->
+Read `CALIBER_LEARNINGS.md` for patterns and anti-patterns learned from previous sessions.
+These are auto-extracted from real tool usage — treat them as project-specific rules.
+<!-- /caliber:managed:learnings -->
