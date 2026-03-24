@@ -10,10 +10,58 @@ import (
 	"github.com/The-Artificer-of-Ciphers-LLC/gsd-wired/internal/connection"
 )
 
-// TestClientRunInjectsConnEnvVars: Client with connConfig set passes
+// TestClientRunInjectsConnEnvVarsRemoteMode: Client with remote connConfig passes
 // BEADS_DOLT_SERVER_HOST and BEADS_DOLT_SERVER_PORT to bd subprocess.
-func TestClientRunInjectsConnEnvVars(t *testing.T) {
-	// Create temp dir structure: <root>/.gsdw/connection.json + <root>/.beads/
+// In remote mode, bd cannot auto-discover the server, so env vars are needed.
+func TestClientRunInjectsConnEnvVarsRemoteMode(t *testing.T) {
+	root := t.TempDir()
+	gsdwDir := filepath.Join(root, ".gsdw")
+	beadsDir := filepath.Join(root, ".beads")
+	if err := os.MkdirAll(gsdwDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(beadsDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := &connection.Config{
+		ActiveMode: "remote",
+		Remote:     connection.RemoteConfig{Host: "10.0.0.5", Port: connection.FlexPort("3307"), User: "dev"},
+		Configured: "2026-01-01T00:00:00Z",
+	}
+	if err := connection.SaveConnection(gsdwDir, cfg); err != nil {
+		t.Fatal(err)
+	}
+
+	captureFile := filepath.Join(root, "env_capture.json")
+	t.Setenv("FAKE_BD_ENV_CAPTURE_FILE", captureFile)
+
+	c := NewClientWithPath(fakeBdPath, beadsDir)
+	c.connConfig = cfg
+
+	ctx := context.Background()
+	_, _ = c.run(ctx, "echo-env")
+
+	data, err := os.ReadFile(captureFile)
+	if err != nil {
+		t.Fatalf("env capture file not written: %v", err)
+	}
+	var envMap map[string]string
+	if err := json.Unmarshal(data, &envMap); err != nil {
+		t.Fatalf("env capture file not valid JSON: %v", err)
+	}
+
+	if envMap["BEADS_DOLT_SERVER_HOST"] != "10.0.0.5" {
+		t.Errorf("BEADS_DOLT_SERVER_HOST: got %q, want %q", envMap["BEADS_DOLT_SERVER_HOST"], "10.0.0.5")
+	}
+	if envMap["BEADS_DOLT_SERVER_PORT"] != "3307" {
+		t.Errorf("BEADS_DOLT_SERVER_PORT: got %q, want %q", envMap["BEADS_DOLT_SERVER_PORT"], "3307")
+	}
+}
+
+// TestClientRunLocalModeSkipsEnvVars: Client with local connConfig does NOT pass
+// BEADS_DOLT_SERVER_HOST/PORT to bd — bd manages its own server in local mode.
+func TestClientRunLocalModeSkipsEnvVars(t *testing.T) {
 	root := t.TempDir()
 	gsdwDir := filepath.Join(root, ".gsdw")
 	beadsDir := filepath.Join(root, ".beads")
@@ -33,16 +81,13 @@ func TestClientRunInjectsConnEnvVars(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Set up FAKE_BD_ENV_CAPTURE_FILE so fake_bd writes its env to a file.
 	captureFile := filepath.Join(root, "env_capture.json")
 	t.Setenv("FAKE_BD_ENV_CAPTURE_FILE", captureFile)
 
 	c := NewClientWithPath(fakeBdPath, beadsDir)
-	// Force-load the connection config (NewClientWithPath doesn't load from disk).
 	c.connConfig = cfg
 
 	ctx := context.Background()
-	// Run a no-op command; fake_bd will capture env vars.
 	_, _ = c.run(ctx, "echo-env")
 
 	data, err := os.ReadFile(captureFile)
@@ -54,11 +99,11 @@ func TestClientRunInjectsConnEnvVars(t *testing.T) {
 		t.Fatalf("env capture file not valid JSON: %v", err)
 	}
 
-	if envMap["BEADS_DOLT_SERVER_HOST"] != "127.0.0.1" {
-		t.Errorf("BEADS_DOLT_SERVER_HOST: got %q, want %q", envMap["BEADS_DOLT_SERVER_HOST"], "127.0.0.1")
+	if _, ok := envMap["BEADS_DOLT_SERVER_HOST"]; ok {
+		t.Errorf("BEADS_DOLT_SERVER_HOST should not be injected in local mode, but got %q", envMap["BEADS_DOLT_SERVER_HOST"])
 	}
-	if envMap["BEADS_DOLT_SERVER_PORT"] != "3307" {
-		t.Errorf("BEADS_DOLT_SERVER_PORT: got %q, want %q", envMap["BEADS_DOLT_SERVER_PORT"], "3307")
+	if _, ok := envMap["BEADS_DOLT_SERVER_PORT"]; ok {
+		t.Errorf("BEADS_DOLT_SERVER_PORT should not be injected in local mode, but got %q", envMap["BEADS_DOLT_SERVER_PORT"])
 	}
 }
 

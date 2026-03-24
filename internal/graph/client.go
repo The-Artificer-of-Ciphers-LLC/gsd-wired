@@ -118,7 +118,11 @@ func (c *Client) run(ctx context.Context, args ...string) ([]byte, error) {
 
 	cmd := exec.CommandContext(ctx, c.bdPath, args...)
 	envVars := []string{"BEADS_DIR=" + c.beadsDir}
-	if c.connConfig != nil {
+	// Only override bd's server discovery for remote mode.
+	// In local mode, bd manages its own Dolt server lifecycle (auto-start,
+	// port discovery via .beads/dolt-server.port). Forcing a port via env vars
+	// breaks this — the saved port may be stale, pointing to a dead or wrong server.
+	if c.connConfig != nil && c.connConfig.ActiveMode == "remote" {
 		host, port := c.connConfig.ActiveHostPort()
 		envVars = append(envVars,
 			"BEADS_DOLT_SERVER_HOST="+host,
