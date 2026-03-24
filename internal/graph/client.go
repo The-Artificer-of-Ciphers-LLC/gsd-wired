@@ -22,11 +22,17 @@ type Client struct {
 	connConfig *connection.Config // cached connection config, nil if not configured
 }
 
-// loadConnConfig attempts to load connection.json from the .gsdw/ directory
-// that is a sibling of beadsDir. Per Pitfall 4: derive from beadsDir, not cwd walk-up.
+// loadConnConfig attempts to load connection.json from the .gsdw/ directory.
+// beadsDir may be either the .beads/ path or the project root — both are handled.
 // Returns nil (no error) if the file does not exist.
 func loadConnConfig(beadsDir string) *connection.Config {
-	gsdwDir := filepath.Join(filepath.Dir(beadsDir), ".gsdw")
+	// If beadsDir is the .beads/ path, .gsdw/ is a sibling.
+	// If beadsDir is the project root, .gsdw/ is a child.
+	projectRoot := filepath.Dir(beadsDir)
+	if filepath.Base(beadsDir) != ".beads" {
+		projectRoot = beadsDir
+	}
+	gsdwDir := filepath.Join(projectRoot, ".gsdw")
 	cfg, _ := connection.LoadConnection(gsdwDir)
 	return cfg
 }
